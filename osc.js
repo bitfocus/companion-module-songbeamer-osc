@@ -150,7 +150,7 @@ instance.prototype.action = function(action) {
 
 instance.module_info = {
 	label: 'Direct: OSC',
-	id: 'direct_osc',
+	id: 'osc',
 	version: '0.0.1'
 };
 
