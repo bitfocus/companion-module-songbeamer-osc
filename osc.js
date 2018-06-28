@@ -95,6 +95,24 @@ instance.prototype.actions = function(system) {
 					 label: 'Value',
 					 id: 'int',
 					 default: 1,
+					 regex: self.REGEX_SIGNED_NUMBER
+				}
+			]
+		},
+		'send_float': {
+			label: 'Send float',
+			options: [
+				{
+					 type: 'textinput',
+					 label: 'OSC Path',
+					 id: 'path',
+					 default: '/osc/path'
+				},
+				{
+					 type: 'textinput',
+					 label: 'Value',
+					 id: 'float',
+					 default: 1,
 					 regex: self.REGEX_SIGNED_FLOAT
 				}
 			]
@@ -138,6 +156,14 @@ instance.prototype.action = function(action) {
 		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, [ bol ]);
 	}
 
+	if (action.action == 'send_float') {
+		var bol = {
+				type: "f",
+				value: parseFloat(action.options.float)
+		};
+		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, [ bol ]);
+	}
+
 	if (action.action == 'send_string') {
 		var bol = {
 				type: "s",
@@ -151,7 +177,7 @@ instance.prototype.action = function(action) {
 instance.module_info = {
 	label: 'Direct: OSC',
 	id: 'osc',
-	version: '0.0.1'
+	version: '0.0.2'
 };
 
 instance_skel.extendedBy(instance);
