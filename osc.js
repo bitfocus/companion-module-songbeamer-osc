@@ -64,14 +64,14 @@ instance.prototype.config_fields = function () {
 // When module gets deleted
 instance.prototype.destroy = function() {
 	var self = this;
-	debug("destroy");
+	debug('destroy');
 };
 
 instance.prototype.actions = function(system) {
 	var self = this;
 	self.system.emit('instance_actions', self.id, {
 		'send_blank': {
-			label: 'Send message',
+			label: 'Send message without arguments',
 			options: [
 				{
 					 type: 'textinput',
@@ -130,7 +130,24 @@ instance.prototype.actions = function(system) {
 					 type: 'textinput',
 					 label: 'Value',
 					 id: 'string',
-					 default: "text"
+					 default: 'text'
+				}
+			]
+		},
+		'send_multiple': {
+			label: 'Send message with multiple arguments',
+			options: [
+				{
+					 type: 'textinput',
+					 label: 'OSC Path',
+					 id: 'path',
+					 default: '/osc/path'
+				},
+				{
+					 type: 'textinput',
+					 label: 'Arguments',
+					 id: 'arguments',
+					 default: '1 "test" 2.5' 
 				}
 			]
 		}
@@ -140,37 +157,76 @@ instance.prototype.actions = function(system) {
 
 instance.prototype.action = function(action) {
 	var self = this;
+	
+	var args = null;
 
 	debug('action: ', action);
-
-	if (action.action == 'send_blank') {
-		debug('sending',self.config.host, self.config.port, action.options.path);
-		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, [])
-	}
-
-	if (action.action == 'send_int') {
-		var bol = {
-				type: "i",
+	
+	switch(action.action) {
+		case 'send_blank':
+			args = [];
+			break;
+		case 'send_int':
+			args = [{
+				type: 'i',
 				value: parseInt(action.options.int)
-		};
-		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, [ bol ]);
-	}
-
-	if (action.action == 'send_float') {
-		var bol = {
-				type: "f",
+			}];
+			break;
+		case 'send_float':
+			args = [{
+				type: 'f',
 				value: parseFloat(action.options.float)
-		};
-		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, [ bol ]);
+			}];
+			break;
+		case 'send_string':
+			args = [{
+				type: 's',
+				value: '' + action.options.string
+			}];
+			break;
+		case 'send_multiple':
+			let arguments = action.options.arguments.split(' ');
+			let arg;
+			
+			if (arguments.length) {
+				args = [];
+			}
+			
+			for (let i = 0; i < arguments.length; i++) {
+				if (isNaN(arguments[i])) {
+					arg = {
+						type: 's',
+						value: arguments[i].replace(/"/g, '').replace(/'/g, '')
+					};
+					args.push(arg);
+				}
+				else if (arguments[i].indexOf('.') > -1) {
+					arg = {
+						type: 'f',
+						value: parseFloat(arguments[i])
+					};
+					args.push(arg);
+				}
+				else {
+					arg = {
+						type: 'i',
+						value: parseInt(arguments[i])
+					};
+					args.push(arg);
+				}
+			}
+			break;
+		default:
+			break;
 	}
-
-	if (action.action == 'send_string') {
-		var bol = {
-				type: "s",
-				value: "" + action.options.string
-		};
-		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, [ bol ]);
+	
+	if (args !== null) {
+		debug('Sending OSC',self.config.host, self.config.port, action.options.path);
+		console.log('sending osc');
+		console.log(args);
+		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, args);
 	}
+	
 
 };
 
