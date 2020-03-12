@@ -1,7 +1,8 @@
 {
-	"name": "osc",
+	"name": "generic-osc",
 	"legacy": [
-		"direct_osc"
+		"direct_osc",
+		"osc"
 	],
 	"version": "1.0.2",
 	"api_version": "1.0.0",
