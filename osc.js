@@ -147,7 +147,7 @@ instance.prototype.actions = function(system) {
 					 type: 'textinput',
 					 label: 'Arguments',
 					 id: 'arguments',
-					 default: '1 "test" 2.5' 
+					 default: '1 "test" 2.5'
 				}
 			]
 		}
@@ -157,11 +157,11 @@ instance.prototype.actions = function(system) {
 
 instance.prototype.action = function(action) {
 	var self = this;
-	
+
 	var args = null;
 
 	debug('action: ', action);
-	
+
 	switch(action.action) {
 		case 'send_blank':
 			args = [];
@@ -185,18 +185,31 @@ instance.prototype.action = function(action) {
 			}];
 			break;
 		case 'send_multiple':
-			let arguments = action.options.arguments.split(' ');
+			let arguments = action.options.arguments.replace(/“/g, '"').replace(/”/g, '"').split(' ');
 			let arg;
-			
+
 			if (arguments.length) {
 				args = [];
 			}
-			
+
 			for (let i = 0; i < arguments.length; i++) {
+				console.log("looking at "+i);
+				if (arguments[i].length == 0)
+					continue;   
 				if (isNaN(arguments[i])) {
+					var str = arguments[i];
+					if (str.startsWith("\""))
+					{  //a quoted string..
+						  while (!arguments[i].endsWith("\""))
+							{
+								 i++;
+								 str += " "+arguments[i];
+							}
+
+					}
 					arg = {
 						type: 's',
-						value: arguments[i].replace(/"/g, '').replace(/'/g, '')
+						value: str.replace(/"/g, '').replace(/'/g, '')
 					};
 					args.push(arg);
 				}
@@ -219,14 +232,14 @@ instance.prototype.action = function(action) {
 		default:
 			break;
 	}
-	
+
 	if (args !== null) {
 		debug('Sending OSC',self.config.host, self.config.port, action.options.path);
 		console.log('sending osc');
 		console.log(args);
 		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, args);
 	}
-	
+
 
 };
 
