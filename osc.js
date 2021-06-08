@@ -1,6 +1,5 @@
 var instance_skel = require('../../instance_skel');
-var debug;
-var log;
+var GetUpgradeScripts = require('./upgrades')
 
 function instance(system, id, config) {
 	var self = this;
@@ -10,21 +9,10 @@ function instance(system, id, config) {
 
 	self.actions(); // export actions
 
-	// Example: When this script was committed, a fix needed to be made
-	// this will only be run if you had an instance of an older "version" before.
-	// "version" is calculated out from how many upgradescripts your intance config has run.
-	// So just add a addUpgradeScript when you commit a breaking change to the config, that fixes
-	// the config.
-
-	self.addUpgradeScript(function () {
-		// just an example
-		if (self.config.host !== undefined) {
-			self.config.old_host = self.config.host;
-		}
-	});
-
 	return self;
 }
+
+instance.GetUpgradeScripts = GetUpgradeScripts
 
 instance.prototype.updateConfig = function(config) {
 	var self = this;
@@ -35,9 +23,6 @@ instance.prototype.init = function() {
 	var self = this;
 
 	self.status(self.STATE_OK);
-
-	debug = self.debug;
-	log = self.log;
 };
 
 // Return config fields for web config
@@ -64,7 +49,7 @@ instance.prototype.config_fields = function () {
 // When module gets deleted
 instance.prototype.destroy = function() {
 	var self = this;
-	debug('destroy');
+	self.debug('destroy');
 };
 
 instance.prototype.actions = function(system) {
@@ -160,7 +145,7 @@ instance.prototype.action = function(action) {
 
 	var args = null;
 
-	debug('action: ', action);
+	self.debug('action: ', action);
 
 	switch(action.action) {
 		case 'send_blank':
@@ -193,7 +178,6 @@ instance.prototype.action = function(action) {
 			}
 
 			for (let i = 0; i < arguments.length; i++) {
-				console.log("looking at "+i);
 				if (arguments[i].length == 0)
 					continue;   
 				if (isNaN(arguments[i])) {
@@ -234,9 +218,7 @@ instance.prototype.action = function(action) {
 	}
 
 	if (args !== null) {
-		debug('Sending OSC',self.config.host, self.config.port, action.options.path);
-		console.log('sending osc');
-		console.log(args);
+		self.debug('Sending OSC',self.config.host, self.config.port, action.options.path);
 		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, args);
 	}
 
