@@ -19,5 +19,13 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "William Viker <william@bitfocus.io>",
-	"license": "MIT"
+	"license": "MIT",
+	"homepage": "https://github.com/bitfocus/companion-module-generic-osc#readme",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-generic-osc/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-generic-osc.git"
+	}
 }
