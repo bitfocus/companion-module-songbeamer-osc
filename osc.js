@@ -54,7 +54,7 @@ instance.prototype.destroy = function() {
 
 instance.prototype.actions = function(system) {
 	var self = this;
-	self.system.emit('instance_actions', self.id, {
+	self.setActions({
 		'send_blank': {
 			label: 'Send message without arguments',
 			options: [
@@ -235,7 +235,7 @@ instance.prototype.action = function(action) {
 
 	if (args !== null) {
 		self.debug('Sending OSC',self.config.host, self.config.port, action.options.path);
-		self.system.emit('osc_send', self.config.host, self.config.port, action.options.path, args);
+		self.oscSend(self.config.host, self.config.port, action.options.path, args);
 	}
 
 
