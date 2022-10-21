@@ -1,2 +1,3 @@
-# companion-module-generic-osc
+# companion-module-songbeamer-osc
+
 See HELP.md and LICENSE

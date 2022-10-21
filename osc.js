@@ -1,249 +1,247 @@
-var instance_skel = require('../../instance_skel');
+var instance_skel = require('../../instance_skel')
 var GetUpgradeScripts = require('./upgrades')
 
 function instance(system, id, config) {
-	var self = this;
+	var self = this
 
 	// super-constructor
-	instance_skel.apply(this, arguments);
+	instance_skel.apply(this, arguments)
 
-	self.actions(); // export actions
+	self.actions() // export actions
 
-	return self;
+	return self
 }
 
 instance.GetUpgradeScripts = GetUpgradeScripts
 
-instance.prototype.updateConfig = function(config) {
-	var self = this;
+instance.prototype.updateConfig = function (config) {
+	var self = this
 
-	self.config = config;
-};
-instance.prototype.init = function() {
-	var self = this;
+	self.config = config
+}
+instance.prototype.init = function () {
+	var self = this
 
-	self.status(self.STATE_OK);
-};
+	self.status(self.STATE_OK)
+}
 
 // Return config fields for web config
 instance.prototype.config_fields = function () {
-	var self = this;
+	var self = this
 	return [
 		{
 			type: 'textinput',
 			id: 'host',
 			label: 'Target IP',
 			width: 8,
-			regex: self.REGEX_IP
+			regex: self.REGEX_IP,
 		},
 		{
 			type: 'textinput',
 			id: 'port',
 			label: 'Target Port',
 			width: 4,
-			regex: self.REGEX_PORT
-		}
+			regex: self.REGEX_PORT,
+		},
 	]
-};
+}
 
 // When module gets deleted
-instance.prototype.destroy = function() {
-	var self = this;
-	self.debug('destroy');
-};
+instance.prototype.destroy = function () {
+	var self = this
+	self.debug('destroy')
+}
 
-instance.prototype.actions = function(system) {
-	var self = this;
+instance.prototype.actions = function (system) {
+	var self = this
 	self.setActions({
-		'send_blank': {
+		send_blank: {
 			label: 'Send message without arguments',
 			options: [
 				{
-					 type: 'textwithvariables',
-					 label: 'OSC Path',
-					 id: 'path',
-					 default: '/osc/path'
-				}
-			]
+					type: 'textwithvariables',
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
+				},
+			],
 		},
-		'send_int': {
+		send_int: {
 			label: 'Send integer',
 			options: [
 				{
-					 type: 'textwithvariables',
-					 label: 'OSC Path',
-					 id: 'path',
-					 default: '/osc/path'
+					type: 'textwithvariables',
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
 				},
 				{
-					 type: 'textwithvariables',
-					 label: 'Value',
-					 id: 'int',
-					 default: 1,
-					 regex: self.REGEX_SIGNED_NUMBER
-				}
-			]
+					type: 'textwithvariables',
+					label: 'Value',
+					id: 'int',
+					default: 1,
+					regex: self.REGEX_SIGNED_NUMBER,
+				},
+			],
 		},
-		'send_float': {
+		send_float: {
 			label: 'Send float',
 			options: [
 				{
-					 type: 'textwithvariables',
-					 label: 'OSC Path',
-					 id: 'path',
-					 default: '/osc/path'
+					type: 'textwithvariables',
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
 				},
 				{
-					 type: 'textwithvariables',
-					 label: 'Value',
-					 id: 'float',
-					 default: 1,
-					 regex: self.REGEX_SIGNED_FLOAT
-				}
-			]
+					type: 'textwithvariables',
+					label: 'Value',
+					id: 'float',
+					default: 1,
+					regex: self.REGEX_SIGNED_FLOAT,
+				},
+			],
 		},
-		'send_string': {
+		send_string: {
 			label: 'Send string',
 			options: [
 				{
-					 type: 'textwithvariables',
-					 label: 'OSC Path',
-					 id: 'path',
-					 default: '/osc/path'
+					type: 'textwithvariables',
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
 				},
 				{
-					 type: 'textwithvariables',
-					 label: 'Value',
-					 id: 'string',
-					 default: 'text'
-				}
-			]
+					type: 'textwithvariables',
+					label: 'Value',
+					id: 'string',
+					default: 'text',
+				},
+			],
 		},
-		'send_multiple': {
+		send_multiple: {
 			label: 'Send message with multiple arguments',
 			options: [
 				{
-					 type: 'textwithvariables',
-					 label: 'OSC Path',
-					 id: 'path',
-					 default: '/osc/path'
+					type: 'textwithvariables',
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
 				},
 				{
-					 type: 'textwithvariables',
-					 label: 'Arguments',
-					 id: 'arguments',
-					 default: '1 "test" 2.5'
-				}
-			]
-		}
-
-	});
+					type: 'textwithvariables',
+					label: 'Arguments',
+					id: 'arguments',
+					default: '1 "test" 2.5',
+				},
+			],
+		},
+	})
 }
 
-instance.prototype.action = function(action) {
-	var self = this;
+instance.prototype.action = function (action) {
+	var self = this
 
-	var args = null;
-	var path = action.options.path;
+	var args = null
+	var path = action.options.path
 	self.system.emit('variable_parse', action.options.path, function (value) {
 		path = value
 	})
 
-	self.debug('action: ', action);
+	self.debug('action: ', action)
 
-	switch(action.action) {
+	switch (action.action) {
 		case 'send_blank':
-			args = [];
-			break;
+			args = []
+			break
 		case 'send_int':
-			var int;
+			var int
 			self.system.emit('variable_parse', action.options.int, function (value) {
 				int = value
 			})
-			args = [{
-				type: 'i',
-				value: parseInt(int)
-			}];
-			break;
+			args = [
+				{
+					type: 'i',
+					value: parseInt(int),
+				},
+			]
+			break
 		case 'send_float':
-			var float;
+			var float
 			self.system.emit('variable_parse', action.options.float, function (value) {
 				float = value
 			})
-			args = [{
-				type: 'f',
-				value: parseFloat(float)
-			}];
-			break;
+			args = [
+				{
+					type: 'f',
+					value: parseFloat(float),
+				},
+			]
+			break
 		case 'send_string':
-			var string;
+			var string
 			self.system.emit('variable_parse', action.options.string, function (value) {
 				string = value
 			})
-			args = [{
-				type: 's',
-				value: '' + string
-			}];
-			break;
+			args = [
+				{
+					type: 's',
+					value: '' + string,
+				},
+			]
+			break
 		case 'send_multiple':
-			var args;
+			var args
 			self.system.emit('variable_parse', action.options.arguments, function (value) {
 				args = value
 			})
-			let arguments = args.replace(/“/g, '"').replace(/”/g, '"').split(' ');
-			let arg;
+			let arguments = args.replace(/“/g, '"').replace(/”/g, '"').split(' ')
+			let arg
 
 			if (arguments.length) {
-				args = [];
+				args = []
 			}
 
 			for (let i = 0; i < arguments.length; i++) {
-				if (arguments[i].length == 0)
-					continue;   
+				if (arguments[i].length == 0) continue
 				if (isNaN(arguments[i])) {
-					var str = arguments[i];
-					if (str.startsWith("\""))
-					{  //a quoted string..
-						  while (!arguments[i].endsWith("\""))
-							{
-								 i++;
-								 str += " "+arguments[i];
-							}
-
+					var str = arguments[i]
+					if (str.startsWith('"')) {
+						//a quoted string..
+						while (!arguments[i].endsWith('"')) {
+							i++
+							str += ' ' + arguments[i]
+						}
 					}
 					arg = {
 						type: 's',
-						value: str.replace(/"/g, '').replace(/'/g, '')
-					};
-					args.push(arg);
-				}
-				else if (arguments[i].indexOf('.') > -1) {
+						value: str.replace(/"/g, '').replace(/'/g, ''),
+					}
+					args.push(arg)
+				} else if (arguments[i].indexOf('.') > -1) {
 					arg = {
 						type: 'f',
-						value: parseFloat(arguments[i])
-					};
-					args.push(arg);
-				}
-				else {
+						value: parseFloat(arguments[i]),
+					}
+					args.push(arg)
+				} else {
 					arg = {
 						type: 'i',
-						value: parseInt(arguments[i])
-					};
-					args.push(arg);
+						value: parseInt(arguments[i]),
+					}
+					args.push(arg)
 				}
 			}
-			break;
+			break
 		default:
-			break;
+			break
 	}
 
 	if (args !== null) {
-		self.debug('Sending OSC',self.config.host, self.config.port, path);
-		self.oscSend(self.config.host, self.config.port, path, args);
+		self.debug('Sending OSC', self.config.host, self.config.port, path)
+		self.oscSend(self.config.host, self.config.port, path, args)
 	}
+}
 
-
-};
-
-instance_skel.extendedBy(instance);
-exports = module.exports = instance;
+instance_skel.extendedBy(instance)
+exports = module.exports = instance
