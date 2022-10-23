@@ -4,7 +4,8 @@
 	"api_version": "1.0.0",
 	"keywords": [
 		"Protocol",
-		"Generic"
+		"OSC",
+		"Songbeamer"
 	],
 	"manufacturer": "Songbeamer",
 	"product": "OSC",

@@ -1,5 +1,6 @@
 var instance_skel = require('../../instance_skel')
 var GetUpgradeScripts = require('./upgrades')
+var OSC = require('osc')
 
 function instance(system, id, config) {
 	var self = this
@@ -16,12 +17,14 @@ instance.GetUpgradeScripts = GetUpgradeScripts
 
 instance.prototype.updateConfig = function (config) {
 	var self = this
-
 	self.config = config
 }
 instance.prototype.init = function () {
 	var self = this
-
+	self.debug('instance prototype init pre osc')
+	self.debug('var set')
+	self.osc = self.osc_server_init()
+	self.debug('instance prototype init post osc')
 	self.status(self.STATE_OK)
 }
 
@@ -551,9 +554,48 @@ instance.prototype.action = function (action) {
 	}
 
 	if (args !== null) {
-		self.debug('Sending OSC', self.config.host, self.config.port, path, args)
-		self.oscSend(self.config.host, self.config.port, path, args)
+		self.osc.send({
+			address: path,
+			args: args,
+		})
+		self.debug('Sent OSC', self.config.host, self.config.port, path, args)
 	}
+}
+
+instance.prototype.osc_server_init = function () {
+	var self = this
+	self.debug('osc_server_init method started')
+	if (self.osc) {
+		try {
+			self.osc.close()
+		} catch (e) {
+			// Ignore
+		}
+	}
+	// Create an osc.js UDP Port listening on port 57121.
+	self.osc = new OSC.UDPPort({
+		localAddress: '0.0.0.0',
+		remoteAddress: self.config.host,
+		localPort: self.config.port, // 0, random
+		remotePort: self.config.port,
+		broadcast: true,
+		metadata: true,
+	})
+
+	// Listen for incoming OSC messages.
+	self.osc.on('message', function (oscMsg, timeTag, info) {
+		console.log('Received OSC message, Remote info is: ', info) //TODO call feedback action
+	})
+
+	self.osc.on('ready', function () {
+		self.debug('OSC port is ready')
+	})
+
+	// Open the socket.
+	self.osc.open()
+
+	self.debug('osc_server_init method finished', self.osc)
+	return self.osc
 }
 
 instance_skel.extendedBy(instance)
