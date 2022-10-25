@@ -58,18 +58,17 @@ instance.prototype.destroy = function () {
 instance.prototype.actions = function (system) {
 	var self = this
 	self.setActions({
-		/*
-		'send_blank': {
+		send_blank: {
 			label: 'Send message without arguments',
 			options: [
 				{
-					 type: 'textwithvariables',
-					 label: 'OSC Path',
-					 id: 'path',
-					 default: '/osc/path'
-				}
-			]
-		},*/
+					type: 'textwithvariables',
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
+				},
+			],
+		},
 		presentation_state: {
 			label: 'Change presentation state',
 			options: [
@@ -202,6 +201,7 @@ instance.prototype.actions = function (system) {
 					type: 'textwithvariables',
 					label: 'Playlist item number',
 					id: 'navigate_to_playlistitem',
+					tooltip: 'Frist playlist entry is 0!',
 					default: 1,
 					regex: self.REGEX_SIGNED_NUMBER,
 				},
@@ -296,10 +296,12 @@ instance.prototype.action = function (action) {
 	//self.debug('action: ', action);
 
 	switch (action.action) {
-		/*case 'send_blank':
-			args = [];
-			break;
-			*/
+		case 'send_blank':
+			self.system.emit('variable_parse', action.options.path, function (value) {
+				path = value
+			})
+			args = []
+			break
 		case 'presentation_state':
 			self.system.emit('variable_parse', action.options.presentation_state, function (value) {
 				presentation_state = value
@@ -584,7 +586,39 @@ instance.prototype.osc_server_init = function () {
 
 	// Listen for incoming OSC messages.
 	self.osc.on('message', function (oscMsg, timeTag, info) {
-		console.log('Received OSC message, Remote info is: ', info) //TODO call feedback action
+		//self.debug('Received OSC message, Remote info is: ', info) //TODO call feedback action
+		message = oscMsg['address']
+		args = oscMsg['args'][0]
+		value = oscMsg['args'][0]['value']
+		//self.debug('oscMsg:', message, args, value)
+
+		switch (message) {
+			case '/presentation/pagecount':
+				self.debug('/presentation/pagecount', value)
+				break
+			case '/presentation/filename':
+				self.debug('/presentation/filename', value)
+				break
+			case '/playlist/filename':
+				self.debug('/playlist/filename', value)
+				break
+			case '/playlist/count':
+				self.debug('/playlist/count', value)
+				break
+			case '/video/length':
+				self.debug('/video/length', value)
+				break
+			case '/video/filename':
+				self.debug('/video/filename', value)
+				break
+			default:
+				self.debug('unknown osc message case', oscMsg)
+				//TODO
+				// /playlist/items/**/caption
+				// /playlist/items/**/filename
+
+				break
+		}
 	})
 
 	self.osc.on('ready', function () {
