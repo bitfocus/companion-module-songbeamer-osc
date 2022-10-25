@@ -21,10 +21,11 @@ instance.prototype.updateConfig = function (config) {
 }
 instance.prototype.init = function () {
 	var self = this
-	self.debug('instance prototype init pre osc')
-	self.debug('var set')
 	self.osc = self.osc_server_init()
-	self.debug('instance prototype init post osc')
+
+	self.setFeedbackDefinitions(self.feedbacks)
+	self.setVariableDefinitions(self.variables)
+
 	self.status(self.STATE_OK)
 }
 
@@ -307,43 +308,16 @@ instance.prototype.action = function (action) {
 				presentation_state = value
 			})
 			path = '/presentation/state'
-			switch (presentation_state) {
-				case '0':
-					args = [
-						{
-							type: 's',
-							value: 'black',
-						},
-					]
-					break
-				case '1':
-					args = [
-						{
-							type: 's',
-							value: 'background',
-						},
-					]
-					break
-				case '2':
-					args = [
-						{
-							type: 's',
-							value: 'page',
-						},
-					]
-					break
-				case '3':
-					args = [
-						{
-							type: 's',
-							value: 'logo',
-						},
-					]
-					break
-				default:
-					self.debug('presentation state not recoginzed ', presentation_state)
-					break
-			}
+			states = ['black', 'background', 'page', 'logo']
+			args = [
+				{
+					type: 's',
+					value: states[presentation_state],
+				},
+			]
+			//TODO this is only required until songbeamer implements feedback on setting something
+			self.setVariable('presentation_state', states[presentation_state])
+			self.checkFeedbacks('presentation_state')
 			break
 		case 'presentation_page':
 			self.system.emit('variable_parse', action.options.presentation_page, function (value) {
@@ -564,6 +538,58 @@ instance.prototype.action = function (action) {
 	}
 }
 
+instance.prototype.feedbacks = {
+	presentation_state: {
+		type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+		label: 'Presentation State',
+		description: 'Checks presentation state',
+		style: {},
+		// options is how the user can choose the condition the feedback activates for
+		options: [
+			{
+				type: 'dropdown',
+				label: 'State',
+				id: 'presentation_state',
+				default: '0',
+				choices: [
+					{ id: '0', label: 'black' },
+					{ id: '1', label: 'background' },
+					{ id: '2', label: 'page' },
+					{ id: '3', label: 'logo' },
+				],
+				minChoicesForSearch: 0,
+			},
+		],
+	},
+}
+
+instance.prototype.feedback = function (event) {
+	var self = this
+	var options = event.options
+	if (event.type == 'presentation_state') {
+		self.getVariable('presentation_state', function (value) {
+			var_state = value
+		})
+		states = ['black', 'background', 'page', 'logo']
+		if (var_state == states[event.options.presentation_state]) {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		self.debug('feedback event not recognized', event)
+		false
+	}
+	return false
+}
+
+instance.prototype.variables = [
+	{
+		label: 'Presentation State',
+		name: 'presentation_state',
+	},
+]
+
 instance.prototype.osc_server_init = function () {
 	var self = this
 	self.debug('osc_server_init method started')
@@ -586,7 +612,7 @@ instance.prototype.osc_server_init = function () {
 
 	// Listen for incoming OSC messages.
 	self.osc.on('message', function (oscMsg, timeTag, info) {
-		//self.debug('Received OSC message, Remote info is: ', info) //TODO call feedback action
+		//self.debug('Received OSC message, Remote info is: ', info)
 		message = oscMsg['address']
 		args = oscMsg['args'][0]
 		value = oscMsg['args'][0]['value']
@@ -611,12 +637,16 @@ instance.prototype.osc_server_init = function () {
 			case '/video/filename':
 				self.debug('/video/filename', value)
 				break
+			case '/presentation/state':
+				var states = ['black', 'background', 'page', 'logo']
+				self.setVariable('presentation_state', states[value])
+				self.checkFeedbacks('presentation_state')
+				break
 			default:
 				self.debug('unknown osc message case', oscMsg)
 				//TODO
 				// /playlist/items/**/caption
 				// /playlist/items/**/filename
-
 				break
 		}
 	})

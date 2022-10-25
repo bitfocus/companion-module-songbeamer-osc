@@ -1,14 +1,6 @@
 ## Songbeamer OSC based on OSC Generic
 
-In instaces tab specify the ip and port you want to send. In button actions tab specify the OSC path and value.
-
-**Available commands for OSC Songbeamer**
-
-- Send message without arguments
-- Send integer
-- Send float
-- Send string
-- Send message with multiple arguments
+In instances tab specify the ip and port you want to send. In button actions tab specify the OSC path and value.
 
 **Implemented commands from Songbeamer OSC**
 presentation_state
@@ -58,9 +50,17 @@ livevideo_state
 
 - /livevideo/state
 
+**Implemented feedbacks from Songbeamer OSC**
+presentation_state
+
+- /presentation/state
+
 **ToDo List for implementatio of commands from Songbeamer OSC**
 
+- Initial Feedback and Variable Execution e.g. presentation_state
 - Merge conditional presentation_message_text and presentation_message_visible into single action
 - Merge presentation_versemarker into navigate_to with conditional option
 - OSC Feedback - see https://bitfocusio.slack.com/archives/CFG7HAN5N/p1666280195183589
+  - consider which variables should have feedback
 - Merge presentation_language and presentation_language but sending 2 separate commands
+- discuss missing OSC feedback in Songbeamer dev
