@@ -26,7 +26,8 @@ instance.prototype.init = function () {
 	self.setFeedbackDefinitions(self.feedbacks)
 	self.setVariableDefinitions(self.variables)
 
-    //TODO #1 Initialise variables
+	//TODO #1 Initialise variables
+	self.setVariable('presentation_state', 'Not Checked')
 
 	self.status(self.STATE_OK)
 }
@@ -104,7 +105,8 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_versemarker: { //TODO #3 Merge presentation_versemarker into navigate_to
+		presentation_versemarker: {
+			//TODO #3 Merge presentation_versemarker into navigate_to
 			label: 'Change presentation page to verse marker',
 			options: [
 				{
@@ -117,7 +119,8 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_language_primary: { //TODO #6 Merge presentation_language actions
+		presentation_language_primary: {
+			//TODO #6 Merge presentation_language actions
 			label: 'Change primary language ID',
 			options: [
 				{
@@ -135,7 +138,8 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_language: { //TODO #6 Merge presentation_language actions
+		presentation_language: {
+			//TODO #6 Merge presentation_language actions
 			label: 'Change languages to be displayed',
 			options: [
 				{
@@ -148,7 +152,8 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_message_text: { //TODO #2 Combine with visible
+		presentation_message_text: {
+			//TODO #2 Combine with visible
 			label: 'Change presentation message text',
 			options: [
 				{
@@ -161,7 +166,8 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_message_visible: { //TODO #2 Combine with text
+		presentation_message_visible: {
+			//TODO #2 Combine with text
 			label: 'Change presentation message visibility',
 			options: [
 				{
@@ -172,7 +178,8 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		navigate_to: { //TODO #3 Merge presentation_versemarker into navigate_to
+		navigate_to: {
+			//TODO #3 Merge presentation_versemarker into navigate_to
 			label: 'Navigation options within presentation ',
 			options: [
 				{
@@ -317,7 +324,7 @@ instance.prototype.action = function (action) {
 					value: states[presentation_state],
 				},
 			]
-			//TODO this is only required until songbeamer implements feedback on setting something
+			//TODO #7 Remove following line as workaround once fixed
 			self.setVariable('presentation_state', states[presentation_state])
 			self.checkFeedbacks('presentation_state')
 			break
