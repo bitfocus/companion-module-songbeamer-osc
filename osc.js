@@ -26,6 +26,8 @@ instance.prototype.init = function () {
 	self.setFeedbackDefinitions(self.feedbacks)
 	self.setVariableDefinitions(self.variables)
 
+    //TODO #1 Initialise variables
+
 	self.status(self.STATE_OK)
 }
 
@@ -102,7 +104,7 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_versemarker: {
+		presentation_versemarker: { //TODO #3 Merge presentation_versemarker into navigate_to
 			label: 'Change presentation page to verse marker',
 			options: [
 				{
@@ -115,7 +117,7 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_language_primary: {
+		presentation_language_primary: { //TODO #6 Merge presentation_language actions
 			label: 'Change primary language ID',
 			options: [
 				{
@@ -133,7 +135,7 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_language: {
+		presentation_language: { //TODO #6 Merge presentation_language actions
 			label: 'Change languages to be displayed',
 			options: [
 				{
@@ -146,7 +148,7 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_message_text: {
+		presentation_message_text: { //TODO #2 Combine with visible
 			label: 'Change presentation message text',
 			options: [
 				{
@@ -159,7 +161,7 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		presentation_message_visible: {
+		presentation_message_visible: { //TODO #2 Combine with text
 			label: 'Change presentation message visibility',
 			options: [
 				{
@@ -170,7 +172,7 @@ instance.prototype.actions = function (system) {
 				},
 			],
 		},
-		navigate_to: {
+		navigate_to: { //TODO #3 Merge presentation_versemarker into navigate_to
 			label: 'Navigation options within presentation ',
 			options: [
 				{
@@ -331,7 +333,7 @@ instance.prototype.action = function (action) {
 				},
 			]
 			break
-		case 'presentation_versemarker':
+		case 'presentation_versemarker': //TODO #3 Merge presentation_versemarker into navigate_to
 			self.system.emit('variable_parse', action.options.presentation_versemarker, function (value) {
 				presentation_versemarker = value
 			})
@@ -343,7 +345,7 @@ instance.prototype.action = function (action) {
 				},
 			]
 			break
-		case 'presentation_language_primary': //TODO merge with presentation language
+		case 'presentation_language_primary': //TODO #6 Merge presentation_language actions
 			self.system.emit('variable_parse', action.options.presentation_language_primary, function (value) {
 				presentation_language_primary = value
 			})
@@ -355,7 +357,7 @@ instance.prototype.action = function (action) {
 				},
 			]
 			break
-		case 'presentation_language':
+		case 'presentation_language': //TODO #6 Merge presentation_language actions
 			self.system.emit('variable_parse', action.options.presentation_language, function (value) {
 				presentation_language = value
 			})
@@ -367,7 +369,7 @@ instance.prototype.action = function (action) {
 				},
 			]
 			break
-		case 'presentation_message_text':
+		case 'presentation_message_text': //TODO #2 Combine with visible
 			self.system.emit('variable_parse', action.options.presentation_message_text, function (value) {
 				presentation_message_text = value
 			})
@@ -379,7 +381,7 @@ instance.prototype.action = function (action) {
 				},
 			]
 			break
-		case 'presentation_message_visible':
+		case 'presentation_message_visible': //TODO #2 Combine with text
 			self.system.emit('variable_parse', action.options.presentation_message_visible, function (value) {
 				presentation_message_visible = value
 			})
@@ -391,7 +393,7 @@ instance.prototype.action = function (action) {
 				},
 			]
 			break
-		case 'navigate_to':
+		case 'navigate_to': //TODO #3 Merge presentation_versemarker into navigate_to
 			self.system.emit('variable_parse', action.options.navigate_to, function (value) {
 				navigate_to = value
 			})
@@ -543,7 +545,7 @@ instance.prototype.feedbacks = {
 		type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 		label: 'Presentation State',
 		description: 'Checks presentation state',
-		style: {},
+		style: {}, //TODO #4 Implement default style
 		// options is how the user can choose the condition the feedback activates for
 		options: [
 			{
