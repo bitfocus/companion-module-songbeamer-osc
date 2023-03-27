@@ -14,7 +14,8 @@
 	"main": "osc.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"dev": "cd ../../ && yarn dev"
 	},
 	"author": "Benedict Stein <Benedict.Stein@gmail.com>",
 	"license": "MIT",
