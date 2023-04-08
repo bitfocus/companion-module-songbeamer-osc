@@ -3,65 +3,58 @@ var GetUpgradeScripts = require('./upgrades')
 var OSC = require('osc')
 
 function instance(system, id, config) {
-	var self = this
-
 	// super-constructor
 	instance_skel.apply(this, arguments)
 
-	self.actions() // export actions
+	this.actions() // export actions
 
-	return self
+	return this
 }
 
 instance.GetUpgradeScripts = GetUpgradeScripts
 
 instance.prototype.updateConfig = function (config) {
-	var self = this
-	self.config = config
+	this.config = config
 }
 instance.prototype.init = function () {
-	var self = this
-	self.osc = self.osc_server_init()
+	this.osc = this.osc_server_init()
 
-	self.setFeedbackDefinitions(self.feedbacks)
-	self.setVariableDefinitions(self.variables)
+	this.setFeedbackDefinitions(this.feedbacks)
+	this.setVariableDefinitions(this.variables)
 
 	//TODO #1 Initialise variables
-	self.setVariable('presentation_state', 'Not Checked')
+	this.setVariable('presentation_state', 'Not Checked')
 
-	self.status(self.STATE_OK)
+	this.status(this.STATE_OK)
 }
 
 // Return config fields for web config
 instance.prototype.config_fields = function () {
-	var self = this
 	return [
 		{
 			type: 'textinput',
 			id: 'host',
 			label: 'Target IP',
 			width: 8,
-			regex: self.REGEX_IP,
+			regex: this.REGEX_IP,
 		},
 		{
 			type: 'textinput',
 			id: 'port',
 			label: 'Target Port',
 			width: 4,
-			regex: self.REGEX_PORT,
+			regex: this.REGEX_PORT,
 		},
 	]
 }
 
 // When module gets deleted
 instance.prototype.destroy = function () {
-	var self = this
-	self.debug('destroy')
+	this.debug('destroy')
 }
 
 instance.prototype.actions = function (system) {
-	var self = this
-	self.setActions({
+	this.setActions({
 		send_blank: {
 			label: 'Send message without arguments',
 			options: [
@@ -101,7 +94,7 @@ instance.prototype.actions = function (system) {
 					id: 'presentation_page',
 					default: '1',
 					tooltip: 'Choose any page number',
-					regex: self.REGEX_NUMBER,
+					regex: this.REGEX_NUMBER,
 				},
 			],
 		},
@@ -115,7 +108,7 @@ instance.prototype.actions = function (system) {
 					id: 'presentation_versemarker',
 					default: 'Verse 1',
 					tooltip: 'Choose any verse marker',
-					regex: self.REGEX_SOMETHING,
+					regex: this.REGEX_SOMETHING,
 				},
 			],
 		},
@@ -148,7 +141,7 @@ instance.prototype.actions = function (system) {
 					id: 'presentation_language',
 					default: '1234',
 					tooltip: 'Choose any combination of 1234', //TODO check why not displayed
-					regex: self.REGEX_SOMETHING,
+					regex: this.REGEX_SOMETHING,
 				},
 			],
 		},
@@ -162,7 +155,7 @@ instance.prototype.actions = function (system) {
 					id: 'presentation_message_text',
 					default: '',
 					tooltip: 'Type any message to display',
-					regex: self.REGEX_SOMETHING,
+					regex: this.REGEX_SOMETHING,
 				},
 			],
 		},
@@ -213,7 +206,7 @@ instance.prototype.actions = function (system) {
 					id: 'navigate_to_playlistitem',
 					tooltip: 'Frist playlist entry is 0!',
 					default: 1,
-					regex: self.REGEX_SIGNED_NUMBER,
+					regex: this.REGEX_SIGNED_NUMBER,
 				},
 			],
 		},
@@ -244,7 +237,7 @@ instance.prototype.actions = function (system) {
 					id: 'video_position',
 					tooltip: 'Position of video to skip to as hours with . as decimal',
 					default: 1,
-					regex: self.REGEX_SIGNED_FLOAT,
+					regex: this.REGEX_SIGNED_FLOAT,
 				},
 			],
 		},
@@ -273,7 +266,7 @@ instance.prototype.actions = function (system) {
 					label: 'Value',
 					id: 'int',
 					default: 1,
-					regex: self.REGEX_SIGNED_NUMBER,
+					regex: this.REGEX_SIGNED_NUMBER,
 				},
 			],
 		},
@@ -298,22 +291,20 @@ instance.prototype.actions = function (system) {
 }
 
 instance.prototype.action = function (action) {
-	var self = this
-
 	var path
 	var args = null
 
-	//self.debug('action: ', action);
+	//this.debug('action: ', action);
 
 	switch (action.action) {
 		case 'send_blank':
-			self.system.emit('variable_parse', action.options.path, function (value) {
+			this.system.emit('variable_parse', action.options.path, function (value) {
 				path = value
 			})
 			args = []
 			break
 		case 'presentation_state':
-			self.system.emit('variable_parse', action.options.presentation_state, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_state, function (value) {
 				presentation_state = value
 			})
 			path = '/presentation/state'
@@ -325,11 +316,11 @@ instance.prototype.action = function (action) {
 				},
 			]
 			//TODO #7 Remove following line as workaround once fixed
-			self.setVariable('presentation_state', states[presentation_state])
-			self.checkFeedbacks('presentation_state')
+			this.setVariable('presentation_state', states[presentation_state])
+			this.checkFeedbacks('presentation_state')
 			break
 		case 'presentation_page':
-			self.system.emit('variable_parse', action.options.presentation_page, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_page, function (value) {
 				presentation_page = value
 			})
 			path = '/presentation/page'
@@ -341,7 +332,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'presentation_versemarker': //TODO #3 Merge presentation_versemarker into navigate_to
-			self.system.emit('variable_parse', action.options.presentation_versemarker, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_versemarker, function (value) {
 				presentation_versemarker = value
 			})
 			path = '/presentation/pagecaption'
@@ -353,7 +344,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'presentation_language_primary': //TODO #6 Merge presentation_language actions
-			self.system.emit('variable_parse', action.options.presentation_language_primary, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_language_primary, function (value) {
 				presentation_language_primary = value
 			})
 			path = '/presentation/primarylanguage'
@@ -365,7 +356,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'presentation_language': //TODO #6 Merge presentation_language actions
-			self.system.emit('variable_parse', action.options.presentation_language, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_language, function (value) {
 				presentation_language = value
 			})
 			path = '/presentation/language'
@@ -377,7 +368,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'presentation_message_text': //TODO #2 Combine with visible
-			self.system.emit('variable_parse', action.options.presentation_message_text, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_message_text, function (value) {
 				presentation_message_text = value
 			})
 			path = '/presentation/message/text'
@@ -389,7 +380,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'presentation_message_visible': //TODO #2 Combine with text
-			self.system.emit('variable_parse', action.options.presentation_message_visible, function (value) {
+			this.system.emit('variable_parse', action.options.presentation_message_visible, function (value) {
 				presentation_message_visible = value
 			})
 			path = '/presentation/message/visible'
@@ -401,10 +392,10 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'navigate_to': //TODO #3 Merge presentation_versemarker into navigate_to
-			self.system.emit('variable_parse', action.options.navigate_to, function (value) {
+			this.system.emit('variable_parse', action.options.navigate_to, function (value) {
 				navigate_to = value
 			})
-			self.system.emit('variable_parse', action.options.navigate_to_execute, function (value) {
+			this.system.emit('variable_parse', action.options.navigate_to_execute, function (value) {
 				navigate_to_execute = value
 			})
 			args = [
@@ -427,12 +418,12 @@ instance.prototype.action = function (action) {
 					path = '/playlist/previous'
 					break
 				default:
-					self.debug('navigate_to option not recognized', navigate_to)
+					this.debug('navigate_to option not recognized', navigate_to)
 					break
 			}
 			break
 		case 'navigate_to_playlistitem': //TODO improve by integrating into navigate_to with optionally displayed param
-			self.system.emit('variable_parse', action.options.navigate_to_playlistitem, function (value) {
+			this.system.emit('variable_parse', action.options.navigate_to_playlistitem, function (value) {
 				navigate_to_playlistitem = value
 			})
 			path = '/playlist/itemindex'
@@ -444,7 +435,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'video_state':
-			self.system.emit('variable_parse', action.options.video_state, function (value) {
+			this.system.emit('variable_parse', action.options.video_state, function (value) {
 				video_state = value
 			})
 			path = '/video/state'
@@ -474,13 +465,13 @@ instance.prototype.action = function (action) {
 					]
 					break
 				default:
-					self.debug('video state not recoginzed ', video_state)
+					this.debug('video state not recoginzed ', video_state)
 					break
 			}
 			break
 		case 'video_position':
 			var float
-			self.system.emit('variable_parse', action.options.video_position, function (value) {
+			this.system.emit('variable_parse', action.options.video_position, function (value) {
 				video_position = value
 			})
 			args = [
@@ -491,7 +482,7 @@ instance.prototype.action = function (action) {
 			]
 			break
 		case 'livevideo_state':
-			self.system.emit('variable_parse', action.options.livevideo_state, function (value) {
+			this.system.emit('variable_parse', action.options.livevideo_state, function (value) {
 				livevideo_state = value
 			})
 			path = '/livevideo/state'
@@ -505,10 +496,10 @@ instance.prototype.action = function (action) {
 		case 'send_int':
 			var int
 			path = action.options.path
-			self.system.emit('variable_parse', action.options.path, function (value) {
+			this.system.emit('variable_parse', action.options.path, function (value) {
 				path = value
 			})
-			self.system.emit('variable_parse', action.options.int, function (value) {
+			this.system.emit('variable_parse', action.options.int, function (value) {
 				int = value
 			})
 			args = [
@@ -521,10 +512,10 @@ instance.prototype.action = function (action) {
 		case 'send_string':
 			var string
 			path = action.options.path
-			self.system.emit('variable_parse', action.options.path, function (value) {
+			this.system.emit('variable_parse', action.options.path, function (value) {
 				path = value
 			})
-			self.system.emit('variable_parse', action.options.string, function (value) {
+			this.system.emit('variable_parse', action.options.string, function (value) {
 				string = value
 			})
 			args = [
@@ -539,11 +530,11 @@ instance.prototype.action = function (action) {
 	}
 
 	if (args !== null) {
-		self.osc.send({
+		this.osc.send({
 			address: path,
 			args: args,
 		})
-		self.debug('Sent OSC', self.config.host, self.config.port, path, args)
+		this.debug('Sent OSC', this.config.host, this.config.port, path, args)
 	}
 }
 
@@ -573,10 +564,9 @@ instance.prototype.feedbacks = {
 }
 
 instance.prototype.feedback = function (event) {
-	var self = this
 	var options = event.options
 	if (event.type == 'presentation_state') {
-		self.getVariable('presentation_state', function (value) {
+		this.getVariable('presentation_state', function (value) {
 			var_state = value
 		})
 		states = ['black', 'background', 'page', 'logo']
@@ -586,7 +576,7 @@ instance.prototype.feedback = function (event) {
 			return false
 		}
 	} else {
-		self.debug('feedback event not recognized', event)
+		this.debug('feedback event not recognized', event)
 		false
 	}
 	return false
@@ -600,75 +590,74 @@ instance.prototype.variables = [
 ]
 
 instance.prototype.osc_server_init = function () {
-	var self = this
-	self.debug('osc_server_init method started')
-	if (self.osc) {
+	this.debug('osc_server_init method started')
+	if (this.osc) {
 		try {
-			self.osc.close()
+			this.osc.close()
 		} catch (e) {
 			// Ignore
 		}
 	}
 	// Create an osc.js UDP Port listening on port 57121.
-	self.osc = new OSC.UDPPort({
+	this.osc = new OSC.UDPPort({
 		localAddress: '0.0.0.0',
-		remoteAddress: self.config.host,
-		localPort: self.config.port, // 0, random
-		remotePort: self.config.port,
+		remoteAddress: this.config.host,
+		localPort: this.config.port, // 0, random
+		remotePort: this.config.port,
 		broadcast: true,
 		metadata: true,
 	})
 
 	// Listen for incoming OSC messages.
-	self.osc.on('message', function (oscMsg, timeTag, info) {
-		//self.debug('Received OSC message, Remote info is: ', info)
+	this.osc.on('message', function (oscMsg, timeTag, info) {
+		//this.debug('Received OSC message, Remote info is: ', info)
 		message = oscMsg['address']
 		args = oscMsg['args'][0]
 		value = oscMsg['args'][0]['value']
-		//self.debug('oscMsg:', message, args, value)
+		//this.debug('oscMsg:', message, args, value)
 
 		switch (message) {
 			case '/presentation/pagecount':
-				self.debug('/presentation/pagecount', value)
+				this.debug('/presentation/pagecount', value)
 				break
 			case '/presentation/filename':
-				self.debug('/presentation/filename', value)
+				this.debug('/presentation/filename', value)
 				break
 			case '/playlist/filename':
-				self.debug('/playlist/filename', value)
+				this.debug('/playlist/filename', value)
 				break
 			case '/playlist/count':
-				self.debug('/playlist/count', value)
+				this.debug('/playlist/count', value)
 				break
 			case '/video/length':
-				self.debug('/video/length', value)
+				this.debug('/video/length', value)
 				break
 			case '/video/filename':
-				self.debug('/video/filename', value)
+				this.debug('/video/filename', value)
 				break
 			case '/presentation/state':
 				var states = ['black', 'background', 'page', 'logo']
-				self.setVariable('presentation_state', states[value])
-				self.checkFeedbacks('presentation_state')
+				this.setVariable('presentation_state', states[value])
+				this.checkFeedbacks('presentation_state')
 				break
 			default:
-				self.debug('unknown osc message case', oscMsg)
+				this.debug('unknown osc message case', oscMsg)
 				//TODO
 				// /playlist/items/**/caption
 				// /playlist/items/**/filename
 				break
 		}
-	})
+	}.bind(this))
 
-	self.osc.on('ready', function () {
-		self.debug('OSC port is ready')
-	})
+	this.osc.on('ready', function () {
+		this.debug('OSC port is ready')
+	}.bind(this))
 
 	// Open the socket.
-	self.osc.open()
+	this.osc.open()
 
-	self.debug('osc_server_init method finished', self.osc)
-	return self.osc
+	this.debug('osc_server_init method finished', this.osc)
+	return this.osc
 }
 
 instance_skel.extendedBy(instance)
