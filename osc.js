@@ -535,7 +535,7 @@ class instance extends instance_skel {
 				args = [
 					{
 						type: 's',
-						value: '' + string,
+						value: '${string}',
 					},
 				]
 				break
