@@ -312,13 +312,13 @@ class instance extends instance_skel {
 
 		switch (action.action) {
 			case 'send_blank':
-				this.system.emit('variable_parse', action.options.path, function (value) {
+				this.system.emit('variable_parse', action.options.path, (value) => {
 					path = value
 				})
 				args = []
 				break
 			case 'presentation_state':
-				this.system.emit('variable_parse', action.options.presentation_state, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_state, (value) => {
 					presentation_state = value
 				})
 				path = '/presentation/state'
@@ -334,7 +334,7 @@ class instance extends instance_skel {
 				this.checkFeedbacks('presentation_state')
 				break
 			case 'presentation_page':
-				this.system.emit('variable_parse', action.options.presentation_page, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_page, (value) => {
 					presentation_page = value
 				})
 				path = '/presentation/page'
@@ -346,7 +346,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_versemarker': //TODO #3 Merge presentation_versemarker into navigate_to
-				this.system.emit('variable_parse', action.options.presentation_versemarker, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_versemarker, (value) => {
 					presentation_versemarker = value
 				})
 				path = '/presentation/pagecaption'
@@ -358,7 +358,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_language_primary': //TODO #6 Merge presentation_language actions
-				this.system.emit('variable_parse', action.options.presentation_language_primary, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_language_primary, (value) => {
 					presentation_language_primary = value
 				})
 				path = '/presentation/primarylanguage'
@@ -370,7 +370,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_language': //TODO #6 Merge presentation_language actions
-				this.system.emit('variable_parse', action.options.presentation_language, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_language, (value) => {
 					presentation_language = value
 				})
 				path = '/presentation/language'
@@ -382,7 +382,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_message_text': //TODO #2 Combine with visible
-				this.system.emit('variable_parse', action.options.presentation_message_text, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_message_text, (value) => {
 					presentation_message_text = value
 				})
 				path = '/presentation/message/text'
@@ -394,7 +394,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_message_visible': //TODO #2 Combine with text
-				this.system.emit('variable_parse', action.options.presentation_message_visible, function (value) {
+				this.system.emit('variable_parse', action.options.presentation_message_visible, (value) => {
 					presentation_message_visible = value
 				})
 				path = '/presentation/message/visible'
@@ -406,10 +406,10 @@ class instance extends instance_skel {
 				]
 				break
 			case 'navigate_to': //TODO #3 Merge presentation_versemarker into navigate_to
-				this.system.emit('variable_parse', action.options.navigate_to, function (value) {
+				this.system.emit('variable_parse', action.options.navigate_to, (value) => {
 					navigate_to = value
 				})
-				this.system.emit('variable_parse', action.options.navigate_to_execute, function (value) {
+				this.system.emit('variable_parse', action.options.navigate_to_execute, (value) => {
 					navigate_to_execute = value
 				})
 				args = [
@@ -437,7 +437,7 @@ class instance extends instance_skel {
 				}
 				break
 			case 'navigate_to_playlistitem': //TODO improve by integrating into navigate_to with optionally displayed param
-				this.system.emit('variable_parse', action.options.navigate_to_playlistitem, function (value) {
+				this.system.emit('variable_parse', action.options.navigate_to_playlistitem, (value) => {
 					navigate_to_playlistitem = value
 				})
 				path = '/playlist/itemindex'
@@ -449,7 +449,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'video_state':
-				this.system.emit('variable_parse', action.options.video_state, function (value) {
+				this.system.emit('variable_parse', action.options.video_state, (value) => {
 					video_state = value
 				})
 				path = '/video/state'
@@ -485,7 +485,7 @@ class instance extends instance_skel {
 				break
 			case 'video_position':
 				let float
-				this.system.emit('variable_parse', action.options.video_position, function (value) {
+				this.system.emit('variable_parse', action.options.video_position, (value) => {
 					video_position = value
 				})
 				args = [
@@ -496,7 +496,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'livevideo_state':
-				this.system.emit('variable_parse', action.options.livevideo_state, function (value) {
+				this.system.emit('variable_parse', action.options.livevideo_state, (value) => {
 					livevideo_state = value
 				})
 				path = '/livevideo/state'
@@ -510,10 +510,10 @@ class instance extends instance_skel {
 			case 'send_int':
 				let int
 				path = action.options.path
-				this.system.emit('variable_parse', action.options.path, function (value) {
+				this.system.emit('variable_parse', action.options.path, (value) => {
 					path = value
 				})
-				this.system.emit('variable_parse', action.options.int, function (value) {
+				this.system.emit('variable_parse', action.options.int, (value) => {
 					int = value
 				})
 				args = [
@@ -526,10 +526,10 @@ class instance extends instance_skel {
 			case 'send_string':
 				let string
 				path = action.options.path
-				this.system.emit('variable_parse', action.options.path, function (value) {
+				this.system.emit('variable_parse', action.options.path, (value) => {
 					path = value
 				})
-				this.system.emit('variable_parse', action.options.string, function (value) {
+				this.system.emit('variable_parse', action.options.string, (value) => {
 					string = value
 				})
 				args = [
@@ -587,7 +587,7 @@ class instance extends instance_skel {
 	 */
 	feedback(event) {
 		if (event.type == 'presentation_state') {
-			this.getVariable('presentation_state', function (value) {
+			this.getVariable('presentation_state', (value) => {
 				var_state = value
 			})
 			states = ['black', 'background', 'page', 'logo']
@@ -640,58 +640,52 @@ class instance extends instance_skel {
 		/**
 		 * Listener to receive messages
 		 */
-		this.osc.on(
-			'message',
-			function (oscMsg, timeTag, info) {
-				//this.debug('Received OSC message, Remote info is: ', info)
-				message = oscMsg['address']
-				args = oscMsg['args'][0]
-				value = oscMsg['args'][0]['value']
-				//this.debug('oscMsg:', message, args, value)
+		this.osc.on('message', (oscMsg, timeTag, info) => {
+			//this.debug('Received OSC message, Remote info is: ', info)
+			message = oscMsg['address']
+			args = oscMsg['args'][0]
+			value = oscMsg['args'][0]['value']
+			//this.debug('oscMsg:', message, args, value)
 
-				switch (message) {
-					case '/presentation/pagecount':
-						this.debug('/presentation/pagecount', value)
-						break
-					case '/presentation/filename':
-						this.debug('/presentation/filename', value)
-						break
-					case '/playlist/filename':
-						this.debug('/playlist/filename', value)
-						break
-					case '/playlist/count':
-						this.debug('/playlist/count', value)
-						break
-					case '/video/length':
-						this.debug('/video/length', value)
-						break
-					case '/video/filename':
-						this.debug('/video/filename', value)
-						break
-					case '/presentation/state':
-						const states = ['black', 'background', 'page', 'logo']
-						this.setVariable('presentation_state', states[value])
-						this.checkFeedbacks('presentation_state')
-						break
-					default:
-						this.debug('unknown osc message case', oscMsg)
-						//TODO
-						// /playlist/items/**/caption
-						// /playlist/items/**/filename
-						break
-				}
-			}.bind(this)
-		)
+			switch (message) {
+				case '/presentation/pagecount':
+					this.debug('/presentation/pagecount', value)
+					break
+				case '/presentation/filename':
+					this.debug('/presentation/filename', value)
+					break
+				case '/playlist/filename':
+					this.debug('/playlist/filename', value)
+					break
+				case '/playlist/count':
+					this.debug('/playlist/count', value)
+					break
+				case '/video/length':
+					this.debug('/video/length', value)
+					break
+				case '/video/filename':
+					this.debug('/video/filename', value)
+					break
+				case '/presentation/state':
+					const states = ['black', 'background', 'page', 'logo']
+					this.setVariable('presentation_state', states[value])
+					this.checkFeedbacks('presentation_state')
+					break
+				default:
+					this.debug('unknown osc message case', oscMsg)
+					//TODO
+					// /playlist/items/**/caption
+					// /playlist/items/**/filename
+					break
+			}
+		})
 
 		/**
 		 * Listener logging ready function
 		 */
-		this.osc.on(
-			'ready',
-			function () {
-				this.debug('OSC port is ready')
-			}.bind(this)
-		)
+		this.osc.on('ready', () => {
+			this.debug('OSC port is ready')
+		})
 
 		// Open the socket.
 		this.osc.open()
