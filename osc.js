@@ -15,6 +15,11 @@ class instance extends instance_skel {
 	updateConfig(config) {
 		this.config = config
 	}
+
+	/**
+	 * This is a method that initializes the instance for companion
+	 * it needds to set status after successful execution
+	 */
 	init() {
 		this.osc = this.osc_server_init()
 
@@ -27,7 +32,9 @@ class instance extends instance_skel {
 		this.status(this.STATE_OK)
 	}
 
-	// Return config fields for web config
+	/**
+	 * Return config fields for web config
+	 */
 	config_fields() {
 		return [
 			{
@@ -47,11 +54,16 @@ class instance extends instance_skel {
 		]
 	}
 
-	// When module gets deleted
+	/**
+	 * When module gets deleted
+	 */
 	destroy() {
 		this.debug('destroy')
 	}
 
+	/**
+	 * Defines the actions and respective options available with this module
+	 */
 	actions(system) {
 		this.setActions({
 			send_blank: {
@@ -289,6 +301,11 @@ class instance extends instance_skel {
 		})
 	}
 
+	/**
+	 * Method which is used to execute something based on the actions defined before
+	 * by default args and path is set based on the action and sent after the switch case using the osc server from init
+	 * @param action - The companion action object which was executed
+	 */
 	action(action) {
 		let path
 		let args = null
@@ -523,7 +540,7 @@ class instance extends instance_skel {
 				]
 				break
 			default:
-				this.debug('action: ', action);
+				this.debug('action: ', action)
 				break
 		}
 
@@ -536,6 +553,9 @@ class instance extends instance_skel {
 		}
 	}
 
+	/**
+	 * Default feedback options available for the module
+	 */
 	feedbacks = {
 		presentation_state: {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
@@ -561,6 +581,10 @@ class instance extends instance_skel {
 		},
 	}
 
+	/**
+	 * Method which is used to run feedbacks something based on the actions defined before
+	 * @param event - The companion event which triggered the feedback
+	 */
 	feedback(event) {
 		if (event.type == 'presentation_state') {
 			this.getVariable('presentation_state', function (value) {
@@ -579,6 +603,9 @@ class instance extends instance_skel {
 		return false
 	}
 
+	/**
+	 * Default variables available for the module
+	 */
 	variables = [
 		{
 			label: 'Presentation State',
@@ -586,6 +613,9 @@ class instance extends instance_skel {
 		},
 	]
 
+	/**
+	 * Initialisation method for the OSC server used to send and receive messages
+	 */
 	osc_server_init() {
 		this.debug('osc_server_init method started')
 		if (this.osc) {
@@ -595,17 +625,21 @@ class instance extends instance_skel {
 				// Ignore
 			}
 		}
-		// Create an osc.js UDP Port listening on port 57121.
+		/**
+		 * Create an osc.js UDP Port listening on port defined in config.
+		 * */
 		this.osc = new OSC.UDPPort({
 			localAddress: '0.0.0.0',
 			remoteAddress: this.config.host,
-			localPort: this.config.port, // 0, random
+			localPort: this.config.port,
 			remotePort: this.config.port,
 			broadcast: true,
 			metadata: true,
 		})
 
-		// Listen for incoming OSC messages.
+		/**
+		 * Listener to receive messages
+		 */
 		this.osc.on(
 			'message',
 			function (oscMsg, timeTag, info) {
@@ -649,6 +683,9 @@ class instance extends instance_skel {
 			}.bind(this)
 		)
 
+		/**
+		 * Listener logging ready function
+		 */
 		this.osc.on(
 			'ready',
 			function () {
