@@ -6,14 +6,20 @@ class instance extends instance_skel {
 	constructor(system, id, config) {
 		// super-constructor
 		super(system, id, config)
-		this.actions() // export actions
-		return this
 	}
 
 	GetUpgradeScripts = GetUpgradeScripts
 
+	/**
+	 * This is a method is executed on config changes
+	 * It will restart the OSC server if it's configuration changed
+	 */
 	updateConfig(config) {
 		this.config = config
+		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
+			this.debug('host or port configuration changed - reloading osc server')
+			this.osc_server_init()
+		}
 	}
 
 	/**
@@ -21,11 +27,11 @@ class instance extends instance_skel {
 	 * it needds to set status after successful execution
 	 */
 	init() {
-		this.osc = this.osc_server_init()
+		this.osc_server_init()
 
-		this.setFeedbackDefinitions(this.feedbacks)
-		this.setVariableDefinitions(this.variables)
-
+		this.actions()
+		this.feedbacks()
+		this.variables()
 		//TODO #1 Initialise variables
 		this.setVariable('presentation_state', 'Not Checked')
 
@@ -554,31 +560,34 @@ class instance extends instance_skel {
 	}
 
 	/**
-	 * Default feedback options available for the module
+	 * Method which sets the feedback definitions
+	 * @param system - Unknown default param from template
 	 */
-	feedbacks = {
-		presentation_state: {
-			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
-			label: 'Presentation State',
-			description: 'Checks presentation state',
-			style: {}, //TODO #4 Implement default style
-			// options is how the user can choose the condition the feedback activates for
-			options: [
-				{
-					type: 'dropdown',
-					label: 'State',
-					id: 'presentation_state',
-					default: '0',
-					choices: [
-						{ id: '0', label: 'black' },
-						{ id: '1', label: 'background' },
-						{ id: '2', label: 'page' },
-						{ id: '3', label: 'logo' },
-					],
-					minChoicesForSearch: 0,
-				},
-			],
-		},
+	feedbacks(system) {
+		this.setFeedbackDefinitions({
+			presentation_state: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				label: 'Presentation State',
+				description: 'Checks presentation state',
+				style: {}, //TODO #4 Implement default style
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'dropdown',
+						label: 'State',
+						id: 'presentation_state',
+						default: '0',
+						choices: [
+							{ id: '0', label: 'black' },
+							{ id: '1', label: 'background' },
+							{ id: '2', label: 'page' },
+							{ id: '3', label: 'logo' },
+						],
+						minChoicesForSearch: 0,
+					},
+				],
+			},
+		})
 	}
 
 	/**
@@ -604,14 +613,15 @@ class instance extends instance_skel {
 	}
 
 	/**
-	 * Default variables available for the module
+	 * Method which sets the variable definitions
+	 * @param system - Unknown default param from template
 	 */
-	variables = [
-		{
+	variables(system) {
+		this.setVariableDefinitions({
 			label: 'Presentation State',
 			name: 'presentation_state',
-		},
-	]
+		})
+	}
 
 	/**
 	 * Initialisation method for the OSC server used to send and receive messages
@@ -621,6 +631,7 @@ class instance extends instance_skel {
 		if (this.osc) {
 			try {
 				this.osc.close()
+				delete this.osc
 			} catch (e) {
 				// Ignore
 			}
@@ -691,7 +702,6 @@ class instance extends instance_skel {
 		this.osc.open()
 
 		this.debug('osc_server_init method finished', this.osc)
-		return this.osc
 	}
 }
 
