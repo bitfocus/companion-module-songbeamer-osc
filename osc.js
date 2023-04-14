@@ -64,6 +64,8 @@ class instance extends instance_skel {
 	 * When module gets deleted
 	 */
 	destroy() {
+		this.osc.close()
+		delete this.osc
 		this.debug('destroy')
 	}
 
