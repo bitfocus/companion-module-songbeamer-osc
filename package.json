@@ -1,28 +1,11 @@
 {
 	"name": "songbeamer-osc",
-	"version": "1.0.0",
-	"api_version": "1.0.0",
-	"keywords": [
-		"Protocol",
-		"OSC",
-		"Songbeamer"
-	],
-	"manufacturer": "Songbeamer",
-	"product": "OSC",
-	"shortname": "songbeamer-osc",
-	"description": "Direct: Songbeamer OSC plugin for Companion",
+	"version": "2.0.0",
 	"main": "osc.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"format": "prettier --write .",
-		"dev": "cd ../../ && yarn dev"
+		"format": "prettier --write ."
 	},
-	"author": "Benedict Stein <Benedict.Stein@gmail.com>",
 	"license": "MIT",
-	"homepage": "https://github.com/bitfocus/companion-module-songbeamer-osc/#readme",
-	"bugs": {
-		"url": "https://github.com/bitfocus/companion-module-songbeamer-osc/issues"
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bitfocus/companion-module-songbeamer-osc.git"
