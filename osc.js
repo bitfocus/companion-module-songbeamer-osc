@@ -17,7 +17,7 @@ class instance extends instance_skel {
 	updateConfig(config) {
 		this.config = config
 		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
-			this.debug('host or port configuration changed - reloading osc server')
+			this.log('debug','host or port configuration changed - reloading osc server')
 			this.osc_server_init()
 		}
 	}
@@ -66,7 +66,7 @@ class instance extends instance_skel {
 	destroy() {
 		this.osc.close()
 		delete this.osc
-		this.debug('destroy')
+		this.log('debug','destroy')
 	}
 
 	/**
@@ -450,7 +450,7 @@ class instance extends instance_skel {
 						path = '/playlist/previous'
 						break
 					default:
-						this.debug('navigate_to option not recognized', navigate_to)
+						this.log('debug','navigate_to option not recognized', navigate_to)
 						break
 				}
 				break
@@ -499,7 +499,7 @@ class instance extends instance_skel {
 						]
 						break
 					default:
-						this.debug('video state not recoginzed ', video_state)
+						this.log('debug','video state not recoginzed ', video_state)
 						break
 				}
 				break
@@ -562,7 +562,7 @@ class instance extends instance_skel {
 				]
 				break
 			default:
-				this.debug('action: ', action)
+				this.log('debug','action: ', action)
 				break
 		}
 
@@ -571,7 +571,7 @@ class instance extends instance_skel {
 				address: path,
 				args: args,
 			})
-			this.debug('Sent OSC', this.config.host, this.config.port, path, args)
+			this.log('debug','Sent OSC', this.config.host, this.config.port, path, args)
 		}
 	}
 
@@ -623,7 +623,7 @@ class instance extends instance_skel {
 				return false
 			}
 		} else {
-			this.debug('feedback event not recognized', event)
+			this.log('debug','feedback event not recognized', event)
 			false
 		}
 		return false
@@ -644,7 +644,7 @@ class instance extends instance_skel {
 	 * Initialisation method for the OSC server used to send and receive messages
 	 */
 	osc_server_init() {
-		this.debug('osc_server_init method started')
+		this.log('debug','osc_server_init method started')
 		if (this.osc) {
 			try {
 				this.osc.close()
@@ -669,30 +669,30 @@ class instance extends instance_skel {
 		 * Listener to receive messages
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
-			//this.debug('Received OSC message, Remote info is: ', info)
+			//this.log('debug','Received OSC message, Remote info is: ', info)
 			message = oscMsg['address']
 			args = oscMsg['args'][0]
 			value = oscMsg['args'][0]['value']
-			//this.debug('oscMsg:', message, args, value)
+			//this.log('debug','oscMsg:', message, args, value)
 
 			switch (message) {
 				case '/presentation/pagecount':
-					this.debug('/presentation/pagecount', value)
+					this.log('debug','/presentation/pagecount', value)
 					break
 				case '/presentation/filename':
-					this.debug('/presentation/filename', value)
+					this.log('debug','/presentation/filename', value)
 					break
 				case '/playlist/filename':
-					this.debug('/playlist/filename', value)
+					this.log('debug','/playlist/filename', value)
 					break
 				case '/playlist/count':
-					this.debug('/playlist/count', value)
+					this.log('debug','/playlist/count', value)
 					break
 				case '/video/length':
-					this.debug('/video/length', value)
+					this.log('debug','/video/length', value)
 					break
 				case '/video/filename':
-					this.debug('/video/filename', value)
+					this.log('debug','/video/filename', value)
 					break
 				case '/presentation/state':
 					const states = ['black', 'background', 'page', 'logo']
@@ -700,7 +700,7 @@ class instance extends instance_skel {
 					this.checkFeedbacks('presentation_state')
 					break
 				default:
-					this.debug('unknown osc message case', oscMsg)
+					this.log('debug','unknown osc message case', oscMsg)
 					//TODO
 					// /playlist/items/**/caption
 					// /playlist/items/**/filename
@@ -712,13 +712,13 @@ class instance extends instance_skel {
 		 * Listener logging ready function
 		 */
 		this.osc.on('ready', () => {
-			this.debug('OSC port is ready')
+			this.log('debug','OSC port is ready')
 		})
 
 		// Open the socket.
 		this.osc.open()
 
-		this.debug('osc_server_init method finished', this.osc)
+		this.log('debug','osc_server_init method finished', this.osc)
 	}
 }
 
