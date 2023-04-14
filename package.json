@@ -28,6 +28,10 @@
 		"url": "git+https://github.com/bitfocus/companion-module-songbeamer-osc.git"
 	},
 	"devDependencies": {
+		"@companion-module/tools": "^1.2.0",
 		"prettier": "^2.7.1"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.4.1"
 	}
 }
