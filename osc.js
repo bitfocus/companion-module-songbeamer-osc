@@ -254,6 +254,7 @@ class instance extends instance_skel {
 						type: 'textwithvariables',
 						label: 'Position in h',
 						id: 'video_position',
+						required: true,
 						tooltip: 'Position of video to skip to as hours with . as decimal',
 						default: 1,
 						regex: this.REGEX_SIGNED_FLOAT,
@@ -326,11 +327,12 @@ class instance extends instance_skel {
 				args = []
 				break
 			case 'presentation_state':
+				let presentation_state
 				this.system.emit('variable_parse', action.options.presentation_state, (value) => {
 					presentation_state = value
 				})
 				path = '/presentation/state'
-				states = ['black', 'background', 'page', 'logo']
+				const states = ['black', 'background', 'page', 'logo']
 				args = [
 					{
 						type: 's',
@@ -342,6 +344,7 @@ class instance extends instance_skel {
 				this.checkFeedbacks('presentation_state')
 				break
 			case 'presentation_page':
+				let presentation_page
 				this.system.emit('variable_parse', action.options.presentation_page, (value) => {
 					presentation_page = value
 				})
@@ -354,6 +357,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_versemarker': //TODO #3 Merge presentation_versemarker into navigate_to
+				let presentation_versemarker
 				this.system.emit('variable_parse', action.options.presentation_versemarker, (value) => {
 					presentation_versemarker = value
 				})
@@ -366,6 +370,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_language_primary': //TODO #6 Merge presentation_language actions
+				let presentation_language_primary
 				this.system.emit('variable_parse', action.options.presentation_language_primary, (value) => {
 					presentation_language_primary = value
 				})
@@ -378,6 +383,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_language': //TODO #6 Merge presentation_language actions
+				let presentation_language
 				this.system.emit('variable_parse', action.options.presentation_language, (value) => {
 					presentation_language = value
 				})
@@ -390,6 +396,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_message_text': //TODO #2 Combine with visible
+				let presentation_message_text
 				this.system.emit('variable_parse', action.options.presentation_message_text, (value) => {
 					presentation_message_text = value
 				})
@@ -402,6 +409,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'presentation_message_visible': //TODO #2 Combine with text
+				let presentation_message_visible
 				this.system.emit('variable_parse', action.options.presentation_message_visible, (value) => {
 					presentation_message_visible = value
 				})
@@ -414,6 +422,8 @@ class instance extends instance_skel {
 				]
 				break
 			case 'navigate_to': //TODO #3 Merge presentation_versemarker into navigate_to
+				let navigate_to
+				let navigate_to_execute
 				this.system.emit('variable_parse', action.options.navigate_to, (value) => {
 					navigate_to = value
 				})
@@ -445,6 +455,7 @@ class instance extends instance_skel {
 				}
 				break
 			case 'navigate_to_playlistitem': //TODO improve by integrating into navigate_to with optionally displayed param
+				let navigate_to_playlistitem
 				this.system.emit('variable_parse', action.options.navigate_to_playlistitem, (value) => {
 					navigate_to_playlistitem = value
 				})
@@ -457,6 +468,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'video_state':
+				let video_state
 				this.system.emit('variable_parse', action.options.video_state, (value) => {
 					video_state = value
 				})
@@ -492,10 +504,11 @@ class instance extends instance_skel {
 				}
 				break
 			case 'video_position':
-				let float
+				let video_position
 				this.system.emit('variable_parse', action.options.video_position, (value) => {
 					video_position = value
 				})
+				path = '/video/position'
 				args = [
 					{
 						type: 'f',
@@ -504,6 +517,7 @@ class instance extends instance_skel {
 				]
 				break
 			case 'livevideo_state':
+				let livevideo_state
 				this.system.emit('variable_parse', action.options.livevideo_state, (value) => {
 					livevideo_state = value
 				})
@@ -598,10 +612,11 @@ class instance extends instance_skel {
 	 */
 	feedback(event) {
 		if (event.type == 'presentation_state') {
+			let var_state
 			this.getVariable('presentation_state', (value) => {
 				var_state = value
 			})
-			states = ['black', 'background', 'page', 'logo']
+			const states = ['black', 'background', 'page', 'logo']
 			if (var_state == states[event.options.presentation_state]) {
 				return true
 			} else {
