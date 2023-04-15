@@ -15,6 +15,7 @@
 		"prettier": "^2.7.1"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.4.1"
+		"@companion-module/base": "~1.2",
+		"osc": "^2.4.1"
 	}
 }

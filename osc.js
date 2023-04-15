@@ -1,20 +1,17 @@
-const instance_skel = require('../../instance_skel')
-const GetUpgradeScripts = require('./upgrades')
-const OSC = require('osc')
+const { InstanceBase, Regex, runEntrypoint } = require('@companion-module/base')
+const UpgradeScripts = require('./upgrades')
+const OSC = require('@osc')
 
-class instance extends instance_skel {
-	constructor(system, id, config) {
-		// super-constructor
-		super(system, id, config)
+class SongbeamerInstance extends InstanceBase {
+	constructor(internal) {
+		super(internal)
 	}
-
-	GetUpgradeScripts = GetUpgradeScripts
 
 	/**
 	 * This is a method is executed on config changes
 	 * It will restart the OSC server if it's configuration changed
 	 */
-	updateConfig(config) {
+	async configUpdated(config) {
 		this.config = config
 		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
 			this.log('debug','host or port configuration changed - reloading osc server')
@@ -35,7 +32,7 @@ class instance extends instance_skel {
 		//TODO #1 Initialise variables
 		this.setVariable('presentation_state', 'Not Checked')
 
-		this.status(this.STATE_OK)
+		this.updateStatus('ok')
 	}
 
 	/**
@@ -722,4 +719,4 @@ class instance extends instance_skel {
 	}
 }
 
-exports = module.exports = instance
+runEntrypoint(SongbeamerInstance, UpgradeScripts)
