@@ -56,6 +56,7 @@ class SongbeamerInstance extends InstanceBase {
 				label: 'Target IP',
 				width: 8,
 				regex: this.REGEX_IP,
+				useVariables: true,
 			},
 			{
 				type: 'textinput',
@@ -63,6 +64,7 @@ class SongbeamerInstance extends InstanceBase {
 				label: 'Target Port',
 				width: 4,
 				regex: this.REGEX_PORT,
+				useVariables: true,
 			},
 		]
 	}
@@ -79,10 +81,11 @@ class SongbeamerInstance extends InstanceBase {
 				name: 'Send message without arguments',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'OSC Path',
 						id: 'path',
 						default: '/osc/path',
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -146,6 +149,7 @@ class SongbeamerInstance extends InstanceBase {
 						default: '1',
 						tooltip: 'Choose any page number',
 						regex: this.REGEX_NUMBER,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -176,6 +180,7 @@ class SongbeamerInstance extends InstanceBase {
 						default: 'Verse 1',
 						tooltip: 'Choose any verse marker',
 						regex: this.REGEX_SOMETHING,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -241,6 +246,7 @@ class SongbeamerInstance extends InstanceBase {
 						default: '1234',
 						tooltip: 'Choose any combination of 1234', //TODO check why not displayed
 						regex: this.REGEX_SOMETHING,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -271,6 +277,7 @@ class SongbeamerInstance extends InstanceBase {
 						default: '',
 						tooltip: 'Type any message to display',
 						regex: this.REGEX_SOMETHING,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -384,12 +391,13 @@ class SongbeamerInstance extends InstanceBase {
 				name: 'Navigate to a numbered item within the playlist ',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Playlist item number',
 						id: 'navigate_to_playlistitem',
 						tooltip: 'Frist playlist entry is 0!',
 						default: 1,
 						regex: this.REGEX_SIGNED_NUMBER,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -470,13 +478,14 @@ class SongbeamerInstance extends InstanceBase {
 				name: 'Move to video position',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Position in h',
 						id: 'video_position',
 						required: true,
 						tooltip: 'Position of video to skip to as hours with . as decimal',
 						default: 1,
 						regex: this.REGEX_SIGNED_FLOAT,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -527,17 +536,19 @@ class SongbeamerInstance extends InstanceBase {
 				name: 'Send integer',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Value',
 						id: 'int',
 						default: 1,
 						regex: this.REGEX_SIGNED_NUMBER,
+						useVariables: true,
 					},
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'OSC Path',
 						id: 'path',
 						default: '/osc/path',
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -561,16 +572,18 @@ class SongbeamerInstance extends InstanceBase {
 				name: 'Send string',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'OSC Path',
 						id: 'path',
 						default: '/osc/path',
+						useVariables: true,
 					},
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Value',
 						id: 'string',
 						default: 'text',
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
