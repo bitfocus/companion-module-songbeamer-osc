@@ -1,6 +1,6 @@
 const { InstanceBase, Regex, runEntrypoint } = require('@companion-module/base')
 const UpgradeScripts = require('./upgrades')
-const OSC = require('@osc')
+const OSC = require('osc')
 
 class SongbeamerInstance extends InstanceBase {
 	constructor(internal) {
