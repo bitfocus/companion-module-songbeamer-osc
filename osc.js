@@ -601,9 +601,9 @@ class SongbeamerInstance extends InstanceBase {
 		this.setFeedbackDefinitions({
 			presentation_state: {
 				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
-				label: 'Presentation State',
+				name: 'Presentation State',
 				description: 'Checks presentation state',
-				style: {}, //TODO #4 Implement default style
+				defaultStyle: {}, //TODO #4 Implement default style
 				// options is how the user can choose the condition the feedback activates for
 				options: [
 					{
@@ -620,31 +620,20 @@ class SongbeamerInstance extends InstanceBase {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (event) => {
+					let var_state
+					this.getVariable('presentation_state', (value) => {
+						var_state = value // TODO #11 check if variables are still used this way - likely change to with at least .await()
+					})
+					const states = ['black', 'background', 'page', 'logo']
+					if (var_state == states[event.options.presentation_state]) {
+						return true
+					} else {
+						return false
+					}
+				},
 			},
 		})
-	}
-
-	/**
-	 * Method which is used to run feedbacks something based on the actions defined before
-	 * @param event - The companion event which triggered the feedback
-	 */
-	feedback(event) {
-		if (event.type == 'presentation_state') {
-			let var_state
-			this.getVariable('presentation_state', (value) => {
-				var_state = value
-			})
-			const states = ['black', 'background', 'page', 'logo']
-			if (var_state == states[event.options.presentation_state]) {
-				return true
-			} else {
-				return false
-			}
-		} else {
-			this.log('debug', 'feedback event not recognized', event)
-			false
-		}
-		return false
 	}
 
 	/**
