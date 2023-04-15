@@ -698,10 +698,12 @@ class SongbeamerInstance extends InstanceBase {
 	 * Method which sets the variable definitions
 	 */
 	updateVariables() {
-		this.setVariableDefinitions({
-			name: 'Presentation State',
-			variableId: 'presentation_state',
-		})
+		this.setVariableDefinitions([
+			{
+				name: 'Presentation State',
+				variableId: 'presentation_state',
+			},
+		])
 		this.setVariableValues({ presentation_state: 'Not Checked' })
 		this.log('debug', 'Finished updateVariables()')
 	}
