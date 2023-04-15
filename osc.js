@@ -15,9 +15,9 @@ class SongbeamerInstance extends InstanceBase {
 		this.config = config
 		this.osc_server_init()
 
-		this.actions()
-		this.feedbacks()
-		this.variables()
+		this.updateActions()
+		this.updateFeedbacks()
+		this.updateVariables()
 
 		this.updateStatus('ok')
 	}
@@ -46,7 +46,7 @@ class SongbeamerInstance extends InstanceBase {
 	/**
 	 * Return config fields for web config
 	 */
-	config_fields() {
+	getConfigFields() {
 		return [
 			{
 				type: 'textinput',
@@ -70,11 +70,11 @@ class SongbeamerInstance extends InstanceBase {
 	/**
 	 * Defines the actions and respective options available with this module
 	 */
-	actions() {
+	updateActions() {
 		let path
 		let args = []
 
-		this.setActions({
+		this.setActionDefinitions({
 			send_blank: {
 				name: 'Send message without arguments',
 				options: [
@@ -127,7 +127,7 @@ class SongbeamerInstance extends InstanceBase {
 					]
 
 					//TODO #7 Remove following line as workaround once fixed
-					this.setVariable('presentation_state', states[presentation_state]) // TODO #11 check if changes required with conversion
+					this.setVariableValues('presentation_state', states[presentation_state]) // TODO #11 check if changes required with conversion
 					this.checkFeedbacks('presentation_state') // TODO #11 check if changes required with conversion
 
 					this.osc.send({
@@ -607,7 +607,7 @@ class SongbeamerInstance extends InstanceBase {
 	/**
 	 * Method which sets the feedback definitions
 	 */
-	feedbacks() {
+	updateFeedbacks() {
 		this.setFeedbackDefinitions({
 			presentation_state: {
 				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
@@ -649,7 +649,7 @@ class SongbeamerInstance extends InstanceBase {
 	/**
 	 * Method which sets the variable definitions
 	 */
-	variables() {
+	updateVariables() {
 		this.setVariableDefinitions({
 			name: 'Presentation State',
 			variableId: 'presentation_state',
@@ -713,7 +713,7 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				case '/presentation/state':
 					const states = ['black', 'background', 'page', 'logo']
-					this.setVariable('presentation_state', states[value])
+					this.setVariableValues('presentation_state', states[value])
 					this.checkFeedbacks('presentation_state')
 					break
 				default:
