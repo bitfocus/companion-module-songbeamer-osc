@@ -70,7 +70,7 @@ class SongbeamerInstance extends InstanceBase {
 	/**
 	 * Defines the actions and respective options available with this module
 	 */
-	actions(system) {
+	actions() {
 		let path
 		let args = []
 
@@ -606,9 +606,8 @@ class SongbeamerInstance extends InstanceBase {
 
 	/**
 	 * Method which sets the feedback definitions
-	 * @param system - Unknown default param from template
 	 */
-	feedbacks(system) {
+	feedbacks() {
 		this.setFeedbackDefinitions({
 			presentation_state: {
 				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
@@ -649,9 +648,8 @@ class SongbeamerInstance extends InstanceBase {
 
 	/**
 	 * Method which sets the variable definitions
-	 * @param system - Unknown default param from template
 	 */
-	variables(system) {
+	variables() {
 		this.setVariableDefinitions({
 			name: 'Presentation State',
 			variableId: 'presentation_state',
