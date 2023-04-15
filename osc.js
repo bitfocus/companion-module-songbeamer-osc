@@ -8,6 +8,32 @@ class SongbeamerInstance extends InstanceBase {
 	}
 
 	/**
+	 * This is a method that initializes the instance for companion
+	 * it needds to set status after successful execution
+	 */
+	async init(config) {
+		this.config = config
+		this.osc_server_init()
+
+		this.actions()
+		this.feedbacks()
+		this.variables()
+		//TODO #1 Initialise variables
+		this.setVariable('presentation_state', 'Not Checked')
+
+		this.updateStatus('ok')
+	}
+
+	/**
+	 * When module gets deleted
+	 */
+	async destroy() {
+		this.osc.close()
+		delete this.osc
+		this.log('debug','destroy')
+	}
+
+	/**
 	 * This is a method is executed on config changes
 	 * It will restart the OSC server if it's configuration changed
 	 */
@@ -19,21 +45,6 @@ class SongbeamerInstance extends InstanceBase {
 		}
 	}
 
-	/**
-	 * This is a method that initializes the instance for companion
-	 * it needds to set status after successful execution
-	 */
-	init() {
-		this.osc_server_init()
-
-		this.actions()
-		this.feedbacks()
-		this.variables()
-		//TODO #1 Initialise variables
-		this.setVariable('presentation_state', 'Not Checked')
-
-		this.updateStatus('ok')
-	}
 
 	/**
 	 * Return config fields for web config
@@ -55,15 +66,6 @@ class SongbeamerInstance extends InstanceBase {
 				regex: this.REGEX_PORT,
 			},
 		]
-	}
-
-	/**
-	 * When module gets deleted
-	 */
-	destroy() {
-		this.osc.close()
-		delete this.osc
-		this.log('debug','destroy')
 	}
 
 	/**
