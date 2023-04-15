@@ -15,6 +15,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.config = config
 		this.osc_server_init()
 
+		this.log('debug', 'Starting definition of actions feedbacks and variables')
 		this.updateActions()
 		this.updateFeedbacks()
 		this.updateVariables()
@@ -130,7 +131,7 @@ class SongbeamerInstance extends InstanceBase {
 					]
 
 					//TODO #7 Remove following line as workaround once fixed
-					this.setVariableValues('presentation_state', states[presentation_state]) // TODO #11 check if changes required with conversion
+					this.setVariableValues({ presentation_state: states[presentation_state] }) // TODO #11 check if changes required with conversion
 					this.checkFeedbacks('presentation_state') // TODO #11 check if changes required with conversion
 
 					this.osc.send({
@@ -647,6 +648,7 @@ class SongbeamerInstance extends InstanceBase {
 				},
 			},
 		})
+		this.log('debug', 'Finished updateActions()')
 	}
 
 	/**
@@ -689,6 +691,7 @@ class SongbeamerInstance extends InstanceBase {
 				},
 			},
 		})
+		this.log('debug', 'Finished updateFeedbacks()')
 	}
 
 	/**
@@ -699,7 +702,8 @@ class SongbeamerInstance extends InstanceBase {
 			name: 'Presentation State',
 			variableId: 'presentation_state',
 		})
-		this.setVariableValues('presentation_state', 'Not Checked')
+		this.setVariableValues({ presentation_state: 'Not Checked' })
+		this.log('debug', 'Finished updateVariables()')
 	}
 
 	/**
@@ -761,8 +765,8 @@ class SongbeamerInstance extends InstanceBase {
 				case '/presentation/state':
 					this.log('debug', 'presentation/state ${value}')
 					const states = ['black', 'background', 'page', 'logo']
-					this.setVariableValues('presentation_state', states[value])
-					this.checkFeedbacks('presentation_state')
+					this.setVariableValues({ presentation_state: states[value] })
+					this.c('presentation_state')
 					break
 				default:
 					this.log('debug', 'unknown osc message case ${oscMsg}')
@@ -777,7 +781,7 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener logging ready function
 		 */
 		this.osc.on('ready', () => {
-			this.log('debug', 'OSC port is ready')
+			this.log('debug', 'OSC port is in "ready" state')
 		})
 
 		// Open the socket.
