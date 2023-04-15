@@ -18,8 +18,6 @@ class SongbeamerInstance extends InstanceBase {
 		this.actions()
 		this.feedbacks()
 		this.variables()
-		//TODO #1 Initialise variables
-		this.setVariable('presentation_state', 'Not Checked')
 
 		this.updateStatus('ok')
 	}
@@ -635,8 +633,8 @@ class SongbeamerInstance extends InstanceBase {
 				],
 				callback: async (event) => {
 					let var_state
-					this.getVariable('presentation_state', (value) => {
-						var_state = value // TODO #11 check if variables are still used this way - likely change to with at least .await()
+					this.getVariableValue('presentation_state', (value) => {
+						var_state = value
 					})
 					const states = ['black', 'background', 'page', 'logo']
 					if (var_state == states[event.options.presentation_state]) {
@@ -655,9 +653,10 @@ class SongbeamerInstance extends InstanceBase {
 	 */
 	variables(system) {
 		this.setVariableDefinitions({
-			label: 'Presentation State',
-			name: 'presentation_state',
+			name: 'Presentation State',
+			variableId: 'presentation_state',
 		})
+		this.setVariableValues('presentation_state', 'Not Checked')
 	}
 
 	/**
