@@ -8,8 +8,7 @@
 			"name": "Run Companion-Launcher",
 			"type": "node-terminal",
 			"request": "launch",
-			"command": "../../companion-linux-x64-3.0.0+5795-beta-9eaf9255/companion-x64/companion-launcher",
-		  }
-		  
+			"command": "../../companion-linux-x64-3.0.0+5795-beta-9eaf9255/companion-x64/companion-launcher"
+		}
 	]
 }

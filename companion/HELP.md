@@ -1,4 +1,5 @@
-# Songbeamer OSC 
+# Songbeamer OSC
+
 based on OSC Generic module
 
 After configuring host and port this module will open it's own OSC instance in order to communicate with SongBeamer.
@@ -10,9 +11,11 @@ Please be aware that OSC is a functionality that is not enabled in Songbeamer by
 ## Changelog
 
 ### Version 2.0.0
-* Companion 3.0 compatibility
+
+- Companion 3.0 compatibility
 
 ## Functional Scope
+
 ### Actions
 
 presentation_state

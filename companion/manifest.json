@@ -21,12 +21,6 @@
 		"entrypoint": "../osc.js"
 	},
 	"manufacturer": "Songbeamer",
-	"products": [
-		"OSC"
-	],
-	"keywords": [
-		"Protocol",
-		"OSC",
-		"Songbeamer"
-	]
+	"products": ["OSC"],
+	"keywords": ["Protocol", "OSC", "Songbeamer"]
 }

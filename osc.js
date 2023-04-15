@@ -30,7 +30,7 @@ class SongbeamerInstance extends InstanceBase {
 	async destroy() {
 		this.osc.close()
 		delete this.osc
-		this.log('debug','destroy')
+		this.log('debug', 'destroy')
 	}
 
 	/**
@@ -40,11 +40,10 @@ class SongbeamerInstance extends InstanceBase {
 	async configUpdated(config) {
 		this.config = config
 		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
-			this.log('debug','host or port configuration changed - reloading osc server')
+			this.log('debug', 'host or port configuration changed - reloading osc server')
 			this.osc_server_init()
 		}
 	}
-
 
 	/**
 	 * Return config fields for web config
@@ -72,9 +71,12 @@ class SongbeamerInstance extends InstanceBase {
 	 * Defines the actions and respective options available with this module
 	 */
 	actions(system) {
+		let path
+		let args = []
+
 		this.setActions({
 			send_blank: {
-				label: 'Send message without arguments',
+				name: 'Send message without arguments',
 				options: [
 					{
 						type: 'textwithvariables',
@@ -83,9 +85,18 @@ class SongbeamerInstance extends InstanceBase {
 						default: '/osc/path',
 					},
 				],
+				callback: async (event) => {
+					path = await this.parseVariablesInString(event.options.path)
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_state: {
-				label: 'Change presentation state',
+				name: 'Change presentation state',
 				options: [
 					{
 						type: 'dropdown',
@@ -102,9 +113,31 @@ class SongbeamerInstance extends InstanceBase {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (event) => {
+					const presentation_state = await this.parseVariablesInString(event.options.presentation_state)
+					path = '/presentation/state'
+					states = ['black', 'background', 'page', 'logo']
+
+					args = [
+						{
+							type: 's',
+							value: states[presentation_state],
+						},
+					]
+
+					//TODO #7 Remove following line as workaround once fixed
+					this.setVariable('presentation_state', states[presentation_state]) // TODO #11 check if changes required with conversion
+					this.checkFeedbacks('presentation_state') // TODO #11 check if changes required with conversion
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_page: {
-				label: 'Change presentation page',
+				name: 'Change presentation page',
 				options: [
 					{
 						type: 'textinput',
@@ -115,10 +148,26 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_NUMBER,
 					},
 				],
+				callback: async (event) => {
+					const presentation_page = await this.parseVariablesInString(event.options.presentation_page)
+					path = '/presentation/page'
+					args = [
+						{
+							type: 'i',
+							value: parseInt(presentation_page),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_versemarker: {
 				//TODO #3 Merge presentation_versemarker into navigate_to
-				label: 'Change presentation page to verse marker',
+				name: 'Change presentation page to verse marker',
 				options: [
 					{
 						type: 'textinput',
@@ -129,10 +178,26 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_SOMETHING,
 					},
 				],
+				callback: async (event) => {
+					presentation_versemarker = await this.parseVariablesInString(event.options.presentation_versemarker)
+					;(path = '/presentation/pagecaption'),
+						(args = [
+							{
+								type: 's',
+								value: presentation_versemarker,
+							},
+						])
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_language_primary: {
 				//TODO #6 Merge presentation_language actions
-				label: 'Change primary language ID',
+				name: 'Change primary language ID',
 				options: [
 					{
 						type: 'dropdown',
@@ -148,10 +213,26 @@ class SongbeamerInstance extends InstanceBase {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (event) => {
+					presentation_language_primary = await this.parseVariablesInString(event.options.presentation_language_primary)
+					path = '/presentation/primarylanguage'
+					args = [
+						{
+							type: 'i',
+							value: parseInt(presentation_language_primary),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_language: {
 				//TODO #6 Merge presentation_language actions
-				label: 'Change languages to be displayed',
+				name: 'Change languages to be displayed',
 				options: [
 					{
 						type: 'textinput',
@@ -162,10 +243,26 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_SOMETHING,
 					},
 				],
+				callback: async (event) => {
+					let presentation_language = await this.parseVariablesInString(event.options.presentation_language)
+					path = '/presentation/language'
+					args = [
+						{
+							type: 's',
+							value: presentation_language,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_message_text: {
 				//TODO #2 Combine with visible
-				label: 'Change presentation message text',
+				name: 'Change presentation message text',
 				options: [
 					{
 						type: 'textinput',
@@ -176,10 +273,26 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_SOMETHING,
 					},
 				],
+				callback: async (event) => {
+					let presentation_message_text = await this.parseVariablesInString(event.options.presentation_message_text)
+					path = '/presentation/message/text'
+					args = [
+						{
+							type: 's',
+							value: presentation_message_text,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			presentation_message_visible: {
 				//TODO #2 Combine with text
-				label: 'Change presentation message visibility',
+				name: 'Change presentation message visibility',
 				options: [
 					{
 						type: 'checkbox',
@@ -188,10 +301,28 @@ class SongbeamerInstance extends InstanceBase {
 						default: true,
 					},
 				],
+				callback: async (event) => {
+					let presentation_message_visible = await this.parseVariablesInString(
+						event.options.presentation_message_visible
+					)
+					path = '/presentation/message/visible'
+					args = [
+						{
+							type: 'i',
+							value: presentation_message_visible === 'true' ? 1 : 0,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			navigate_to: {
 				//TODO #3 Merge presentation_versemarker into navigate_to
-				label: 'Navigation options within presentation ',
+				name: 'Navigation options within presentation ',
 				options: [
 					{
 						type: 'dropdown',
@@ -214,9 +345,43 @@ class SongbeamerInstance extends InstanceBase {
 						default: true,
 					},
 				],
+				callback: async (event) => {
+					const navigate_to = await this.parseVariablesInString(event.options.navigate_to)
+					const navigate_to_execute = await this.parseVariablesInString(event.options.navigate_to_execute) // TODO #11 - read bool not str?
+					switch (navigate_to) {
+						case '0':
+							path = '/presentation/nextpage'
+							break
+						case '1':
+							path = '/presentation/prevpage'
+							break
+						case '2':
+							path = '/playlist/next'
+							break
+						case '3':
+							path = '/playlist/previous'
+							break
+						default:
+							this.log('debug', 'navigate_to option not recognized', navigate_to)
+							break
+					}
+					args = [
+						{
+							type: 'i',
+							value: navigate_to_execute === 'true' ? 1 : 0,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
+			//TODO improve by integrating into navigate_to with optionally displayed param
 			navigate_to_playlistitem: {
-				label: 'Navigate to a numbered item within the playlist ',
+				name: 'Navigate to a numbered item within the playlist ',
 				options: [
 					{
 						type: 'textwithvariables',
@@ -227,9 +392,25 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_SIGNED_NUMBER,
 					},
 				],
+				callback: async (event) => {
+					let navigate_to_playlistitem = await this.parseVariablesInString(event.options.navigate_to_playlistitem)
+					path = '/playlist/itemindex'
+					args = [
+						{
+							type: 'i',
+							value: parseInt(navigate_to_playlistitem),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			video_state: {
-				label: 'Change video state',
+				name: 'Change video state',
 				options: [
 					{
 						type: 'dropdown',
@@ -245,9 +426,48 @@ class SongbeamerInstance extends InstanceBase {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (event) => {
+					let video_state = await this.parseVariablesInString(event.options.video_state)
+					path = '/video/state'
+					switch (video_state) {
+						case '0':
+							args = [
+								{
+									type: 's',
+									value: 'play',
+								},
+							]
+							break
+						case '1':
+							args = [
+								{
+									type: 's',
+									value: 'pause',
+								},
+							]
+							break
+						case '2':
+							args = [
+								{
+									type: 's',
+									value: 'stop',
+								},
+							]
+							break
+						default:
+							this.log('debug', 'video state not recoginzed ', video_state)
+							break
+					}
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			video_position: {
-				label: 'Move to video position',
+				name: 'Move to video position',
 				options: [
 					{
 						type: 'textwithvariables',
@@ -259,9 +479,25 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_SIGNED_FLOAT,
 					},
 				],
+				callback: async (event) => {
+					let video_position = await this.parseVariablesInString(event.options.video_position)
+					path = '/video/position'
+					args = [
+						{
+							type: 'f',
+							value: parseFloat(video_position),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			livevideo_state: {
-				label: 'Change livevideo state',
+				name: 'Change livevideo state',
 				options: [
 					{
 						type: 'checkbox',
@@ -270,16 +506,26 @@ class SongbeamerInstance extends InstanceBase {
 						default: true,
 					},
 				],
+				callback: async (event) => {
+					let livevideo_state = await this.parseVariablesInString(event.options.livevideo_state)
+					path = '/livevideo/state'
+					args = [
+						{
+							type: 's',
+							value: livevideo_state === 'true' ? 'play' : 'stop',
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			send_int: {
-				label: 'Send integer',
+				name: 'Send integer',
 				options: [
-					{
-						type: 'textwithvariables',
-						label: 'OSC Path',
-						id: 'path',
-						default: '/osc/path',
-					},
 					{
 						type: 'textwithvariables',
 						label: 'Value',
@@ -287,10 +533,32 @@ class SongbeamerInstance extends InstanceBase {
 						default: 1,
 						regex: this.REGEX_SIGNED_NUMBER,
 					},
+					{
+						type: 'textwithvariables',
+						label: 'OSC Path',
+						id: 'path',
+						default: '/osc/path',
+					},
 				],
+				callback: async (event) => {
+					let int = await this.parseVariablesInString(event.options.int)
+					path = await this.parseVariablesInString(event.options.path)
+					args = [
+						{
+							type: 'i',
+							value: parseInt(int),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 			send_string: {
-				label: 'Send string',
+				name: 'Send string',
 				options: [
 					{
 						type: 'textwithvariables',
@@ -305,273 +573,24 @@ class SongbeamerInstance extends InstanceBase {
 						default: 'text',
 					},
 				],
+				callback: async (event) => {
+					let string = await this.parseVariablesInString(event.options.string)
+					path = await this.parseVariablesInString(event.options.path)
+					args = [
+						{
+							type: 's',
+							value: '${string}',
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+				},
 			},
 		})
-	}
-
-	/**
-	 * Method which is used to execute something based on the actions defined before
-	 * by default args and path is set based on the action and sent after the switch case using the osc server from init
-	 * @param action - The companion action object which was executed
-	 */
-	action(action) {
-		let path
-		let args = null
-
-		switch (action.action) {
-			case 'send_blank':
-				this.system.emit('variable_parse', action.options.path, (value) => {
-					path = value
-				})
-				args = []
-				break
-			case 'presentation_state':
-				let presentation_state
-				this.system.emit('variable_parse', action.options.presentation_state, (value) => {
-					presentation_state = value
-				})
-				path = '/presentation/state'
-				const states = ['black', 'background', 'page', 'logo']
-				args = [
-					{
-						type: 's',
-						value: states[presentation_state],
-					},
-				]
-				//TODO #7 Remove following line as workaround once fixed
-				this.setVariable('presentation_state', states[presentation_state])
-				this.checkFeedbacks('presentation_state')
-				break
-			case 'presentation_page':
-				let presentation_page
-				this.system.emit('variable_parse', action.options.presentation_page, (value) => {
-					presentation_page = value
-				})
-				path = '/presentation/page'
-				args = [
-					{
-						type: 'i',
-						value: parseInt(presentation_page),
-					},
-				]
-				break
-			case 'presentation_versemarker': //TODO #3 Merge presentation_versemarker into navigate_to
-				let presentation_versemarker
-				this.system.emit('variable_parse', action.options.presentation_versemarker, (value) => {
-					presentation_versemarker = value
-				})
-				path = '/presentation/pagecaption'
-				args = [
-					{
-						type: 's',
-						value: presentation_versemarker,
-					},
-				]
-				break
-			case 'presentation_language_primary': //TODO #6 Merge presentation_language actions
-				let presentation_language_primary
-				this.system.emit('variable_parse', action.options.presentation_language_primary, (value) => {
-					presentation_language_primary = value
-				})
-				path = '/presentation/primarylanguage'
-				args = [
-					{
-						type: 'i',
-						value: parseInt(presentation_language_primary),
-					},
-				]
-				break
-			case 'presentation_language': //TODO #6 Merge presentation_language actions
-				let presentation_language
-				this.system.emit('variable_parse', action.options.presentation_language, (value) => {
-					presentation_language = value
-				})
-				path = '/presentation/language'
-				args = [
-					{
-						type: 's',
-						value: presentation_language,
-					},
-				]
-				break
-			case 'presentation_message_text': //TODO #2 Combine with visible
-				let presentation_message_text
-				this.system.emit('variable_parse', action.options.presentation_message_text, (value) => {
-					presentation_message_text = value
-				})
-				path = '/presentation/message/text'
-				args = [
-					{
-						type: 's',
-						value: presentation_message_text,
-					},
-				]
-				break
-			case 'presentation_message_visible': //TODO #2 Combine with text
-				let presentation_message_visible
-				this.system.emit('variable_parse', action.options.presentation_message_visible, (value) => {
-					presentation_message_visible = value
-				})
-				path = '/presentation/message/visible'
-				args = [
-					{
-						type: 'i',
-						value: presentation_message_visible === 'true' ? 1 : 0,
-					},
-				]
-				break
-			case 'navigate_to': //TODO #3 Merge presentation_versemarker into navigate_to
-				let navigate_to
-				let navigate_to_execute
-				this.system.emit('variable_parse', action.options.navigate_to, (value) => {
-					navigate_to = value
-				})
-				this.system.emit('variable_parse', action.options.navigate_to_execute, (value) => {
-					navigate_to_execute = value
-				})
-				args = [
-					{
-						type: 'i',
-						value: navigate_to_execute === 'true' ? 1 : 0,
-					},
-				]
-				switch (navigate_to) {
-					case '0':
-						path = '/presentation/nextpage'
-						break
-					case '1':
-						path = '/presentation/prevpage'
-						break
-					case '2':
-						path = '/playlist/next'
-						break
-					case '3':
-						path = '/playlist/previous'
-						break
-					default:
-						this.log('debug','navigate_to option not recognized', navigate_to)
-						break
-				}
-				break
-			case 'navigate_to_playlistitem': //TODO improve by integrating into navigate_to with optionally displayed param
-				let navigate_to_playlistitem
-				this.system.emit('variable_parse', action.options.navigate_to_playlistitem, (value) => {
-					navigate_to_playlistitem = value
-				})
-				path = '/playlist/itemindex'
-				args = [
-					{
-						type: 'i',
-						value: parseInt(navigate_to_playlistitem),
-					},
-				]
-				break
-			case 'video_state':
-				let video_state
-				this.system.emit('variable_parse', action.options.video_state, (value) => {
-					video_state = value
-				})
-				path = '/video/state'
-				switch (video_state) {
-					case '0':
-						args = [
-							{
-								type: 's',
-								value: 'play',
-							},
-						]
-						break
-					case '1':
-						args = [
-							{
-								type: 's',
-								value: 'pause',
-							},
-						]
-						break
-					case '2':
-						args = [
-							{
-								type: 's',
-								value: 'stop',
-							},
-						]
-						break
-					default:
-						this.log('debug','video state not recoginzed ', video_state)
-						break
-				}
-				break
-			case 'video_position':
-				let video_position
-				this.system.emit('variable_parse', action.options.video_position, (value) => {
-					video_position = value
-				})
-				path = '/video/position'
-				args = [
-					{
-						type: 'f',
-						value: parseFloat(video_position),
-					},
-				]
-				break
-			case 'livevideo_state':
-				let livevideo_state
-				this.system.emit('variable_parse', action.options.livevideo_state, (value) => {
-					livevideo_state = value
-				})
-				path = '/livevideo/state'
-				args = [
-					{
-						type: 's',
-						value: livevideo_state === 'true' ? 'play' : 'stop',
-					},
-				]
-				break
-			case 'send_int':
-				let int
-				path = action.options.path
-				this.system.emit('variable_parse', action.options.path, (value) => {
-					path = value
-				})
-				this.system.emit('variable_parse', action.options.int, (value) => {
-					int = value
-				})
-				args = [
-					{
-						type: 'i',
-						value: parseInt(int),
-					},
-				]
-				break
-			case 'send_string':
-				let string
-				path = action.options.path
-				this.system.emit('variable_parse', action.options.path, (value) => {
-					path = value
-				})
-				this.system.emit('variable_parse', action.options.string, (value) => {
-					string = value
-				})
-				args = [
-					{
-						type: 's',
-						value: '${string}',
-					},
-				]
-				break
-			default:
-				this.log('debug','action: ', action)
-				break
-		}
-
-		if (args !== null) {
-			this.osc.send({
-				address: path,
-				args: args,
-			})
-			this.log('debug','Sent OSC', this.config.host, this.config.port, path, args)
-		}
 	}
 
 	/**
@@ -622,7 +641,7 @@ class SongbeamerInstance extends InstanceBase {
 				return false
 			}
 		} else {
-			this.log('debug','feedback event not recognized', event)
+			this.log('debug', 'feedback event not recognized', event)
 			false
 		}
 		return false
@@ -643,7 +662,7 @@ class SongbeamerInstance extends InstanceBase {
 	 * Initialisation method for the OSC server used to send and receive messages
 	 */
 	osc_server_init() {
-		this.log('debug','osc_server_init method started')
+		this.log('debug', 'osc_server_init method started')
 		if (this.osc) {
 			try {
 				this.osc.close()
@@ -676,22 +695,22 @@ class SongbeamerInstance extends InstanceBase {
 
 			switch (message) {
 				case '/presentation/pagecount':
-					this.log('debug','/presentation/pagecount', value)
+					this.log('debug', '/presentation/pagecount', value)
 					break
 				case '/presentation/filename':
-					this.log('debug','/presentation/filename', value)
+					this.log('debug', '/presentation/filename', value)
 					break
 				case '/playlist/filename':
-					this.log('debug','/playlist/filename', value)
+					this.log('debug', '/playlist/filename', value)
 					break
 				case '/playlist/count':
-					this.log('debug','/playlist/count', value)
+					this.log('debug', '/playlist/count', value)
 					break
 				case '/video/length':
-					this.log('debug','/video/length', value)
+					this.log('debug', '/video/length', value)
 					break
 				case '/video/filename':
-					this.log('debug','/video/filename', value)
+					this.log('debug', '/video/filename', value)
 					break
 				case '/presentation/state':
 					const states = ['black', 'background', 'page', 'logo']
@@ -699,7 +718,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_state')
 					break
 				default:
-					this.log('debug','unknown osc message case', oscMsg)
+					this.log('debug', 'unknown osc message case', oscMsg)
 					//TODO
 					// /playlist/items/**/caption
 					// /playlist/items/**/filename
@@ -711,13 +730,13 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener logging ready function
 		 */
 		this.osc.on('ready', () => {
-			this.log('debug','OSC port is ready')
+			this.log('debug', 'OSC port is ready')
 		})
 
 		// Open the socket.
 		this.osc.open()
 
-		this.log('debug','osc_server_init method finished', this.osc)
+		this.log('debug', 'osc_server_init method finished', this.osc)
 	}
 }
 
