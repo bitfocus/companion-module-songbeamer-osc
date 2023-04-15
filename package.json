@@ -16,6 +16,9 @@
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.2",
-		"osc": "^2.4.1"
+		"bufferutil": "^4.0.7",
+		"osc": "^2.4.1",
+		"utf-8-validate": "^6.0.3",
+		"ws": "^8.13.0"
 	}
 }
