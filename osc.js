@@ -93,7 +93,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_state: {
@@ -134,7 +137,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_page: {
@@ -164,7 +170,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_versemarker: {
@@ -195,7 +204,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_language_primary: {
@@ -230,7 +242,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_language: {
@@ -261,7 +276,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_message_text: {
@@ -292,7 +310,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			presentation_message_visible: {
@@ -322,7 +343,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			navigate_to: {
@@ -381,7 +405,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			//TODO improve by integrating into navigate_to with optionally displayed param
@@ -412,7 +439,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			video_state: {
@@ -469,7 +499,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			video_position: {
@@ -500,7 +533,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			livevideo_state: {
@@ -527,7 +563,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			send_int: {
@@ -563,7 +602,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 			send_string: {
@@ -598,7 +640,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: path,
 						args: args,
 					})
-					this.log('debug', 'Sent OSC', this.config.host, this.config.port, path, args)
+					this.log(
+						'debug',
+						'Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}'
+					)
 				},
 			},
 		})
@@ -686,38 +731,41 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener to receive messages
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
-			//this.log('debug','Received OSC message, Remote info is: ', info)
+			//this.log('debug','Received OSC message, Remote info is: ${info}')
+
 			message = oscMsg['address']
 			args = oscMsg['args'][0]
 			value = oscMsg['args'][0]['value']
-			//this.log('debug','oscMsg:', message, args, value)
+
+			this.log('debug', 'Received OSC ${message} ${JSON.stringify(args)} ${value}')
 
 			switch (message) {
 				case '/presentation/pagecount':
-					this.log('debug', '/presentation/pagecount', value)
+					this.log('debug', '/presentation/pagecount ${value}')
 					break
 				case '/presentation/filename':
-					this.log('debug', '/presentation/filename', value)
+					this.log('debug', '/presentation/filename ${value}')
 					break
 				case '/playlist/filename':
-					this.log('debug', '/playlist/filename', value)
+					this.log('debug', '/playlist/filename ${value}')
 					break
 				case '/playlist/count':
-					this.log('debug', '/playlist/count', value)
+					this.log('debug', '/playlist/count ${value}')
 					break
 				case '/video/length':
-					this.log('debug', '/video/length', value)
+					this.log('debug', '/video/length ${value}')
 					break
 				case '/video/filename':
-					this.log('debug', '/video/filename', value)
+					this.log('debug', '/video/filename ${value}')
 					break
 				case '/presentation/state':
+					this.log('debug', 'presentation/state ${value}')
 					const states = ['black', 'background', 'page', 'logo']
 					this.setVariableValues('presentation_state', states[value])
 					this.checkFeedbacks('presentation_state')
 					break
 				default:
-					this.log('debug', 'unknown osc message case', oscMsg)
+					this.log('debug', 'unknown osc message case ${oscMsg}')
 					//TODO
 					// /playlist/items/**/caption
 					// /playlist/items/**/filename
@@ -735,7 +783,7 @@ class SongbeamerInstance extends InstanceBase {
 		// Open the socket.
 		this.osc.open()
 
-		this.log('debug', 'osc_server_init method finished', this.osc)
+		this.log('debug', 'osc_server_init method finished ${this.osc}')
 	}
 }
 
