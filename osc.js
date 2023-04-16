@@ -121,7 +121,7 @@ class SongbeamerInstance extends InstanceBase {
 				callback: async (event) => {
 					const presentation_state = await this.parseVariablesInString(event.options.presentation_state)
 					path = '/presentation/state'
-					states = ['black', 'background', 'page', 'logo']
+					const states = ['black', 'background', 'page', 'logo']
 
 					args = [
 						{
@@ -192,7 +192,7 @@ class SongbeamerInstance extends InstanceBase {
 					},
 				],
 				callback: async (event) => {
-					presentation_versemarker = await this.parseVariablesInString(event.options.presentation_versemarker)
+					const presentation_versemarker = await this.parseVariablesInString(event.options.presentation_versemarker)
 					;(path = '/presentation/pagecaption'),
 						(args = [
 							{
@@ -230,7 +230,7 @@ class SongbeamerInstance extends InstanceBase {
 					},
 				],
 				callback: async (event) => {
-					presentation_language_primary = await this.parseVariablesInString(event.options.presentation_language_primary)
+					const presentation_language_primary = await this.parseVariablesInString(event.options.presentation_language_primary)
 					path = '/presentation/primarylanguage'
 					args = [
 						{
@@ -739,9 +739,9 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc.on('message', (oscMsg, timeTag, info) => {
 			//this.log('debug',`Received OSC message, Remote info is: ${info}`)
 
-			message = oscMsg['address']
-			args = oscMsg['args'][0]
-			value = oscMsg['args'][0]['value']
+			const message = oscMsg['address']
+			const args = oscMsg['args'][0]
+			const value = oscMsg['args'][0]['value']
 
 			this.log('debug', `Received OSC ${message} ${JSON.stringify(args)} ${value}`)
 
