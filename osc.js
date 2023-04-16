@@ -776,7 +776,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_state')
 					break
 				default:
-					this.log('debug', `unknown osc message case ${oscMsg}`)
+					this.log('warning', `unknown osc message case ${oscMsg}`)
 					//TODO
 					// /playlist/items/**/caption
 					// /playlist/items/**/filename
@@ -788,7 +788,7 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener logging ready function
 		 */
 		this.osc.on('ready', () => {
-			this.log('debug', 'OSC port is in "ready" state')
+			this.log('info', 'OSC port is in "ready" state')
 		})
 
 		// Open the socket.
