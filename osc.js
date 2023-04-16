@@ -27,8 +27,11 @@ class SongbeamerInstance extends InstanceBase {
 	 * When module gets deleted
 	 */
 	async destroy() {
+		this.log('debug', 'destroy method started')
 		this.osc.close()
+		this.log('debug', 'osc closed')
 		delete this.osc
+		this.log('debug', 'this.osc deleted')
 		this.log('debug', 'destroy')
 	}
 
@@ -92,7 +95,7 @@ class SongbeamerInstance extends InstanceBase {
 
 					this.osc.send({
 						address: path,
-						args: args,
+						args: [],
 					})
 					this.log(
 						'debug',
@@ -230,7 +233,9 @@ class SongbeamerInstance extends InstanceBase {
 					},
 				],
 				callback: async (event) => {
-					const presentation_language_primary = await this.parseVariablesInString(event.options.presentation_language_primary)
+					const presentation_language_primary = await this.parseVariablesInString(
+						event.options.presentation_language_primary
+					)
 					path = '/presentation/primarylanguage'
 					args = [
 						{
@@ -737,7 +742,7 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener to receive messages
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
-			//this.log('debug',`Received OSC message, Remote info is: ${info}`)
+			this.log('debug', `Received OSC message, Remote info is: ${info}`)
 
 			const message = oscMsg['address']
 			const args = oscMsg['args'][0]
