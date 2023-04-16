@@ -133,9 +133,9 @@ class SongbeamerInstance extends InstanceBase {
 						},
 					]
 
-					//TODO #7 Remove following line as workaround once fixed
-					this.setVariableValues({ presentation_state: states[presentation_state] }) // TODO #11 check if changes required with conversion
-					this.checkFeedbacks('presentation_state') // TODO #11 check if changes required with conversion
+					//TODO #7 Remove following line as workaround once songbeamer sends feedback
+					this.setVariableValues({ presentation_state: states[presentation_state] })
+					this.checkFeedbacks('presentation_state')
 
 					this.osc.send({
 						address: path,
@@ -686,13 +686,13 @@ class SongbeamerInstance extends InstanceBase {
 						minChoicesForSearch: 0,
 					},
 				],
-				callback: (feedback) => {
+				callback: async (feedback) => {
 					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					// this.log('debug',`called feedback with ${JSON.stringify(feedback)}`)
 					let var_state
-					this.getVariableValue('presentation_state', (value) => {
-						var_state = value
-					})
+					var_state = this.getVariableValue('presentation_state')
 					const states = ['black', 'background', 'page', 'logo']
+					// this.log('debug',`comparing ${var_state} with ${states[feedback.options.presentation_state]}`)
 					if (var_state == states[feedback.options.presentation_state]) {
 						return true
 					} else {
@@ -747,7 +747,7 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener to receive messages
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
-			this.log('debug', `Received OSC message, Remote info is: ${info}`)
+			this.log('debug', `Received OSC message, Remote info is: ${JSON.stringify(info)}`)
 
 			const message = oscMsg['address']
 			const args = oscMsg['args'][0]
@@ -778,7 +778,6 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `presentation/state ${value}`)
 					const states = ['black', 'background', 'page', 'logo']
 					this.setVariableValues({ presentation_state: states[value] })
-					this.checkFeedbacks('presentation_state')
 					break
 				default:
 					this.log('warning', `unknown osc message case ${oscMsg}`)
