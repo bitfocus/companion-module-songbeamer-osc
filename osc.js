@@ -778,8 +778,9 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `presentation/state ${value}`)
 					const states = ['black', 'background', 'page', 'logo']
 					this.setVariableValues({ presentation_state: states[value] })
+					this.checkFeedbacks('presentation_state')
 					break
-				default:
+				default:	
 					this.log('warning', `unknown osc message case ${oscMsg}`)
 					//TODO
 					// /playlist/items/**/caption
