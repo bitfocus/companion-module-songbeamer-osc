@@ -157,6 +157,12 @@ class SongbeamerInstance extends InstanceBase {
 						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
 					)
 				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/state',
+						args: [],
+					})
+				},
 			},
 			presentation_page: {
 				name: 'Change presentation page',
