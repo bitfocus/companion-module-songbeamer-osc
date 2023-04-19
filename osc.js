@@ -239,16 +239,29 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_SOMETHING,
 						useVariables: true,
 					},
+					{
+						type: 'checkbox',
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
+					},
 				],
 				callback: async (event) => {
 					const presentation_versemarker = await this.parseVariablesInString(event.options.presentation_versemarker)
-					;(path = '/presentation/pagecaption'),
-						(args = [
+					const should_change = await this.parseVariablesInString(event.options.should_change)
+					path = '/presentation/pagecaption'
+					this.log('warn','This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
+					if (should_change == 'true') {
+						args = [
 							{
 								type: 's',
 								value: presentation_versemarker,
 							},
-						])
+						]
+					} else {
+						args = []
+					}
 
 					this.osc.send({
 						address: path,
@@ -421,14 +434,15 @@ class SongbeamerInstance extends InstanceBase {
 					},
 					{
 						type: 'checkbox',
-						label: 'Execute',
-						id: 'navigate_to_execute',
-						default: true,
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
 					},
 				],
 				callback: async (event) => {
 					const navigate_to = await this.parseVariablesInString(event.options.navigate_to)
-					const navigate_to_execute = await this.parseVariablesInString(event.options.navigate_to_execute) // TODO #11 - read bool not str?
+					const should_change = await this.parseVariablesInString(event.options.should_change) // TODO #11 - read bool not str?
 					switch (navigate_to) {
 						case '0':
 							path = '/presentation/nextpage'
@@ -449,7 +463,7 @@ class SongbeamerInstance extends InstanceBase {
 					args = [
 						{
 							type: 'i',
-							value: navigate_to_execute === 'true' ? 1 : 0,
+							value: should_change === 'true' ? 1 : 0,
 						},
 					]
 
