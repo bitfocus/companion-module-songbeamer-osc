@@ -123,7 +123,7 @@ class SongbeamerInstance extends InstanceBase {
 					{
 						type: 'checkbox',
 						label: 'Execute change',
-						id: 'exec',
+						id: 'should_change',
 						default: 'true',
 						tooltip: 'disable in order to request state instead of changing it',
 					},
@@ -133,7 +133,7 @@ class SongbeamerInstance extends InstanceBase {
 					const should_change = await this.parseVariablesInString(event.options.should_change)
 					path = '/presentation/state'
 
-					if (should_change) {
+					if (should_change == 'true') {
 						const states = ['black', 'background', 'page', 'logo']
 						args = [
 							{
@@ -176,16 +176,45 @@ class SongbeamerInstance extends InstanceBase {
 						regex: this.REGEX_NUMBER,
 						useVariables: true,
 					},
+					{
+						type: 'checkbox',
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
+					},
 				],
 				callback: async (event) => {
 					const presentation_page = await this.parseVariablesInString(event.options.presentation_page)
+					const should_change = await this.parseVariablesInString(event.options.should_change)
 					path = '/presentation/page'
-					args = [
-						{
-							type: 'i',
-							value: parseInt(presentation_page),
-						},
-					]
+					if (should_change == 'true') {
+						args = [
+							{
+								type: 'i',
+								value: parseInt(presentation_page),
+							},
+						]
+					} else {
+						args = []
+					}
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
+			},
+			presentation_pagecount: {
+				name: 'Get presentation page total',
+				options: [],
+				callback: async (event) => {
+					path = '/presentation/pagecount'
+					args = []
 
 					this.osc.send({
 						address: path,
