@@ -13,6 +13,7 @@ class SongbeamerInstance extends InstanceBase {
 	 */
 	async init(config) {
 		this.config = config
+		this.updateStatus('connecting')
 		this.osc_server_init()
 
 		this.log('debug', 'Starting definition of actions feedbacks and variables')
@@ -251,7 +252,7 @@ class SongbeamerInstance extends InstanceBase {
 					const presentation_versemarker = await this.parseVariablesInString(event.options.presentation_versemarker)
 					const should_change = await this.parseVariablesInString(event.options.should_change)
 					path = '/presentation/pagecaption'
-					this.log('warn','This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
+					this.log('warn', 'This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
 					if (should_change == 'true') {
 						args = [
 							{
@@ -576,10 +577,10 @@ class SongbeamerInstance extends InstanceBase {
 				options: [
 					{
 						type: 'textinput',
-						label: 'Position in h',
+						label: 'Position in min',
 						id: 'video_position',
 						required: true,
-						tooltip: 'Position of video to skip to as hours with . as decimal',
+						tooltip: 'Position of video to skip to as minutes with optional . as decimal delimiter',
 						default: 1,
 						regex: this.REGEX_SIGNED_FLOAT,
 						useVariables: true,
@@ -587,11 +588,12 @@ class SongbeamerInstance extends InstanceBase {
 				],
 				callback: async (event) => {
 					let video_position = await this.parseVariablesInString(event.options.video_position)
+					this.log('warn', 'Video position is not correctly applied by Songbeamer 6.0.0d - check #16')
 					path = '/video/position'
 					args = [
 						{
 							type: 'f',
-							value: parseFloat(video_position),
+							value: parseFloat(video_position) / 24 / 60,
 						},
 					]
 
@@ -829,7 +831,8 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/playlist/count ${value}`)
 					break
 				case '/video/length':
-					this.log('debug', `/video/length ${value}`)
+					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
+					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
 					break
 				case '/video/filename':
 					this.log('debug', `/video/filename ${value}`)
