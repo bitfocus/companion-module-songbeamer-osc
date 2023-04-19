@@ -120,22 +120,33 @@ class SongbeamerInstance extends InstanceBase {
 						],
 						minChoicesForSearch: 0,
 					},
+					{
+						type: 'checkbox',
+						label: 'Execute change',
+						id: 'exec',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
+					},
 				],
 				callback: async (event) => {
 					const presentation_state = await this.parseVariablesInString(event.options.presentation_state)
+					const should_change = await this.parseVariablesInString(event.options.should_change)
 					path = '/presentation/state'
-					const states = ['black', 'background', 'page', 'logo']
 
-					args = [
-						{
-							type: 's',
-							value: states[presentation_state],
-						},
-					]
-
-					//TODO #7 Remove following line as workaround once songbeamer sends feedback
-					this.setVariableValues({ presentation_state: states[presentation_state] })
-					this.checkFeedbacks('presentation_state')
+					if (should_change) {
+						const states = ['black', 'background', 'page', 'logo']
+						args = [
+							{
+								type: 's',
+								value: states[presentation_state],
+							},
+						]
+						//TODO #7 Remove following line as workaround once songbeamer sends feedback
+						this.setVariableValues({ presentation_state: states[presentation_state] })
+						this.checkFeedbacks('presentation_state')
+					} else {
+						args = []
+					}
 
 					this.osc.send({
 						address: path,
@@ -780,7 +791,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
-				default:	
+				default:
 					this.log('warning', `unknown osc message case ${oscMsg}`)
 					//TODO
 					// /playlist/items/**/caption
