@@ -840,6 +840,7 @@ class SongbeamerInstance extends InstanceBase {
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
 					const states = ['black', 'background', 'page', 'logo']
+					this.log('info', 'presentation state is only updated upon request and might not be up to date! #7 and ')
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
