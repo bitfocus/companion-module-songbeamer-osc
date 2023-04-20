@@ -762,6 +762,39 @@ class SongbeamerInstance extends InstanceBase {
 					}
 				},
 			},
+			presentation_page: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				name: 'Presentation Page',
+				description: 'Checks presentation page',
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'number',
+						label: 'Page #',
+						id: 'presentation_page',
+						default: 1,
+					},
+				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					if (this.getVariableValue('presentation_page') == feedback.options.presentation_page) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/page',
+						args: [],
+					})
+				},
+			},
 		})
 		this.log('debug', 'Finished updateFeedbacks()')
 	}
@@ -775,8 +808,11 @@ class SongbeamerInstance extends InstanceBase {
 				name: 'Presentation State',
 				variableId: 'presentation_state',
 			},
+			{
+				name: 'Presentation Page',
+				variableId: 'presentation_page',
+			},
 		])
-		this.setVariableValues({ presentation_state: 'Not Checked' })
 		this.log('debug', 'Finished updateVariables()')
 	}
 
@@ -818,6 +854,12 @@ class SongbeamerInstance extends InstanceBase {
 			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
 
 			switch (address) {
+				case '/presentation/page':
+					this.log('debug', `/presentation/page ${value}`)
+					this.log('info', 'presentation page is only updated upon request and might not be up to date! #7 ')
+					this.setVariableValues({ presentation_page: value })
+					this.checkFeedbacks('presentation_page')
+					break
 				case '/presentation/pagecount':
 					this.log('debug', `/presentation/pagecount ${value}`)
 					break
