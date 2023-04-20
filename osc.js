@@ -761,6 +761,12 @@ class SongbeamerInstance extends InstanceBase {
 						return false
 					}
 				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/state',
+						args: [],
+					})
+				},
 			},
 			presentation_page: {
 				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
@@ -882,7 +888,7 @@ class SongbeamerInstance extends InstanceBase {
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
 					const states = ['black', 'background', 'page', 'logo']
-					this.log('info', 'presentation state is only updated upon request and might not be up to date! #7 and ')
+					this.log('info', 'presentation state is only updated upon request and might not be up to date! #7 ')
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
