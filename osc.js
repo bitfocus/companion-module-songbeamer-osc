@@ -809,15 +809,15 @@ class SongbeamerInstance extends InstanceBase {
 		 * Listener to receive messages
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
-			this.log('debug', `Received OSC message, Remote info is: ${JSON.stringify(info)}`)
+			this.log('debug', `Received OSC message from: ${JSON.stringify(info)}`)
 
-			const message = oscMsg['address']
+			const address = oscMsg['address']
 			const args = oscMsg['args'][0]
-			const value = oscMsg['args'][0]['value']
+			const value = args['value']
 
-			this.log('debug', `Received OSC ${message} ${JSON.stringify(args)} ${value}`)
+			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
 
-			switch (message) {
+			switch (address) {
 				case '/presentation/pagecount':
 					this.log('debug', `/presentation/pagecount ${value}`)
 					break
@@ -844,8 +844,10 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
+				case undefined:
+					this.log('warn', `receveived a special message without address - not implemented`)
 				default:
-					this.log('warning', `unknown osc message case ${oscMsg}`)
+					this.log('warn', `received a message with an unknown address - not implemented`)
 					//TODO
 					// /playlist/items/**/caption
 					// /playlist/items/**/filename
@@ -863,7 +865,7 @@ class SongbeamerInstance extends InstanceBase {
 		// Open the socket.
 		this.osc.open()
 
-		this.log('debug', 'osc_server_init method finished ${this.osc}')
+		this.log('debug', `osc_server_init method finished ${this.osc}`)
 	}
 }
 
