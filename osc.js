@@ -49,6 +49,17 @@ class SongbeamerInstance extends InstanceBase {
 	}
 
 	/**
+	 * request updates, subscription expires every 10 seconds
+	 */
+	osc_update_polling() {
+		this.osc.send({
+			address: '/xremote',
+			args: [],
+		})
+		//this.log('debug', 'heartbeat send')
+	}
+
+	/**
 	 * Return config fields for web config
 	 */
 	getConfigFields() {
@@ -826,6 +837,7 @@ class SongbeamerInstance extends InstanceBase {
 	 * Initialisation method for the OSC server used to send and receive messages
 	 */
 	osc_server_init() {
+		var self = this
 		this.log('debug', 'osc_server_init method started')
 		if (this.osc) {
 			try {
@@ -862,7 +874,6 @@ class SongbeamerInstance extends InstanceBase {
 			switch (address) {
 				case '/presentation/page':
 					this.log('debug', `/presentation/page ${value}`)
-					this.log('info', 'presentation page is only updated upon request and might not be up to date! #7 ')
 					this.setVariableValues({ presentation_page: value })
 					this.checkFeedbacks('presentation_page')
 					break
@@ -888,7 +899,6 @@ class SongbeamerInstance extends InstanceBase {
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
 					const states = ['black', 'background', 'page', 'logo']
-					this.log('info', 'presentation state is only updated upon request and might not be up to date! #7 ')
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
@@ -908,6 +918,31 @@ class SongbeamerInstance extends InstanceBase {
 		 */
 		this.osc.on('ready', () => {
 			this.log('info', 'OSC port is in "ready" state')
+			this.heartbeat = setInterval(function () {
+			self.osc_update_polling()
+			}, 9500) // just before 10 sec expiration
+		})
+
+		/**
+		 * Properly closing the hearbeat on close
+		 */
+		this.osc.on('close', () => {
+			if (this.heartbeat) {
+				clearInterval(this.heartbeat)
+				delete this.heartbeat
+			}
+		})
+
+		/**
+		 * Properly logging error and stopping heartbeat
+		 */
+		this.osc.on('error', (err) => {
+			this.log('error', 'Error: ' + err.message)
+			this.updateStatus('UnknownError', err.message)
+			if (this.heartbeat) {
+				clearInterval(this.heartbeat)
+				delete this.heartbeat
+			}
 		})
 
 		// Open the socket.
