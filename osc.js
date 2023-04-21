@@ -359,8 +359,7 @@ class SongbeamerInstance extends InstanceBase {
 					)
 				},
 			},
-			presentation_message_text: {
-				//TODO #2 Combine with visible
+			presentation_message: {
 				name: 'Change presentation message text',
 				options: [
 					{
@@ -371,6 +370,12 @@ class SongbeamerInstance extends InstanceBase {
 						tooltip: 'Type any message to display',
 						regex: this.REGEX_SOMETHING,
 						useVariables: true,
+					},
+					{
+						type: 'checkbox',
+						label: 'Show Message',
+						id: 'presentation_message_visible',
+						default: true,
 					},
 				],
 				callback: async (event) => {
@@ -391,20 +396,6 @@ class SongbeamerInstance extends InstanceBase {
 						'debug',
 						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
 					)
-				},
-			},
-			presentation_message_visible: {
-				//TODO #2 Combine with text
-				name: 'Change presentation message visibility',
-				options: [
-					{
-						type: 'checkbox',
-						label: 'Show Message',
-						id: 'presentation_message_visible',
-						default: true,
-					},
-				],
-				callback: async (event) => {
 					let presentation_message_visible = await this.parseVariablesInString(
 						event.options.presentation_message_visible
 					)
@@ -919,7 +910,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc.on('ready', () => {
 			this.log('info', 'OSC port is in "ready" state')
 			this.heartbeat = setInterval(function () {
-			self.osc_update_polling()
+				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
 		})
 
