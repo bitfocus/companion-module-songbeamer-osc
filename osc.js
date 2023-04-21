@@ -104,10 +104,11 @@ class SongbeamerInstance extends InstanceBase {
 				],
 				callback: async (event) => {
 					path = await this.parseVariablesInString(event.options.path)
+					args = []
 
 					this.osc.send({
 						address: path,
-						args: [],
+						args: args,
 					})
 					this.log(
 						'debug',
@@ -285,9 +286,8 @@ class SongbeamerInstance extends InstanceBase {
 					)
 				},
 			},
-			presentation_language_primary: {
-				//TODO #6 Merge presentation_language actions
-				name: 'Change primary language ID',
+			presentation_language: {
+				name: 'Change languages to be displayed',
 				options: [
 					{
 						type: 'dropdown',
@@ -301,6 +301,15 @@ class SongbeamerInstance extends InstanceBase {
 							{ id: '4', label: '#4' },
 						],
 						minChoicesForSearch: 0,
+					},
+					{
+						type: 'textinput',
+						label: 'Combination of id-number of languages to be displayed',
+						id: 'presentation_language',
+						default: '1234',
+						tooltip: 'Choose any combination of 1234', //TODO check why not displayed
+						regex: this.REGEX_SOMETHING,
+						useVariables: true,
 					},
 				],
 				callback: async (event) => {
@@ -323,23 +332,8 @@ class SongbeamerInstance extends InstanceBase {
 						'debug',
 						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
 					)
-				},
-			},
-			presentation_language: {
-				//TODO #6 Merge presentation_language actions
-				name: 'Change languages to be displayed',
-				options: [
-					{
-						type: 'textinput',
-						label: 'Combination of id-number of languages to be displayed',
-						id: 'presentation_language',
-						default: '1234',
-						tooltip: 'Choose any combination of 1234', //TODO check why not displayed
-						regex: this.REGEX_SOMETHING,
-						useVariables: true,
-					},
-				],
-				callback: async (event) => {
+
+
 					let presentation_language = await this.parseVariablesInString(event.options.presentation_language)
 					path = '/presentation/language'
 					args = [
