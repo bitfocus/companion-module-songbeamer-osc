@@ -803,6 +803,74 @@ class SongbeamerInstance extends InstanceBase {
 					})
 				},
 			},
+			presentation_message_text: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				name: 'Presentation Message Text',
+				description: 'Checks presentation message',
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'textinput',
+						label: 'Message text',
+						id: 'presentation_message_text',
+						default: '',
+					},
+				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					if (this.getVariableValue('presentation_message_text') == feedback.options.presentation_message_text) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/message/text',
+						args: [],
+					})
+					this.log('warn', 'initialisation of presentation/message/text not possible - check #2')
+				},
+			},
+			presentation_message_visible: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				name: 'Presentation Message Visibility',
+				description: 'Checks visibility of presentation message',
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'checkbox',
+						label: 'message is visible?',
+						id: 'presentation_message_visible',
+						default: true,
+					},
+				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					if (this.getVariableValue('presentation_message_visible') == feedback.options.presentation_message_visible) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/message/visible',
+						args: [],
+					})
+					this.log('warn', 'initialisation of presentation/message/visible not possible - check #2')
+				},
+			},
 		})
 		this.log('debug', 'Finished updateFeedbacks()')
 	}
@@ -819,6 +887,14 @@ class SongbeamerInstance extends InstanceBase {
 			{
 				name: 'Presentation Page',
 				variableId: 'presentation_page',
+			},
+			{
+				name: 'Presentation message text',
+				variableId: 'presentation_message_text',
+			},
+			{
+				name: 'Presentation message visibility',
+				variableId: 'presentation_message_visible',
 			},
 		])
 		this.log('debug', 'Finished updateVariables()')
@@ -892,6 +968,22 @@ class SongbeamerInstance extends InstanceBase {
 					const states = ['black', 'background', 'page', 'logo']
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
+					break
+				case '/presentation/message/text':
+					this.log('debug', `presentation/message/text ${value}`)
+					this.setVariableValues({ presentation_message_text: value })
+					this.checkFeedbacks('presentation_message_text')
+					this.log(
+						'info',
+						'presentation visibility is set to 1 on purpose because Songbeamer is ommiting state change in /xremote see #24 '
+					)
+					this.setVariableValues({ presentation_message_visible: true })
+					this.checkFeedbacks('presentation_message_visible')
+					break
+				case '/presentation/message/visible':
+					this.log('debug', `presentation/message/visible ${value}`)
+					this.setVariableValues({ presentation_message_visible: value == 1 })
+					this.checkFeedbacks('presentation_message_visible')
 					break
 				case undefined:
 					this.log('warn', `receveived a special message without address - not implemented`)
