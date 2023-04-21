@@ -307,12 +307,13 @@ class SongbeamerInstance extends InstanceBase {
 						label: 'Combination of id-number of languages to be displayed',
 						id: 'presentation_language',
 						default: '1234',
-						tooltip: 'Choose any combination of 1234', //TODO check why not displayed
+						tooltip: 'Choose any combination of 1234 or type ALL',
 						regex: this.REGEX_SOMETHING,
 						useVariables: true,
 					},
 				],
 				callback: async (event) => {
+					this.log('warn', 'Songbeamer does not yet act upon the request  - check #6')
 					const presentation_language_primary = await this.parseVariablesInString(
 						event.options.presentation_language_primary
 					)
