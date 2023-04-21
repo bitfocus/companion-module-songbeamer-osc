@@ -1,47 +1,68 @@
-const instance_skel = require('../../instance_skel')
-const GetUpgradeScripts = require('./upgrades')
+const { InstanceBase, Regex, runEntrypoint } = require('@companion-module/base')
+const UpgradeScripts = require('./upgrades')
 const OSC = require('osc')
 
-class instance extends instance_skel {
-	constructor(system, id, config) {
-		// super-constructor
-		super(system, id, config)
-	}
-
-	GetUpgradeScripts = GetUpgradeScripts
-
-	/**
-	 * This is a method is executed on config changes
-	 * It will restart the OSC server if it's configuration changed
-	 */
-	updateConfig(config) {
-		this.config = config
-		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
-			this.debug('host or port configuration changed - reloading osc server')
-			this.osc_server_init()
-		}
+class SongbeamerInstance extends InstanceBase {
+	constructor(internal) {
+		super(internal)
 	}
 
 	/**
 	 * This is a method that initializes the instance for companion
 	 * it needds to set status after successful execution
 	 */
-	init() {
+	async init(config) {
+		this.config = config
+		this.updateStatus('connecting')
 		this.osc_server_init()
 
-		this.actions()
-		this.feedbacks()
-		this.variables()
-		//TODO #1 Initialise variables
-		this.setVariable('presentation_state', 'Not Checked')
+		this.log('debug', 'Starting definition of actions feedbacks and variables')
+		this.updateActions()
+		this.updateFeedbacks()
+		this.updateVariables()
 
-		this.status(this.STATE_OK)
+		this.updateStatus('ok')
+	}
+
+	/**
+	 * When module gets deleted
+	 */
+	async destroy() {
+		this.log('debug', 'destroy method started')
+		this.osc.close()
+		this.log('debug', 'osc closed')
+		delete this.osc
+		this.log('debug', 'this.osc deleted')
+		this.log('debug', 'destroy')
+	}
+
+	/**
+	 * This is a method is executed on config changes
+	 * It will restart the OSC server if it's configuration changed
+	 */
+	async configUpdated(config) {
+		this.config = config
+		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
+			this.log('debug', 'host or port configuration changed - reloading osc server')
+			this.osc_server_init()
+		}
+	}
+
+	/**
+	 * request updates, subscription expires every 10 seconds
+	 */
+	osc_update_polling() {
+		this.osc.send({
+			address: '/xremote',
+			args: [],
+		})
+		//this.log('debug', 'heartbeat send')
 	}
 
 	/**
 	 * Return config fields for web config
 	 */
-	config_fields() {
+	getConfigFields() {
 		return [
 			{
 				type: 'textinput',
@@ -49,6 +70,7 @@ class instance extends instance_skel {
 				label: 'Target IP',
 				width: 8,
 				regex: this.REGEX_IP,
+				useVariables: true,
 			},
 			{
 				type: 'textinput',
@@ -56,37 +78,45 @@ class instance extends instance_skel {
 				label: 'Target Port',
 				width: 4,
 				regex: this.REGEX_PORT,
+				useVariables: true,
 			},
 		]
 	}
 
 	/**
-	 * When module gets deleted
-	 */
-	destroy() {
-		this.osc.close()
-		delete this.osc
-		this.debug('destroy')
-	}
-
-	/**
 	 * Defines the actions and respective options available with this module
 	 */
-	actions(system) {
-		this.setActions({
+	updateActions() {
+		let path
+		let args = []
+
+		this.setActionDefinitions({
 			send_blank: {
-				label: 'Send message without arguments',
+				name: 'Send message without arguments',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'OSC Path',
 						id: 'path',
 						default: '/osc/path',
+						useVariables: true,
 					},
 				],
+				callback: async (event) => {
+					path = await this.parseVariablesInString(event.options.path)
+
+					this.osc.send({
+						address: path,
+						args: [],
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			presentation_state: {
-				label: 'Change presentation state',
+				name: 'Change presentation state',
 				options: [
 					{
 						type: 'dropdown',
@@ -102,10 +132,52 @@ class instance extends instance_skel {
 						],
 						minChoicesForSearch: 0,
 					},
+					{
+						type: 'checkbox',
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
+					},
 				],
+				callback: async (event) => {
+					const presentation_state = await this.parseVariablesInString(event.options.presentation_state)
+					const should_change = await this.parseVariablesInString(event.options.should_change)
+					path = '/presentation/state'
+
+					if (should_change == 'true') {
+						const states = ['black', 'background', 'page', 'logo']
+						args = [
+							{
+								type: 's',
+								value: states[presentation_state],
+							},
+						]
+						//TODO #7 Remove following line as workaround once songbeamer sends feedback
+						this.setVariableValues({ presentation_state: states[presentation_state] })
+						this.checkFeedbacks('presentation_state')
+					} else {
+						args = []
+					}
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/state',
+						args: [],
+					})
+				},
 			},
 			presentation_page: {
-				label: 'Change presentation page',
+				name: 'Change presentation page',
 				options: [
 					{
 						type: 'textinput',
@@ -114,12 +186,61 @@ class instance extends instance_skel {
 						default: '1',
 						tooltip: 'Choose any page number',
 						regex: this.REGEX_NUMBER,
+						useVariables: true,
+					},
+					{
+						type: 'checkbox',
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
 					},
 				],
+				callback: async (event) => {
+					const presentation_page = await this.parseVariablesInString(event.options.presentation_page)
+					const should_change = await this.parseVariablesInString(event.options.should_change)
+					path = '/presentation/page'
+					if (should_change == 'true') {
+						args = [
+							{
+								type: 'i',
+								value: parseInt(presentation_page),
+							},
+						]
+					} else {
+						args = []
+					}
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
+			},
+			presentation_pagecount: {
+				name: 'Get presentation page total',
+				options: [],
+				callback: async (event) => {
+					path = '/presentation/pagecount'
+					args = []
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			presentation_versemarker: {
 				//TODO #3 Merge presentation_versemarker into navigate_to
-				label: 'Change presentation page to verse marker',
+				name: 'Change presentation page to verse marker',
 				options: [
 					{
 						type: 'textinput',
@@ -128,12 +249,45 @@ class instance extends instance_skel {
 						default: 'Verse 1',
 						tooltip: 'Choose any verse marker',
 						regex: this.REGEX_SOMETHING,
+						useVariables: true,
+					},
+					{
+						type: 'checkbox',
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
 					},
 				],
+				callback: async (event) => {
+					const presentation_versemarker = await this.parseVariablesInString(event.options.presentation_versemarker)
+					const should_change = await this.parseVariablesInString(event.options.should_change)
+					path = '/presentation/pagecaption'
+					this.log('warn', 'This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
+					if (should_change == 'true') {
+						args = [
+							{
+								type: 's',
+								value: presentation_versemarker,
+							},
+						]
+					} else {
+						args = []
+					}
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			presentation_language_primary: {
 				//TODO #6 Merge presentation_language actions
-				label: 'Change primary language ID',
+				name: 'Change primary language ID',
 				options: [
 					{
 						type: 'dropdown',
@@ -149,10 +303,31 @@ class instance extends instance_skel {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (event) => {
+					const presentation_language_primary = await this.parseVariablesInString(
+						event.options.presentation_language_primary
+					)
+					path = '/presentation/primarylanguage'
+					args = [
+						{
+							type: 'i',
+							value: parseInt(presentation_language_primary),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			presentation_language: {
 				//TODO #6 Merge presentation_language actions
-				label: 'Change languages to be displayed',
+				name: 'Change languages to be displayed',
 				options: [
 					{
 						type: 'textinput',
@@ -161,12 +336,32 @@ class instance extends instance_skel {
 						default: '1234',
 						tooltip: 'Choose any combination of 1234', //TODO check why not displayed
 						regex: this.REGEX_SOMETHING,
+						useVariables: true,
 					},
 				],
+				callback: async (event) => {
+					let presentation_language = await this.parseVariablesInString(event.options.presentation_language)
+					path = '/presentation/language'
+					args = [
+						{
+							type: 's',
+							value: presentation_language,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			presentation_message_text: {
 				//TODO #2 Combine with visible
-				label: 'Change presentation message text',
+				name: 'Change presentation message text',
 				options: [
 					{
 						type: 'textinput',
@@ -175,12 +370,32 @@ class instance extends instance_skel {
 						default: '',
 						tooltip: 'Type any message to display',
 						regex: this.REGEX_SOMETHING,
+						useVariables: true,
 					},
 				],
+				callback: async (event) => {
+					let presentation_message_text = await this.parseVariablesInString(event.options.presentation_message_text)
+					path = '/presentation/message/text'
+					args = [
+						{
+							type: 's',
+							value: presentation_message_text,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			presentation_message_visible: {
 				//TODO #2 Combine with text
-				label: 'Change presentation message visibility',
+				name: 'Change presentation message visibility',
 				options: [
 					{
 						type: 'checkbox',
@@ -189,10 +404,31 @@ class instance extends instance_skel {
 						default: true,
 					},
 				],
+				callback: async (event) => {
+					let presentation_message_visible = await this.parseVariablesInString(
+						event.options.presentation_message_visible
+					)
+					path = '/presentation/message/visible'
+					args = [
+						{
+							type: 'i',
+							value: presentation_message_visible === 'true' ? 1 : 0,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			navigate_to: {
 				//TODO #3 Merge presentation_versemarker into navigate_to
-				label: 'Navigation options within presentation ',
+				name: 'Navigation options within presentation ',
 				options: [
 					{
 						type: 'dropdown',
@@ -210,27 +446,85 @@ class instance extends instance_skel {
 					},
 					{
 						type: 'checkbox',
-						label: 'Execute',
-						id: 'navigate_to_execute',
-						default: true,
+						label: 'Execute change',
+						id: 'should_change',
+						default: 'true',
+						tooltip: 'disable in order to request state instead of changing it',
 					},
 				],
+				callback: async (event) => {
+					const navigate_to = await this.parseVariablesInString(event.options.navigate_to)
+					const should_change = await this.parseVariablesInString(event.options.should_change) // TODO #11 - read bool not str?
+					switch (navigate_to) {
+						case '0':
+							path = '/presentation/nextpage'
+							break
+						case '1':
+							path = '/presentation/prevpage'
+							break
+						case '2':
+							path = '/playlist/next'
+							break
+						case '3':
+							path = '/playlist/previous'
+							break
+						default:
+							this.log('debug', 'navigate_to option not recognized', navigate_to)
+							break
+					}
+					args = [
+						{
+							type: 'i',
+							value: should_change === 'true' ? 1 : 0,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
+			//TODO improve by integrating into navigate_to with optionally displayed param
 			navigate_to_playlistitem: {
-				label: 'Navigate to a numbered item within the playlist ',
+				name: 'Navigate to a numbered item within the playlist ',
 				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Playlist item number',
 						id: 'navigate_to_playlistitem',
 						tooltip: 'Frist playlist entry is 0!',
 						default: 1,
 						regex: this.REGEX_SIGNED_NUMBER,
+						useVariables: true,
 					},
 				],
+				callback: async (event) => {
+					let navigate_to_playlistitem = await this.parseVariablesInString(event.options.navigate_to_playlistitem)
+					path = '/playlist/itemindex'
+					args = [
+						{
+							type: 'i',
+							value: parseInt(navigate_to_playlistitem),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			video_state: {
-				label: 'Change video state',
+				name: 'Change video state',
 				options: [
 					{
 						type: 'dropdown',
@@ -246,23 +540,86 @@ class instance extends instance_skel {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (event) => {
+					let video_state = await this.parseVariablesInString(event.options.video_state)
+					path = '/video/state'
+					switch (video_state) {
+						case '0':
+							args = [
+								{
+									type: 's',
+									value: 'play',
+								},
+							]
+							break
+						case '1':
+							args = [
+								{
+									type: 's',
+									value: 'pause',
+								},
+							]
+							break
+						case '2':
+							args = [
+								{
+									type: 's',
+									value: 'stop',
+								},
+							]
+							break
+						default:
+							this.log('debug', 'video state not recoginzed ', video_state)
+							break
+					}
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			video_position: {
-				label: 'Move to video position',
+				name: 'Move to video position',
 				options: [
 					{
-						type: 'textwithvariables',
-						label: 'Position in h',
+						type: 'textinput',
+						label: 'Position in min',
 						id: 'video_position',
 						required: true,
-						tooltip: 'Position of video to skip to as hours with . as decimal',
+						tooltip: 'Position of video to skip to as minutes with optional . as decimal delimiter',
 						default: 1,
 						regex: this.REGEX_SIGNED_FLOAT,
+						useVariables: true,
 					},
 				],
+				callback: async (event) => {
+					let video_position = await this.parseVariablesInString(event.options.video_position)
+					this.log('warn', 'Video position is not correctly applied by Songbeamer 6.0.0d - check #16')
+					path = '/video/position'
+					args = [
+						{
+							type: 'f',
+							value: parseFloat(video_position) / 24 / 60,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			livevideo_state: {
-				label: 'Change livevideo state',
+				name: 'Change livevideo state',
 				options: [
 					{
 						type: 'checkbox',
@@ -271,321 +628,121 @@ class instance extends instance_skel {
 						default: true,
 					},
 				],
+				callback: async (event) => {
+					let livevideo_state = await this.parseVariablesInString(event.options.livevideo_state)
+					path = '/livevideo/state'
+					args = [
+						{
+							type: 's',
+							value: livevideo_state === 'true' ? 'play' : 'stop',
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 			send_int: {
-				label: 'Send integer',
+				name: 'Send integer',
 				options: [
 					{
-						type: 'textwithvariables',
-						label: 'OSC Path',
-						id: 'path',
-						default: '/osc/path',
-					},
-					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Value',
 						id: 'int',
 						default: 1,
 						regex: this.REGEX_SIGNED_NUMBER,
+						useVariables: true,
 					},
-				],
-			},
-			send_string: {
-				label: 'Send string',
-				options: [
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'OSC Path',
 						id: 'path',
 						default: '/osc/path',
+						useVariables: true,
+					},
+				],
+				callback: async (event) => {
+					let int = await this.parseVariablesInString(event.options.int)
+					path = await this.parseVariablesInString(event.options.path)
+					args = [
+						{
+							type: 'i',
+							value: parseInt(int),
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
+			},
+			send_string: {
+				name: 'Send string',
+				options: [
+					{
+						type: 'textinput',
+						label: 'OSC Path',
+						id: 'path',
+						default: '/osc/path',
+						useVariables: true,
 					},
 					{
-						type: 'textwithvariables',
+						type: 'textinput',
 						label: 'Value',
 						id: 'string',
 						default: 'text',
+						useVariables: true,
 					},
 				],
+				callback: async (event) => {
+					let string = await this.parseVariablesInString(event.options.string)
+					path = await this.parseVariablesInString(event.options.path)
+					args = [
+						{
+							type: 's',
+							value: `${string}`,
+						},
+					]
+
+					this.osc.send({
+						address: path,
+						args: args,
+					})
+					this.log(
+						'debug',
+						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
+					)
+				},
 			},
 		})
-	}
-
-	/**
-	 * Method which is used to execute something based on the actions defined before
-	 * by default args and path is set based on the action and sent after the switch case using the osc server from init
-	 * @param action - The companion action object which was executed
-	 */
-	action(action) {
-		let path
-		let args = null
-
-		switch (action.action) {
-			case 'send_blank':
-				this.system.emit('variable_parse', action.options.path, (value) => {
-					path = value
-				})
-				args = []
-				break
-			case 'presentation_state':
-				let presentation_state
-				this.system.emit('variable_parse', action.options.presentation_state, (value) => {
-					presentation_state = value
-				})
-				path = '/presentation/state'
-				const states = ['black', 'background', 'page', 'logo']
-				args = [
-					{
-						type: 's',
-						value: states[presentation_state],
-					},
-				]
-				//TODO #7 Remove following line as workaround once fixed
-				this.setVariable('presentation_state', states[presentation_state])
-				this.checkFeedbacks('presentation_state')
-				break
-			case 'presentation_page':
-				let presentation_page
-				this.system.emit('variable_parse', action.options.presentation_page, (value) => {
-					presentation_page = value
-				})
-				path = '/presentation/page'
-				args = [
-					{
-						type: 'i',
-						value: parseInt(presentation_page),
-					},
-				]
-				break
-			case 'presentation_versemarker': //TODO #3 Merge presentation_versemarker into navigate_to
-				let presentation_versemarker
-				this.system.emit('variable_parse', action.options.presentation_versemarker, (value) => {
-					presentation_versemarker = value
-				})
-				path = '/presentation/pagecaption'
-				args = [
-					{
-						type: 's',
-						value: presentation_versemarker,
-					},
-				]
-				break
-			case 'presentation_language_primary': //TODO #6 Merge presentation_language actions
-				let presentation_language_primary
-				this.system.emit('variable_parse', action.options.presentation_language_primary, (value) => {
-					presentation_language_primary = value
-				})
-				path = '/presentation/primarylanguage'
-				args = [
-					{
-						type: 'i',
-						value: parseInt(presentation_language_primary),
-					},
-				]
-				break
-			case 'presentation_language': //TODO #6 Merge presentation_language actions
-				let presentation_language
-				this.system.emit('variable_parse', action.options.presentation_language, (value) => {
-					presentation_language = value
-				})
-				path = '/presentation/language'
-				args = [
-					{
-						type: 's',
-						value: presentation_language,
-					},
-				]
-				break
-			case 'presentation_message_text': //TODO #2 Combine with visible
-				let presentation_message_text
-				this.system.emit('variable_parse', action.options.presentation_message_text, (value) => {
-					presentation_message_text = value
-				})
-				path = '/presentation/message/text'
-				args = [
-					{
-						type: 's',
-						value: presentation_message_text,
-					},
-				]
-				break
-			case 'presentation_message_visible': //TODO #2 Combine with text
-				let presentation_message_visible
-				this.system.emit('variable_parse', action.options.presentation_message_visible, (value) => {
-					presentation_message_visible = value
-				})
-				path = '/presentation/message/visible'
-				args = [
-					{
-						type: 'i',
-						value: presentation_message_visible === 'true' ? 1 : 0,
-					},
-				]
-				break
-			case 'navigate_to': //TODO #3 Merge presentation_versemarker into navigate_to
-				let navigate_to
-				let navigate_to_execute
-				this.system.emit('variable_parse', action.options.navigate_to, (value) => {
-					navigate_to = value
-				})
-				this.system.emit('variable_parse', action.options.navigate_to_execute, (value) => {
-					navigate_to_execute = value
-				})
-				args = [
-					{
-						type: 'i',
-						value: navigate_to_execute === 'true' ? 1 : 0,
-					},
-				]
-				switch (navigate_to) {
-					case '0':
-						path = '/presentation/nextpage'
-						break
-					case '1':
-						path = '/presentation/prevpage'
-						break
-					case '2':
-						path = '/playlist/next'
-						break
-					case '3':
-						path = '/playlist/previous'
-						break
-					default:
-						this.debug('navigate_to option not recognized', navigate_to)
-						break
-				}
-				break
-			case 'navigate_to_playlistitem': //TODO improve by integrating into navigate_to with optionally displayed param
-				let navigate_to_playlistitem
-				this.system.emit('variable_parse', action.options.navigate_to_playlistitem, (value) => {
-					navigate_to_playlistitem = value
-				})
-				path = '/playlist/itemindex'
-				args = [
-					{
-						type: 'i',
-						value: parseInt(navigate_to_playlistitem),
-					},
-				]
-				break
-			case 'video_state':
-				let video_state
-				this.system.emit('variable_parse', action.options.video_state, (value) => {
-					video_state = value
-				})
-				path = '/video/state'
-				switch (video_state) {
-					case '0':
-						args = [
-							{
-								type: 's',
-								value: 'play',
-							},
-						]
-						break
-					case '1':
-						args = [
-							{
-								type: 's',
-								value: 'pause',
-							},
-						]
-						break
-					case '2':
-						args = [
-							{
-								type: 's',
-								value: 'stop',
-							},
-						]
-						break
-					default:
-						this.debug('video state not recoginzed ', video_state)
-						break
-				}
-				break
-			case 'video_position':
-				let video_position
-				this.system.emit('variable_parse', action.options.video_position, (value) => {
-					video_position = value
-				})
-				path = '/video/position'
-				args = [
-					{
-						type: 'f',
-						value: parseFloat(video_position),
-					},
-				]
-				break
-			case 'livevideo_state':
-				let livevideo_state
-				this.system.emit('variable_parse', action.options.livevideo_state, (value) => {
-					livevideo_state = value
-				})
-				path = '/livevideo/state'
-				args = [
-					{
-						type: 's',
-						value: livevideo_state === 'true' ? 'play' : 'stop',
-					},
-				]
-				break
-			case 'send_int':
-				let int
-				path = action.options.path
-				this.system.emit('variable_parse', action.options.path, (value) => {
-					path = value
-				})
-				this.system.emit('variable_parse', action.options.int, (value) => {
-					int = value
-				})
-				args = [
-					{
-						type: 'i',
-						value: parseInt(int),
-					},
-				]
-				break
-			case 'send_string':
-				let string
-				path = action.options.path
-				this.system.emit('variable_parse', action.options.path, (value) => {
-					path = value
-				})
-				this.system.emit('variable_parse', action.options.string, (value) => {
-					string = value
-				})
-				args = [
-					{
-						type: 's',
-						value: '${string}',
-					},
-				]
-				break
-			default:
-				this.debug('action: ', action)
-				break
-		}
-
-		if (args !== null) {
-			this.osc.send({
-				address: path,
-				args: args,
-			})
-			this.debug('Sent OSC', this.config.host, this.config.port, path, args)
-		}
+		this.log('debug', 'Finished updateActions()')
 	}
 
 	/**
 	 * Method which sets the feedback definitions
-	 * @param system - Unknown default param from template
 	 */
-	feedbacks(system) {
+	updateFeedbacks() {
 		this.setFeedbackDefinitions({
 			presentation_state: {
 				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
-				label: 'Presentation State',
+				name: 'Presentation State',
 				description: 'Checks presentation state',
-				style: {}, //TODO #4 Implement default style
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
 				// options is how the user can choose the condition the feedback activates for
 				options: [
 					{
@@ -602,49 +759,86 @@ class instance extends instance_skel {
 						minChoicesForSearch: 0,
 					},
 				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					// this.log('debug',`called feedback with ${JSON.stringify(feedback)}`)
+					let var_state
+					var_state = this.getVariableValue('presentation_state')
+					const states = ['black', 'background', 'page', 'logo']
+					// this.log('debug',`comparing ${var_state} with ${states[feedback.options.presentation_state]}`)
+					if (var_state == states[feedback.options.presentation_state]) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/state',
+						args: [],
+					})
+				},
+			},
+			presentation_page: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				name: 'Presentation Page',
+				description: 'Checks presentation page',
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'number',
+						label: 'Page #',
+						id: 'presentation_page',
+						default: 1,
+					},
+				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					if (this.getVariableValue('presentation_page') == feedback.options.presentation_page) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/page',
+						args: [],
+					})
+				},
 			},
 		})
-	}
-
-	/**
-	 * Method which is used to run feedbacks something based on the actions defined before
-	 * @param event - The companion event which triggered the feedback
-	 */
-	feedback(event) {
-		if (event.type == 'presentation_state') {
-			let var_state
-			this.getVariable('presentation_state', (value) => {
-				var_state = value
-			})
-			const states = ['black', 'background', 'page', 'logo']
-			if (var_state == states[event.options.presentation_state]) {
-				return true
-			} else {
-				return false
-			}
-		} else {
-			this.debug('feedback event not recognized', event)
-			false
-		}
-		return false
+		this.log('debug', 'Finished updateFeedbacks()')
 	}
 
 	/**
 	 * Method which sets the variable definitions
-	 * @param system - Unknown default param from template
 	 */
-	variables(system) {
-		this.setVariableDefinitions({
-			label: 'Presentation State',
-			name: 'presentation_state',
-		})
+	updateVariables() {
+		this.setVariableDefinitions([
+			{
+				name: 'Presentation State',
+				variableId: 'presentation_state',
+			},
+			{
+				name: 'Presentation Page',
+				variableId: 'presentation_page',
+			},
+		])
+		this.log('debug', 'Finished updateVariables()')
 	}
 
 	/**
 	 * Initialisation method for the OSC server used to send and receive messages
 	 */
 	osc_server_init() {
-		this.debug('osc_server_init method started')
+		var self = this
+		this.log('debug', 'osc_server_init method started')
 		if (this.osc) {
 			try {
 				this.osc.close()
@@ -669,38 +863,49 @@ class instance extends instance_skel {
 		 * Listener to receive messages
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
-			//this.debug('Received OSC message, Remote info is: ', info)
-			message = oscMsg['address']
-			args = oscMsg['args'][0]
-			value = oscMsg['args'][0]['value']
-			//this.debug('oscMsg:', message, args, value)
+			this.log('debug', `Received OSC message from: ${JSON.stringify(info)}`)
 
-			switch (message) {
+			const address = oscMsg['address']
+			const args = oscMsg['args'][0]
+			const value = args['value']
+
+			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
+
+			switch (address) {
+				case '/presentation/page':
+					this.log('debug', `/presentation/page ${value}`)
+					this.setVariableValues({ presentation_page: value })
+					this.checkFeedbacks('presentation_page')
+					break
 				case '/presentation/pagecount':
-					this.debug('/presentation/pagecount', value)
+					this.log('debug', `/presentation/pagecount ${value}`)
 					break
 				case '/presentation/filename':
-					this.debug('/presentation/filename', value)
+					this.log('debug', `/presentation/filename ${value}`)
 					break
 				case '/playlist/filename':
-					this.debug('/playlist/filename', value)
+					this.log('debug', `/playlist/filename ${value}`)
 					break
 				case '/playlist/count':
-					this.debug('/playlist/count', value)
+					this.log('debug', `/playlist/count ${value}`)
 					break
 				case '/video/length':
-					this.debug('/video/length', value)
+					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
+					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
 					break
 				case '/video/filename':
-					this.debug('/video/filename', value)
+					this.log('debug', `/video/filename ${value}`)
 					break
 				case '/presentation/state':
+					this.log('debug', `presentation/state ${value}`)
 					const states = ['black', 'background', 'page', 'logo']
-					this.setVariable('presentation_state', states[value])
+					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
+				case undefined:
+					this.log('warn', `receveived a special message without address - not implemented`)
 				default:
-					this.debug('unknown osc message case', oscMsg)
+					this.log('warn', `received a message with an unknown address - not implemented`)
 					//TODO
 					// /playlist/items/**/caption
 					// /playlist/items/**/filename
@@ -712,14 +917,39 @@ class instance extends instance_skel {
 		 * Listener logging ready function
 		 */
 		this.osc.on('ready', () => {
-			this.debug('OSC port is ready')
+			this.log('info', 'OSC port is in "ready" state')
+			this.heartbeat = setInterval(function () {
+			self.osc_update_polling()
+			}, 9500) // just before 10 sec expiration
+		})
+
+		/**
+		 * Properly closing the hearbeat on close
+		 */
+		this.osc.on('close', () => {
+			if (this.heartbeat) {
+				clearInterval(this.heartbeat)
+				delete this.heartbeat
+			}
+		})
+
+		/**
+		 * Properly logging error and stopping heartbeat
+		 */
+		this.osc.on('error', (err) => {
+			this.log('error', 'Error: ' + err.message)
+			this.updateStatus('UnknownError', err.message)
+			if (this.heartbeat) {
+				clearInterval(this.heartbeat)
+				delete this.heartbeat
+			}
 		})
 
 		// Open the socket.
 		this.osc.open()
 
-		this.debug('osc_server_init method finished', this.osc)
+		this.log('debug', `osc_server_init method finished ${this.osc}`)
 	}
 }
 
-exports = module.exports = instance
+runEntrypoint(SongbeamerInstance, UpgradeScripts)
