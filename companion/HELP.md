@@ -13,6 +13,17 @@ If it shows "disabled" you need to enable it by running a Songbeamer macro.
 Open the macro window (ALT + F8) and execute
 `IniSFS.OSC.Enabled := True;`
 
+## Use of variables and feedbacks
+
+All variables are only updated upon changes in Songbeamer or in case any feedback is using them.
+This means that the use of variables as simple "display" values might show incorrect initial states.
+
+In case some value has issues a warning referencing the respective github issue will be logged.
+More details can be found on the issues page https://github.com/bitfocus/companion-module-songbeamer-osc/issues
+
+Please be aware that quite a lot of functionality is not yet fully implemented in Songbeamer.
+This module is NOT provided by the Songbeamer developers but rather a user!
+
 # Technical things ...
 
 ## Changelog
