@@ -878,7 +878,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_page')
 					break
 				case '/presentation/pagecount':
-					this.log('debug', `/presentation/pagecount ${value}`)
+					this.log('warn', `/presentation/pagecount ${value} not yet implemented`)
 					break
 				case '/presentation/filename':
 					this.log('debug', `/presentation/filename ${value}`)
@@ -887,14 +887,14 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/playlist/filename ${value}`)
 					break
 				case '/playlist/count':
-					this.log('debug', `/playlist/count ${value}`)
+					this.log('warn', `/playlist/count ${value} not yet implemented`)
 					break
 				case '/video/length':
 					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
 					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
 					break
 				case '/video/filename':
-					this.log('debug', `/video/filename ${value}`)
+					this.log('warn', `/video/filename ${value}  not yet implemented`)
 					break
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
@@ -919,7 +919,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc.on('ready', () => {
 			this.log('info', 'OSC port is in "ready" state')
 			this.heartbeat = setInterval(function () {
-			self.osc_update_polling()
+				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
 		})
 
