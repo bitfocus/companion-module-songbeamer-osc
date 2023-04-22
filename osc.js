@@ -178,6 +178,7 @@ class SongbeamerInstance extends InstanceBase {
 				},
 			},
 			presentation_page: {
+				//TODO #28 - check if it can be joined with navigate_to action
 				name: 'Change presentation page',
 				options: [
 					{
@@ -334,7 +335,6 @@ class SongbeamerInstance extends InstanceBase {
 						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
 					)
 
-
 					let presentation_language = await this.parseVariablesInString(event.options.presentation_language)
 					path = '/presentation/language'
 					args = [
@@ -473,9 +473,22 @@ class SongbeamerInstance extends InstanceBase {
 						'debug',
 						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
 					)
+					// Remove the following lines once propper feedback is implemented in songbeamer - see #22
+					this.log(
+						'info',
+						'Songbeamer OSC implementation is missing feedback for page/playlist changes #22 manually requesting variables'
+					)
+					this.osc.send({
+						address: '/playlist/itemindex',
+						args: [],
+					})
+					this.osc.send({
+						address: '/presentation/page',
+						args: [],
+					})
 				},
 			},
-			//TODO improve by integrating into navigate_to with optionally displayed param
+			//TODO #28 - check if it can be joined with navigate_to action
 			navigate_to_playlistitem: {
 				name: 'Navigate to a numbered item within the playlist ',
 				options: [
@@ -483,7 +496,7 @@ class SongbeamerInstance extends InstanceBase {
 						type: 'textinput',
 						label: 'Playlist item number',
 						id: 'navigate_to_playlistitem',
-						tooltip: 'Frist playlist entry is 0!',
+						tooltip: 'First playlist item is 1 (API translates to 0 based index)',
 						default: 1,
 						regex: this.REGEX_SIGNED_NUMBER,
 						useVariables: true,
@@ -495,7 +508,7 @@ class SongbeamerInstance extends InstanceBase {
 					args = [
 						{
 							type: 'i',
-							value: parseInt(navigate_to_playlistitem),
+							value: parseInt(navigate_to_playlistitem) - 1,
 						},
 					]
 
@@ -507,6 +520,19 @@ class SongbeamerInstance extends InstanceBase {
 						'debug',
 						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
 					)
+					// Remove the following lines once propper feedback is implemented in songbeamer - see #22
+					this.log(
+						'info',
+						'Songbeamer OSC implementation is missing feedback for page/playlist changes #22 manually requesting variables'
+					)
+					this.osc.send({
+						address: '/playlist/itemindex',
+						args: [],
+					})
+					this.osc.send({
+						address: '/presentation/page',
+						args: [],
+					})
 				},
 			},
 			video_state: {
@@ -798,6 +824,40 @@ class SongbeamerInstance extends InstanceBase {
 					})
 				},
 			},
+
+			playlist_itemindex: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				name: 'Playlist item index',
+				description: 'Checks playlist item index ',
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'number',
+						label: 'Playlist index #',
+						id: 'playlist_itemindex',
+						default: 1,
+					},
+				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					if (this.getVariableValue('playlist_itemindex') == feedback.options.playlist_itemindex) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/playlist/itemindex',
+						args: [],
+					})
+				},
+			},
 			presentation_message_text: {
 				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 				name: 'Presentation Message Text',
@@ -876,12 +936,16 @@ class SongbeamerInstance extends InstanceBase {
 	updateVariables() {
 		this.setVariableDefinitions([
 			{
-				name: 'Presentation State',
+				name: 'presentation state',
 				variableId: 'presentation_state',
 			},
 			{
-				name: 'Presentation Page',
+				name: 'presentation page',
 				variableId: 'presentation_page',
+			},
+			{
+				name: 'playlist itemindex (starting with 1)',
+				variableId: 'playlist_itemindex',
 			},
 			{
 				name: 'Presentation message text',
@@ -940,7 +1004,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_page')
 					break
 				case '/presentation/pagecount':
-					this.log('debug', `/presentation/pagecount ${value}`)
+					this.log('warn', `/presentation/pagecount ${value} not yet implemented`)
 					break
 				case '/presentation/filename':
 					this.log('debug', `/presentation/filename ${value}`)
@@ -948,15 +1012,20 @@ class SongbeamerInstance extends InstanceBase {
 				case '/playlist/filename':
 					this.log('debug', `/playlist/filename ${value}`)
 					break
+				case '/playlist/itemindex':
+					this.log('debug', `/playlist/itemindex ${value}`)
+					this.setVariableValues({ playlist_itemindex: value + 1 })
+					this.checkFeedbacks('playlist_itemindex')
+					break
 				case '/playlist/count':
-					this.log('debug', `/playlist/count ${value}`)
+					this.log('warn', `/playlist/count ${value} not yet implemented`)
 					break
 				case '/video/length':
 					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
 					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
 					break
 				case '/video/filename':
-					this.log('debug', `/video/filename ${value}`)
+					this.log('warn', `/video/filename ${value}  not yet implemented`)
 					break
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
