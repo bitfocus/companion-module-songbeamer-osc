@@ -177,52 +177,6 @@ class SongbeamerInstance extends InstanceBase {
 					})
 				},
 			},
-			presentation_page: {
-				//TODO #28 - check if it can be joined with navigate_to action
-				name: 'Change presentation page',
-				options: [
-					{
-						type: 'textinput',
-						label: 'Page number',
-						id: 'presentation_page',
-						default: '1',
-						tooltip: 'Choose any page number',
-						regex: this.REGEX_NUMBER,
-						useVariables: true,
-					},
-					{
-						type: 'checkbox',
-						label: 'Execute change',
-						id: 'should_change',
-						default: 'true',
-						tooltip: 'disable in order to request state instead of changing it',
-					},
-				],
-				callback: async (event) => {
-					const presentation_page = await this.parseVariablesInString(event.options.presentation_page)
-					const should_change = await this.parseVariablesInString(event.options.should_change)
-					path = '/presentation/page'
-					if (should_change == 'true') {
-						args = [
-							{
-								type: 'i',
-								value: parseInt(presentation_page),
-							},
-						]
-					} else {
-						args = []
-					}
-
-					this.osc.send({
-						address: path,
-						args: args,
-					})
-					this.log(
-						'debug',
-						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
-					)
-				},
-			},
 			presentation_pagecount: {
 				name: 'Get presentation page total',
 				options: [],
@@ -414,7 +368,7 @@ class SongbeamerInstance extends InstanceBase {
 			},
 			navigate_to: {
 				//TODO #3 Merge presentation_versemarker into navigate_to
-				name: 'Navigation options within presentation ',
+				name: 'Navigation within presentation and playlist (relative or absolute) ',
 				options: [
 					{
 						type: 'dropdown',
@@ -427,8 +381,30 @@ class SongbeamerInstance extends InstanceBase {
 							{ id: '1', label: 'prevpage' },
 							{ id: '2', label: 'next playlist item' },
 							{ id: '3', label: 'previous playlist item' },
+							{ id: '4', label: 'navigate to playlist item' },
+							{ id: '5', label: 'navigate to presentation page' },
 						],
 						minChoicesForSearch: 0,
+					},
+					{
+						type: 'textinput',
+						label: 'Playlist item number',
+						id: 'navigate_to_playlistitem',
+						tooltip: 'Number of the playlist item starting with 1 (API translates to 0 based index)',
+						default: 1,
+						isVisible: (options) => options.navigate_to == '4' && options.should_change,
+						regex: this.REGEX_SIGNED_NUMBER,
+						useVariables: true,
+					},
+					{
+						type: 'textinput',
+						label: 'Page number',
+						id: 'presentation_page',
+						default: '1',
+						isVisible: (options) => options.navigate_to == '5' && options.should_change,
+						tooltip: 'Number of the page within the current presentation',
+						regex: this.REGEX_SIGNED_NUMBER,
+						useVariables: true,
 					},
 					{
 						type: 'checkbox',
@@ -454,67 +430,48 @@ class SongbeamerInstance extends InstanceBase {
 						case '3':
 							path = '/playlist/previous'
 							break
+						case '4':
+							let navigate_to_playlistitem = await this.parseVariablesInString(event.options.navigate_to_playlistitem)
+							path = '/playlist/itemindex'
+							if (should_change == 'true') {
+								args = [
+									{
+										type: 'i',
+										value: parseInt(navigate_to_playlistitem) - 1,
+									},
+								]
+							} else {
+								args = []
+							}
+							break
+						case '5':
+							const presentation_page = await this.parseVariablesInString(event.options.presentation_page)
+							path = '/presentation/page'
+							if (should_change == 'true') {
+								args = [
+									{
+										type: 'i',
+										value: parseInt(presentation_page),
+									},
+								]
+							} else {
+								args = []
+							}
+							break
 						default:
 							this.log('debug', 'navigate_to option not recognized', navigate_to)
 							break
 					}
-					args = [
-						{
-							type: 'i',
-							value: should_change === 'true' ? 1 : 0,
-						},
-					]
 
-					this.osc.send({
-						address: path,
-						args: args,
-					})
-					this.log(
-						'debug',
-						`Sent OSC to ${this.config.host}:${this.config.port} with ${path} and ${JSON.stringify(args)}`
-					)
-					// Remove the following lines once propper feedback is implemented in songbeamer - see #22
-					this.log(
-						'info',
-						'Songbeamer OSC implementation is missing feedback for page/playlist changes #22 manually requesting variables'
-					)
-					this.osc.send({
-						address: '/playlist/itemindex',
-						args: [],
-					})
-					this.osc.send({
-						address: '/presentation/page',
-						args: [],
-					})
-					this.osc.send({
-						address: '/presentation/presentation_pagecount',
-						args: [],
-					})
-				},
-			},
-			//TODO #28 - check if it can be joined with navigate_to action
-			navigate_to_playlistitem: {
-				name: 'Navigate to a numbered item within the playlist ',
-				options: [
-					{
-						type: 'textinput',
-						label: 'Playlist item number',
-						id: 'navigate_to_playlistitem',
-						tooltip: 'First playlist item is 1 (API translates to 0 based index)',
-						default: 1,
-						regex: this.REGEX_SIGNED_NUMBER,
-						useVariables: true,
-					},
-				],
-				callback: async (event) => {
-					let navigate_to_playlistitem = await this.parseVariablesInString(event.options.navigate_to_playlistitem)
-					path = '/playlist/itemindex'
-					args = [
-						{
-							type: 'i',
-							value: parseInt(navigate_to_playlistitem) - 1,
-						},
-					]
+					//append execution indicator for relative actions
+					if (navigate_to != '4' && navigate_to != '5') {
+						args = [
+							{
+								type: 'i',
+								value: should_change === 'true' ? 1 : 0,
+							},
+						]
+					}
 
 					this.osc.send({
 						address: path,
