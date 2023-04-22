@@ -486,6 +486,10 @@ class SongbeamerInstance extends InstanceBase {
 						'info',
 						'Songbeamer OSC implementation is missing feedback for page/playlist changes #22 manually requesting variables'
 					)
+					this.log(
+						'info',
+						'Songbeamer OSC reports wrong page numbers after update via OSC #30'
+					)
 					this.osc.send({
 						address: '/playlist/itemindex',
 						args: [],
