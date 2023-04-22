@@ -486,6 +486,10 @@ class SongbeamerInstance extends InstanceBase {
 						address: '/presentation/page',
 						args: [],
 					})
+					this.osc.send({
+						address: '/presentation/presentation_pagecount',
+						args: [],
+					})
 				},
 			},
 			//TODO #28 - check if it can be joined with navigate_to action
@@ -531,6 +535,10 @@ class SongbeamerInstance extends InstanceBase {
 					})
 					this.osc.send({
 						address: '/presentation/page',
+						args: [],
+					})
+					this.osc.send({
+						address: '/presentation/presentation_pagecount',
 						args: [],
 					})
 				},
@@ -926,6 +934,39 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('warn', 'initialisation of presentation/message/visible not possible - check #2')
 				},
 			},
+			presentation_pagecount: {
+				type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+				name: 'presentation pagecount',
+				description: 'Checks presentation total page count',
+				defaultStyle: {
+					// The default style change for a boolean feedback
+					// The user will be able to customise these values as well as the fields that will be changed
+					//TODO #4 Implement default style
+				},
+				// options is how the user can choose the condition the feedback activates for
+				options: [
+					{
+						type: 'number',
+						label: '# of pages',
+						id: 'presentation_pagecount',
+						default: 1,
+					},
+				],
+				callback: async (feedback) => {
+					// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+					if (this.getVariableValue('presentation_pagecount') == feedback.options.presentation_pagecount) {
+						return true
+					} else {
+						return false
+					}
+				},
+				subscribe: (feedback) => {
+					this.osc.send({
+						address: '/presentation/presentation_pagecount',
+						args: [],
+					})
+				},
+			},
 		})
 		this.log('debug', 'Finished updateFeedbacks()')
 	}
@@ -954,6 +995,10 @@ class SongbeamerInstance extends InstanceBase {
 			{
 				name: 'Presentation message visibility',
 				variableId: 'presentation_message_visible',
+			},
+			{
+				name: 'presentation pagecount',
+				variableId: 'presentation_pagecount',
 			},
 		])
 		this.log('debug', 'Finished updateVariables()')
@@ -1004,7 +1049,9 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_page')
 					break
 				case '/presentation/pagecount':
-					this.log('warn', `/presentation/pagecount ${value} not yet implemented`)
+					this.log('debug', `/presentation/pagecount ${value}`)
+					this.setVariableValues({ presentation_pagecount: value })
+					this.checkFeedbacks('presentation_pagecount')
 					break
 				case '/presentation/filename':
 					this.log('debug', `/presentation/filename ${value}`)
@@ -1066,6 +1113,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc.on('ready', () => {
 			this.log('info', 'OSC port is in "ready" state')
 			this.heartbeat = setInterval(function () {
+				self.osc_update_polling()
 				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
 		})
