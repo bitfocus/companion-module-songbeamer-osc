@@ -4,7 +4,9 @@
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
+		"lint": "yarn lint:raw ."
 	},
 	"license": "MIT",
 	"repository": {

@@ -1,7 +1,8 @@
-import { InstanceBase, Regex, runEntrypoint } from '@companion-module/base'
+import { InstanceBase, runEntrypoint } from '@companion-module/base'
 import { UpgradeScripts } from './upgrades.js'
 import pkg from 'osc'
 const OSC = pkg
+import { states } from './choices.js'
 
 import { getActionDefinitions } from './actions.js'
 import { getFeedbackDefinitions } from './feedbacks.js'
@@ -168,7 +169,6 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
-					const states = ['black', 'background', 'page', 'logo']
 					this.setVariableValues({ presentation_state: states[value] })
 					this.checkFeedbacks('presentation_state')
 					break
@@ -190,6 +190,7 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				case undefined:
 					this.log('warn', `receveived a special message without address - not implemented`)
+					break
 				default:
 					this.log('warn', `received a message with an unknown address - not implemented`)
 					//TODO

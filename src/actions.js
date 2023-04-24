@@ -1,4 +1,5 @@
 import { Regex } from '@companion-module/base'
+import { states } from './choices.js'
 
 export function getActionDefinitions(self, osc) {
 	let path = ''
@@ -60,7 +61,6 @@ export function getActionDefinitions(self, osc) {
 				path = '/presentation/state'
 
 				if (should_change == 'true') {
-					const states = ['black', 'background', 'page', 'logo']
 					args = [
 						{
 							type: 's',
@@ -83,7 +83,7 @@ export function getActionDefinitions(self, osc) {
 					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
 				)
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				osc.send({
 					address: '/presentation/state',
 					args: [],
@@ -93,7 +93,7 @@ export function getActionDefinitions(self, osc) {
 		presentation_pagecount: {
 			name: 'Get presentation page total',
 			options: [],
-			callback: async (event) => {
+			callback: async () => {
 				path = '/presentation/pagecount'
 				args = []
 
@@ -342,13 +342,12 @@ export function getActionDefinitions(self, osc) {
 						path = '/playlist/previous'
 						break
 					case '4':
-						let navigate_to_playlistitem = await self.parseVariablesInString(event.options.navigate_to_playlistitem)
 						path = '/playlist/itemindex'
 						if (should_change == 'true') {
 							args = [
 								{
 									type: 'i',
-									value: parseInt(navigate_to_playlistitem) - 1,
+									value: parseInt(await self.parseVariablesInString(event.options.navigate_to_playlistitem)) - 1,
 								},
 							]
 						} else {
@@ -356,13 +355,12 @@ export function getActionDefinitions(self, osc) {
 						}
 						break
 					case '5':
-						const presentation_page = await self.parseVariablesInString(event.options.presentation_page)
 						path = '/presentation/page'
 						if (should_change == 'true') {
 							args = [
 								{
 									type: 'i',
-									value: parseInt(presentation_page),
+									value: parseInt(await self.parseVariablesInString(event.options.presentation_page)),
 								},
 							]
 						} else {

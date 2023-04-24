@@ -1,3 +1,5 @@
+import { states } from './choices.js'
+
 export function getFeedbackDefinitions(self, osc) {
 	const feedbacks = {
 		presentation_state: {
@@ -30,7 +32,6 @@ export function getFeedbackDefinitions(self, osc) {
 				// self.log('debug',`called feedback with ${JSON.stringify(feedback)}`)
 				let var_state
 				var_state = self.getVariableValue('presentation_state')
-				const states = ['black', 'background', 'page', 'logo']
 				// self.log('debug',`comparing ${var_state} with ${states[feedback.options.presentation_state]}`)
 				if (var_state == states[feedback.options.presentation_state]) {
 					return true
@@ -38,7 +39,7 @@ export function getFeedbackDefinitions(self, osc) {
 					return false
 				}
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				const path = '/presentation/state'
 				osc.send({
 					address: path,
@@ -73,7 +74,7 @@ export function getFeedbackDefinitions(self, osc) {
 					return false
 				}
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				const path = '/presentation/page'
 				osc.send({
 					address: path,
@@ -109,7 +110,7 @@ export function getFeedbackDefinitions(self, osc) {
 					return false
 				}
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				const path = '/playlist/itemindex'
 				osc.send({
 					address: path,
@@ -144,7 +145,7 @@ export function getFeedbackDefinitions(self, osc) {
 					return false
 				}
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				const path = '/presentation/message/text'
 				osc.send({
 					address: path,
@@ -180,7 +181,7 @@ export function getFeedbackDefinitions(self, osc) {
 					return false
 				}
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				const path = '/presentation/message/visible'
 				osc.send({
 					address: path,
@@ -216,7 +217,7 @@ export function getFeedbackDefinitions(self, osc) {
 					return false
 				}
 			},
-			subscribe: (feedback) => {
+			subscribe: () => {
 				const path = '/presentation/pagecount'
 				osc.send({
 					address: path,
