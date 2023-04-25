@@ -131,7 +131,7 @@ class SongbeamerInstance extends InstanceBase {
 
 			const address = oscMsg['address']
 			const args = oscMsg['args'][0]
-			const value = args['value']
+			let value = args['value']
 
 			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
 
@@ -147,10 +147,20 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_pagecount')
 					break
 				case '/presentation/filename':
-					this.log('debug', `/presentation/filename ${value}`)
+					this.log('info', `/presentation/filename ${value}`)
+					value = value.split(/\\|\//)
+					value = value[value.length - 1]
+					value = value.split('.').slice(0, -1).join('.')
+					this.setVariableValues({ presentation_filename: value })
+					this.checkFeedbacks('presentation_filename')
 					break
 				case '/playlist/filename':
-					this.log('debug', `/playlist/filename ${value}`)
+					this.log('info', `/playlist/filename ${value}`)
+					value = value.split(/\\|\//)
+					value = value[value.length - 1]
+					value = value.split('.').slice(0, -1).join('.')
+					this.setVariableValues({ playlist_filename: value })
+					this.checkFeedbacks('playlist_filename')
 					break
 				case '/playlist/itemindex':
 					this.log('debug', `/playlist/itemindex ${value}`)

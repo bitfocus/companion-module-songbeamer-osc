@@ -8,6 +8,14 @@ export const variables = [
 		variableId: 'presentation_page',
 	},
 	{
+		name: 'presentation filename',
+		variableId: 'presentation_filename',
+	},
+	{
+		name: 'playlist filename',
+		variableId: 'playlist_filename',
+	},
+	{
 		name: 'playlist itemindex (starting with 1)',
 		variableId: 'playlist_itemindex',
 	},
