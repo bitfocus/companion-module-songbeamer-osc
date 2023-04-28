@@ -321,7 +321,7 @@ export function getActionDefinitions(self, osc) {
 					type: 'checkbox',
 					label: 'Execute change',
 					id: 'should_change',
-					default: 'true',
+					default: true,
 					tooltip: 'disable in order to request state instead of changing it',
 				},
 			],
@@ -356,7 +356,7 @@ export function getActionDefinitions(self, osc) {
 						break
 					case '5':
 						path = '/presentation/page'
-						if (should_change == 'true') {
+						if (should_change) {
 							args = [
 								{
 									type: 'i',
