@@ -35,7 +35,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.setPresetDefinitions(getPresetDefinitions(this))
 		this.log('debug', 'Finished definition of presets')
 
-		this.updateStatus('ok')
+		// status ok is only set after first successful xinfo message is received. it's requested as part of the OSC ready function
 	}
 
 	/**
@@ -141,6 +141,11 @@ class SongbeamerInstance extends InstanceBase {
 			let path
 
 			switch (address) {
+				case '/xinfo':
+					this.log('debug', `/xinfo ${value}`)
+					// TODO #32 consider more validation and logging
+					this.updateStatus('ok')
+					break
 				case '/presentation/page':
 					this.log('debug', `/presentation/page ${value}`)
 					this.setVariableValues({ presentation_page: value })
@@ -232,6 +237,14 @@ class SongbeamerInstance extends InstanceBase {
 			this.heartbeat = setInterval(function () {
 				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
+
+			// check /xinfo in order to confirm successful connection upon response
+			this.osc.send({
+				address: '/xinfo',
+				args: [],
+			})
+			//TODO #32 repeat until state is ok
+			self.log('info', `Sent OSC to ${self.config.host}:${self.config.port} with /xinfo to check connection status`)
 		})
 
 		/**
