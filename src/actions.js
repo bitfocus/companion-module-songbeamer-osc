@@ -108,53 +108,6 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
-		presentation_versemarker: {
-			//TODO #3 Merge presentation_versemarker into navigate_to
-			name: 'Change presentation page to verse marker',
-			options: [
-				{
-					type: 'textinput',
-					label: 'Verse marker',
-					id: 'presentation_versemarker',
-					default: 'Verse 1',
-					tooltip: 'Choose any verse marker',
-					regex: Regex.SOMETHING,
-					useVariables: true,
-				},
-				{
-					type: 'checkbox',
-					label: 'Execute change',
-					id: 'should_change',
-					default: 'true',
-					tooltip: 'disable in order to request state instead of changing it',
-				},
-			],
-			callback: async (event) => {
-				const presentation_versemarker = await self.parseVariablesInString(event.options.presentation_versemarker)
-				const should_change = await self.parseVariablesInString(event.options.should_change)
-				path = '/presentation/pagecaption'
-				self.log('warn', 'This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
-				if (should_change == 'true') {
-					args = [
-						{
-							type: 's',
-							value: presentation_versemarker,
-						},
-					]
-				} else {
-					args = []
-				}
-
-				osc.send({
-					address: path,
-					args: args,
-				})
-				self.log(
-					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
-				)
-			},
-		},
 		presentation_language: {
 			name: 'Change languages to be displayed',
 			options: [
@@ -279,43 +232,44 @@ export function getActionDefinitions(self, osc) {
 			},
 		},
 		navigate_to: {
-			//TODO #3 Merge presentation_versemarker into navigate_to
-			name: 'Navigation within presentation and playlist (relative or absolute) ',
+			name: 'Navigation within presentation and playlist',
 			options: [
 				{
 					type: 'dropdown',
 					label: 'Action',
 					id: 'navigate_to',
 					default: '0',
-					tooltip: 'Choose navigation action to be executed on presentation or playlist',
+					tooltip:
+						'Choose navigation action to be executed on presentation or playlist, disabling execute will query the item instead',
 					choices: [
-						{ id: '0', label: 'nextpage' },
-						{ id: '1', label: 'prevpage' },
-						{ id: '2', label: 'next playlist item' },
-						{ id: '3', label: 'previous playlist item' },
-						{ id: '4', label: 'navigate to playlist item' },
-						{ id: '5', label: 'navigate to presentation page' },
+						{ id: 'nextpage', label: 'next page' },
+						{ id: 'prevpage', label: 'prev page' },
+						{ id: 'playlist/next', label: 'next playlist item' },
+						{ id: 'playlist/previous', label: 'previous playlist item' },
+						{ id: 'playlist/item', label: 'navigate to playlist item' },
+						{ id: 'presentation/page', label: 'navigate to presentation page' },
+						{ id: 'presentation/pagecaption', label: 'navigate to pagecaption' },
 					],
 					minChoicesForSearch: 0,
 				},
 				{
 					type: 'textinput',
-					label: 'Playlist item number',
-					id: 'navigate_to_playlistitem',
-					tooltip: 'Number of the playlist item starting with 1 (API translates to 0 based index)',
-					default: 1,
-					isVisible: (options) => options.navigate_to == '4' && options.should_change,
+					label: 'Playlist / Page number',
+					id: 'number',
+					default: '1',
+					isVisible: (options) => ['playlist/item', 'presentation/page'].contains(options.navigate_to),
+					tooltip: 'Number of the page or playlist item (starting with 1 not 0 index!)',
 					regex: Regex.SIGNED_NUMBER,
 					useVariables: true,
 				},
 				{
 					type: 'textinput',
-					label: 'Page number',
-					id: 'presentation_page',
-					default: '1',
-					isVisible: (options) => options.navigate_to == '5' && options.should_change,
-					tooltip: 'Number of the page within the current presentation',
-					regex: Regex.SIGNED_NUMBER,
+					label: 'page caption',
+					id: 'presentation_pagecaption',
+					default: 'Verse 1',
+					isVisible: (options) => options.navigate_to == 'presentation/pagecaption',
+					tooltip: 'Choose any verse marker as listed defined in your current song - e.g. Verse 1, Chorus 1 ... ',
+					regex: Regex.SOMETHING,
 					useVariables: true,
 				},
 				{
@@ -323,6 +277,8 @@ export function getActionDefinitions(self, osc) {
 					label: 'Execute change',
 					id: 'should_change',
 					default: true,
+					isVisible: (options) =>
+						['nextpage', 'prevpage', 'playlist/previous', 'playlist/next'].includes(options.navigate_to),
 					tooltip: 'disable in order to request state instead of changing it',
 				},
 			],
@@ -330,43 +286,45 @@ export function getActionDefinitions(self, osc) {
 				const navigate_to = await self.parseVariablesInString(event.options.navigate_to)
 				const should_change = await self.parseVariablesInString(event.options.should_change) // TODO #11 - read bool not str?
 				switch (navigate_to) {
-					case '0':
+					case 'nextpage':
 						path = '/presentation/nextpage'
 						break
-					case '1':
+					case 'prevpage':
 						path = '/presentation/prevpage'
 						break
-					case '2':
+					case 'playlist/next':
 						path = '/playlist/next'
 						break
-					case '3':
+					case 'playlist/previous':
 						path = '/playlist/previous'
 						break
-					case '4':
+					case 'playlist/item':
 						path = '/playlist/itemindex'
-						if (should_change == 'true') {
-							args = [
-								{
-									type: 'i',
-									value: parseInt(await self.parseVariablesInString(event.options.navigate_to_playlistitem)) - 1,
-								},
-							]
-						} else {
-							args = []
-						}
+						args = [
+							{
+								type: 'i',
+								value: parseInt(await self.parseVariablesInString(event.options.number)) - 1,
+							},
+						]
 						break
-					case '5':
+					case 'presentation/page':
 						path = '/presentation/page'
-						if (should_change) {
-							args = [
-								{
-									type: 'i',
-									value: parseInt(await self.parseVariablesInString(event.options.presentation_page)),
-								},
-							]
-						} else {
-							args = []
-						}
+						args = [
+							{
+								type: 'i',
+								value: parseInt(await self.parseVariablesInString(event.options.number)),
+							},
+						]
+						break
+					case 'presentation/pagecaption':
+						path = '/presentation/pagecaption'
+						self.log('warn', 'This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
+						args = [
+							{
+								type: 's',
+								value: await self.parseVariablesInString(event.options.presentation_pagecaption),
+							},
+						]
 						break
 					default:
 						self.log('debug', 'navigate_to option not recognized', navigate_to)
@@ -374,7 +332,7 @@ export function getActionDefinitions(self, osc) {
 				}
 
 				//append execution indicator for relative actions
-				if (navigate_to != '4' && navigate_to != '5') {
+				if (['nextpage', 'prevpage', 'playlist/previous', 'playlist/next'].includes(navigate_to)) {
 					args = [
 						{
 							type: 'i',

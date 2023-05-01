@@ -8,7 +8,7 @@ export function getPresetDefinitions() {
 
 	const navigate0 = {
 		type: 'button', // This must be 'button' for now
-		category: 'Navigation', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		category: 'Navigation relative and absolute',
 		name: `navigate to next slide`, // A name for the preset. Shown to the user when they hover over it
 		style: {
 			// This is the minimal set of style properties you must define
@@ -27,7 +27,7 @@ export function getPresetDefinitions() {
 						// add an action on down press
 						actionId: 'navigate_to',
 						options: {
-							navigate_to: 0,
+							navigate_to: 'nextpage',
 							should_change: true,
 						},
 					},
@@ -39,7 +39,7 @@ export function getPresetDefinitions() {
 	}
 	const navigate1 = {
 		type: 'button', // This must be 'button' for now
-		category: 'Navigation', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		category: 'Navigation relative and absolute',
 		name: `navigate to prev slide`, // A name for the preset. Shown to the user when they hover over it
 		style: {
 			// This is the minimal set of style properties you must define
@@ -58,7 +58,7 @@ export function getPresetDefinitions() {
 						// add an action on down press
 						actionId: 'navigate_to',
 						options: {
-							navigate_to: 1,
+							navigate_to: 'prevpage',
 							should_change: true,
 						},
 					},
@@ -70,7 +70,7 @@ export function getPresetDefinitions() {
 	}
 	const navigate2 = {
 		type: 'button', // This must be 'button' for now
-		category: 'Navigation', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		category: 'Navigation relative and absolute',
 		name: `navigate to next playlist item`, // A name for the preset. Shown to the user when they hover over it
 		style: {
 			// This is the minimal set of style properties you must define
@@ -89,7 +89,7 @@ export function getPresetDefinitions() {
 						// add an action on down press
 						actionId: 'navigate_to',
 						options: {
-							navigate_to: 2,
+							navigate_to: 'playlist/next',
 							should_change: true,
 						},
 					},
@@ -101,7 +101,7 @@ export function getPresetDefinitions() {
 	}
 	const navigate3 = {
 		type: 'button', // This must be 'button' for now
-		category: 'Navigation', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		category: 'Navigation relative and absolute',
 		name: `navigate to prev playlist item`, // A name for the preset. Shown to the user when they hover over it
 		style: {
 			// This is the minimal set of style properties you must define
@@ -120,7 +120,7 @@ export function getPresetDefinitions() {
 						// add an action on down press
 						actionId: 'navigate_to',
 						options: {
-							navigate_to: 3,
+							navigate_to: 'playlist/previous',
 							should_change: true,
 						},
 					},
@@ -134,6 +134,114 @@ export function getPresetDefinitions() {
 	result['navigate1'] = navigate1
 	result['navigate2'] = navigate2
 	result['navigate3'] = navigate3
+
+	const navigate_page = {
+		type: 'button', // This must be 'button' for now
+		category: 'Navigation relative and absolute',
+		name: `navigate to playlist item 1`, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			// This is the minimal set of style properties you must define
+			text: 'Page\n1', // `$(generic-module:some-variable)`, // You can use variables from your module here
+			size: '18',
+			alignment: 'left:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						// add an action on down press
+						actionId: 'navigate_to',
+						options: {
+							navigate_to: 'playlist/item',
+							number: 1,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+	const navigate_playlist = {
+		type: 'button', // This must be 'button' for now
+		category: 'Navigation relative and absolute',
+		name: `navigate to page number 1`, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			// This is the minimal set of style properties you must define
+			text: 'Playlist\n1', // `$(generic-module:some-variable)`, // You can use variables from your module here
+			size: '18',
+			alignment: 'left:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						// add an action on down press
+						actionId: 'navigate_to',
+						options: {
+							navigate_to: 'presentation/page',
+							number: 1,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+	result['navigate_page'] = navigate_page
+	result['navigate_playlist'] = navigate_playlist
+
+	// Page captions
+	const page_captions = [
+		'Intro',
+		'Verse 1',
+		'Verse 2',
+		'Verse 3',
+		'Chorus 1',
+		'Chorus 2',
+		'Pre-Chorus',
+		'Bridge',
+		'Ending',
+	]
+	page_captions.forEach(function (value) {
+		result['navigate_pagecaption_' + value] = {
+			type: 'button', // This must be 'button' for now
+			category: 'Navigation by page caption', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+			name: `navigate to pagecaption ${value}`, // A name for the preset. Shown to the user when they hover over it
+			style: {
+				// This is the minimal set of style properties you must define
+				text: `➔\n${value}`,
+				size: '18pt',
+				alignment: 'left:center',
+				pngalignment: 'center:center',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [
+				{
+					down: [
+						{
+							// add an action on down press
+							actionId: 'navigate_to',
+							options: {
+								navigate_to: 'presentation/pagecaption',
+								presentation_pagecaption: `${value}`,
+							},
+						},
+					],
+					up: [],
+				},
+			],
+			feedbacks: [],
+		}
+	})
 
 	// Presentation state
 	const state_current = {
