@@ -258,7 +258,7 @@ class SongbeamerInstance extends InstanceBase {
 
 		// Open the socket.
 		this.osc.open()
-		this.log('debug', `osc_server_init method finished ${this.osc}`)
+		this.log('debug', `osc_server_init method finished ${JSON.stringify(this.osc)}`)
 	}
 }
 
