@@ -1,7 +1,9 @@
 import fs from 'fs'
 
 export function get_images() {
-	const image_names = ['slide_next', 'slide_prev', 'playlist_next', 'playlist_prev']
+	const image_names = []
+	image_names.push(...['slide_next', 'slide_prev', 'playlist_next', 'playlist_prev']) // navigation icons
+	image_names.push(...['state_black', 'state_background', 'state_logo']) // presentation_state_icons // slide = background + text
 
 	let data
 	let base64String
@@ -13,6 +15,8 @@ export function get_images() {
 		base64String = Buffer.from(data).toString('base64')
 		images[filename] = base64String
 	})
+
+	images['state_page'] = images['state_background'] //adding state_slide as placeholder copy of state_background
 
 	return images
 }

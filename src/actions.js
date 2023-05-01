@@ -45,6 +45,7 @@ export function getActionDefinitions(self, osc) {
 						{ id: '2', label: 'page' },
 						{ id: '3', label: 'logo' },
 					],
+					isVisible: (options) => options.should_change,
 					minChoicesForSearch: 0,
 				},
 				{
@@ -69,7 +70,7 @@ export function getActionDefinitions(self, osc) {
 					]
 					//TODO #7 Remove following line as workaround once songbeamer sends feedback
 					self.setVariableValues({ presentation_state: states[presentation_state] })
-					self.checkFeedbacks('presentation_state')
+					self.checkFeedbacks('presentation_state', 'presentation_state_advanced')
 				} else {
 					args = []
 				}

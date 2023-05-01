@@ -194,7 +194,7 @@ class SongbeamerInstance extends InstanceBase {
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
 					this.setVariableValues({ presentation_state: states[value] })
-					this.checkFeedbacks('presentation_state')
+					this.checkFeedbacks('presentation_state', 'presentation_state_advanced')
 					break
 				case '/presentation/message/text':
 					this.log('debug', `presentation/message/text ${value}`)
