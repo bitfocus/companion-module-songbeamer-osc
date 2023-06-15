@@ -358,6 +358,23 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
+		playlist_count: {
+			name: 'Get playlist page total',
+			options: [],
+			callback: async () => {
+				path = '/playlist/count'
+				args = []
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
 		video_state: {
 			name: 'Change video state',
 			options: [

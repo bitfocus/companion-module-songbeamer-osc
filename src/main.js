@@ -186,7 +186,9 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/playlist/previous or /playlist/next ${value}`)
 					break
 				case '/playlist/count':
-					this.log('warn', `/playlist/count ${value} not yet implemented`)
+					this.log('debug', `/playlist/count ${value}`)
+					this.setVariableValues({ playlist_count: value })
+					this.checkFeedbacks('playlist_count')
 					break
 				case '/video/length':
 					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes

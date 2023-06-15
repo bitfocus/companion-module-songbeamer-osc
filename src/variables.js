@@ -16,6 +16,10 @@ export const variables = [
 		variableId: 'presentation_pagecaption',
 	},
 	{
+		name: 'presentation pagecount',
+		variableId: 'presentation_pagecount',
+	},
+	{
 		name: 'playlist item filename',
 		variableId: 'playlist_filename',
 	},
@@ -24,15 +28,15 @@ export const variables = [
 		variableId: 'playlist_itemindex',
 	},
 	{
+		name: 'playlist count',
+		variableId: 'playlist_count',
+	},
+	{
 		name: 'Presentation message text',
 		variableId: 'presentation_message_text',
 	},
 	{
 		name: 'Presentation message visibility',
 		variableId: 'presentation_message_visible',
-	},
-	{
-		name: 'presentation pagecount',
-		variableId: 'presentation_pagecount',
 	},
 ]
