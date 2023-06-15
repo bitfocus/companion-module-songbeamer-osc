@@ -350,7 +350,7 @@ export function getFeedbackDefinitions(self, osc) {
 		playlist_filename: {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'playlist filename',
-			description: 'Checks playlist filename (without path)',
+			description: 'Checks playlist item filename (without path)',
 			defaultStyle: {
 				// The default style change for a boolean feedback
 				// The user will be able to customise these values as well as the fields that will be changed
