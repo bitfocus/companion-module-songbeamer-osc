@@ -141,7 +141,7 @@ export function getPresetDefinitions() {
 		name: `navigate to playlist item 1`, // A name for the preset. Shown to the user when they hover over it
 		style: {
 			// This is the minimal set of style properties you must define
-			text: 'Page\n1', // `$(generic-module:some-variable)`, // You can use variables from your module here
+			text: 'Playlist\n1', // `$(generic-module:some-variable)`, // You can use variables from your module here
 			size: '18',
 			alignment: 'left:center',
 			pngalignment: 'center:center',
@@ -171,7 +171,7 @@ export function getPresetDefinitions() {
 		name: `navigate to page number 1`, // A name for the preset. Shown to the user when they hover over it
 		style: {
 			// This is the minimal set of style properties you must define
-			text: 'Playlist\n1', // `$(generic-module:some-variable)`, // You can use variables from your module here
+			text: 'Page\n1', // `$(generic-module:some-variable)`, // You can use variables from your module here
 			size: '18',
 			alignment: 'left:center',
 			pngalignment: 'center:center',
