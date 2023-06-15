@@ -200,6 +200,7 @@ export function getPresetDefinitions() {
 
 	// Page captions
 	const page_captions = [
+		'Title',
 		'Intro',
 		'Verse 1',
 		'Verse 2',

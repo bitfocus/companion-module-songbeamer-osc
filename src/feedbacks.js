@@ -134,6 +134,42 @@ export function getFeedbackDefinitions(self, osc) {
 			},
 		},
 
+		presentation_pagecaption: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'Presentation pagecaption',
+			description: 'Checks presentation pagecaption',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				//TODO #4 Implement default style
+			},
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'textinput',
+					label: 'pagecaption',
+					id: 'presentation_pagecaption',
+					default: 'Title',
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				if (self.getVariableValue('presentation_pagecaption') == feedback.options.presentation_pagecaption) {
+					return true
+				} else {
+					return false
+				}
+			},
+			subscribe: () => {
+				const path = '/presentation/pagecaption'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}}`)
+			},
+		},
+
 		playlist_itemindex: {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'Playlist item index',

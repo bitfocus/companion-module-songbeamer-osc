@@ -12,6 +12,10 @@ export const variables = [
 		variableId: 'presentation_filename',
 	},
 	{
+		name: 'presentation pagecaption',
+		variableId: 'presentation_pagecaption',
+	},
+	{
 		name: 'playlist filename',
 		variableId: 'playlist_filename',
 	},

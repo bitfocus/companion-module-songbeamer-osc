@@ -159,6 +159,11 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_filename: value })
 					this.checkFeedbacks('presentation_filename')
 					break
+				case '/presentation/pagecaption':
+					this.log('debug', `/presentation/pagecaption ${value}`)
+					this.setVariableValues({ presentation_pagecaption: value })
+					this.checkFeedbacks('presentation_pagecaption')
+					break
 				case '/playlist/filename':
 					this.log('info', `/playlist/filename ${value}`)
 					value = value.split(/\\|\//)
