@@ -16,7 +16,7 @@ export const variables = [
 		variableId: 'presentation_pagecaption',
 	},
 	{
-		name: 'playlist filename',
+		name: 'playlist item filename',
 		variableId: 'playlist_filename',
 	},
 	{

@@ -176,15 +176,6 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/playlist/itemindex ${value}`)
 					this.setVariableValues({ playlist_itemindex: value + 1 })
 					this.checkFeedbacks('playlist_itemindex')
-
-					// Manually check filename because change is not reported by /xremote if triggered from OSC see //#28
-					path = '/presentation/filename'
-					this.osc.send({
-						address: path,
-						args: [],
-					})
-					self.log('warn', 'Manually updating filename because of missing feedback #26')
-					self.log('info', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
 					break
 				case '/playlist/count':
 					this.log('warn', `/playlist/count ${value} not yet implemented`)
