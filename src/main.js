@@ -185,6 +185,9 @@ class SongbeamerInstance extends InstanceBase {
 				case '/playlist/next':
 					this.log('debug', `/playlist/previous or /playlist/next ${value}`)
 					break
+				case '/playlist/changed':
+					this.log('debug', `/playlist/changed ${value}`)
+					break
 				case '/playlist/count':
 					this.log('debug', `/playlist/count ${value}`)
 					this.setVariableValues({ playlist_count: value })
