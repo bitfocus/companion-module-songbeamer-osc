@@ -68,9 +68,16 @@ export function getActionDefinitions(self, osc) {
 							value: states[presentation_state],
 						},
 					]
-					//TODO #7 Remove following line as workaround once songbeamer sends feedback
-					self.setVariableValues({ presentation_state: states[presentation_state] })
-					self.checkFeedbacks('presentation_state', 'presentation_state_advanced')
+					self.log(
+						'warn',
+						'workaround for Songbeamer 6.04a regression bug applied https://github.com/bitfocus/companion-module-songbeamer-osc/issues/39'
+					)
+					args = [
+						{
+							type: 'i',
+							value: presentation_state,
+						},
+					]
 				} else {
 					args = []
 				}
