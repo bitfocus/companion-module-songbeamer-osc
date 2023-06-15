@@ -205,12 +205,6 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `presentation/message/text ${value}`)
 					this.setVariableValues({ presentation_message_text: value })
 					this.checkFeedbacks('presentation_message_text')
-					this.log(
-						'info',
-						'presentation visibility is set to 1 on purpose because Songbeamer is ommiting state change in /xremote see #24 '
-					)
-					this.setVariableValues({ presentation_message_visible: true })
-					this.checkFeedbacks('presentation_message_visible')
 					break
 				case '/presentation/message/visible':
 					this.log('debug', `presentation/message/visible ${value}`)
