@@ -4,6 +4,7 @@ export function get_images() {
 	const image_names = []
 	image_names.push(...['slide_next', 'slide_prev', 'playlist_next', 'playlist_prev']) // navigation icons
 	image_names.push(...['state_black', 'state_background', 'state_logo']) // presentation_state_icons // slide = background + text
+	image_names.push(...['state_play', 'state_pause', 'state_stop']) // video states
 
 	let data
 	let base64String

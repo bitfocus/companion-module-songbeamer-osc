@@ -2,7 +2,7 @@ import { InstanceBase, runEntrypoint } from '@companion-module/base'
 import { UpgradeScripts } from './upgrades.js'
 import pkg from 'osc'
 const OSC = pkg
-import { states } from './choices.js'
+import { presentation_states, video_states } from './choices.js'
 
 import { getActionDefinitions } from './actions.js'
 import { getFeedbackDefinitions } from './feedbacks.js'
@@ -193,6 +193,11 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ playlist_count: value })
 					this.checkFeedbacks('playlist_count')
 					break
+				case '/video/state':
+					this.log('debug', `/video/state ${value}`)
+					this.setVariableValues({ video_state: video_states[value] })
+					this.checkFeedbacks('video_state', 'video_state_advanced')
+					break
 				case '/video/length':
 					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
 					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
@@ -202,7 +207,7 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
-					this.setVariableValues({ presentation_state: states[value] })
+					this.setVariableValues({ presentation_state: presentation_states[value] })
 					this.checkFeedbacks('presentation_state', 'presentation_state_advanced')
 					break
 				case '/presentation/message/text':

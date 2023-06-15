@@ -39,4 +39,8 @@ export const variables = [
 		name: 'Presentation message visibility',
 		variableId: 'presentation_message_visible',
 	},
+	{
+		name: 'Video state',
+		variableId: 'video_state',
+	},
 ]

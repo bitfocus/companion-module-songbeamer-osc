@@ -425,5 +425,149 @@ export function getPresetDefinitions() {
 	result['state_page'] = state_page
 	result['state_logo'] = state_logo
 
+	// Video state
+	const video_state_current = {
+		type: 'button', // This must be 'button' for now
+		category: 'Video state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `get current video playback state`, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '?',
+			size: '24',
+			png64: get_images()['state_play'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'video_state',
+						options: {
+							should_change: false,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [
+			{
+				feedbackId: 'video_state_advanced',
+				options: {
+					video_state: '0',
+				},
+			},
+			{
+				feedbackId: 'video_state_advanced',
+				options: {
+					video_state: '1',
+				},
+			},
+			{
+				feedbackId: 'video_state_advanced',
+				options: {
+					video_state: '2',
+				},
+			},
+		],
+	}
+
+	const video_state_play = {
+		type: 'button', // This must be 'button' for now
+		category: 'Video state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `video_state -> play `, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '',
+			size: '24',
+			png64: get_images()['state_play'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'video_state',
+						options: {
+							video_state: '0',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+
+	const video_state_pause = {
+		type: 'button', // This must be 'button' for now
+		category: 'Video state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `video_state -> pause `, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '',
+			size: '24',
+			png64: get_images()['state_pause'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'video_state',
+						options: {
+							video_state: '1',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+
+	const video_state_stop = {
+		type: 'button', // This must be 'button' for now
+		category: 'Video state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `video_state -> stop `, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '',
+			size: '24',
+			png64: get_images()['state_stop'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'video_state',
+						options: {
+							video_state: '2',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+
+	result['video_state_current'] = video_state_current
+	result['video_state_play'] = video_state_play
+	result['video_state_pause'] = video_state_pause
+	result['video_state_stop'] = video_state_stop
+
 	return result
 }

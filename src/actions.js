@@ -1,5 +1,5 @@
 import { Regex } from '@companion-module/base'
-import { states } from './choices.js'
+import { presentation_states } from './choices.js'
 
 export function getActionDefinitions(self, osc) {
 	let path = ''
@@ -65,7 +65,7 @@ export function getActionDefinitions(self, osc) {
 					args = [
 						{
 							type: 's',
-							value: states[presentation_state],
+							value: presentation_states[presentation_state],
 						},
 					]
 					self.log(
@@ -389,40 +389,63 @@ export function getActionDefinitions(self, osc) {
 						{ id: '1', label: 'pause' },
 						{ id: '2', label: 'stop' },
 					],
+					isVisible: (options) => options.should_change,
 					minChoicesForSearch: 0,
+				},
+				{
+					type: 'checkbox',
+					label: 'Execute change',
+					id: 'should_change',
+					default: 'true',
+					tooltip: 'disable in order to request state instead of changing it',
 				},
 			],
 			callback: async (event) => {
 				let video_state = await self.parseVariablesInString(event.options.video_state)
+				const should_change = await self.parseVariablesInString(event.options.should_change)
 				path = '/video/state'
-				switch (video_state) {
-					case '0':
-						args = [
-							{
-								type: 's',
-								value: 'play',
-							},
-						]
-						break
-					case '1':
-						args = [
-							{
-								type: 's',
-								value: 'pause',
-							},
-						]
-						break
-					case '2':
-						args = [
-							{
-								type: 's',
-								value: 'stop',
-							},
-						]
-						break
-					default:
-						self.log('debug', 'video state not recoginzed ', video_state)
-						break
+				if (should_change == 'true') {
+					switch (video_state) {
+						case '0':
+							args = [
+								{
+									type: 's',
+									value: 'play',
+								},
+							]
+							break
+						case '1':
+							args = [
+								{
+									type: 's',
+									value: 'pause',
+								},
+							]
+							break
+						case '2':
+							args = [
+								{
+									type: 's',
+									value: 'stop',
+								},
+							]
+							break
+						default:
+							self.log('debug', 'video state not recoginzed ', video_state)
+							break
+					}
+					self.log(
+						'warn',
+						'workaround for Songbeamer 6.04a regression bug applied https://github.com/bitfocus/companion-module-songbeamer-osc/issues/39'
+					)
+					args = [
+						{
+							type: 'i',
+							value: video_state,
+						},
+					]
+				} else {
+					args = []
 				}
 
 				osc.send({
