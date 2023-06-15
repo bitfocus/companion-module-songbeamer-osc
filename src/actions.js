@@ -349,24 +349,6 @@ export function getActionDefinitions(self, osc) {
 					'debug',
 					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
 				)
-				// Remove the following lines once propper feedback is implemented in songbeamer - see #22
-				self.log(
-					'info',
-					'Songbeamer OSC implementation is missing feedback for page/playlist changes #22 manually requesting variables'
-				)
-				self.log('info', 'Songbeamer OSC reports wrong page numbers after update via OSC #30')
-				osc.send({
-					address: '/playlist/itemindex',
-					args: [],
-				})
-				osc.send({
-					address: '/presentation/page',
-					args: [],
-				})
-				osc.send({
-					address: '/presentation/presentation_pagecount',
-					args: [],
-				})
 			},
 		},
 		video_state: {

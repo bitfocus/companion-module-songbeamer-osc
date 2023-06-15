@@ -146,6 +146,10 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_page: value })
 					this.checkFeedbacks('presentation_page')
 					break
+				case '/presentation/nextpage':
+				case '/presentation/prevpage':
+					this.log('debug', `/presentation/nextpage or /presentation/nextpage ${value}`)
+					break
 				case '/presentation/pagecount':
 					this.log('debug', `/presentation/pagecount ${value}`)
 					this.setVariableValues({ presentation_pagecount: value })
@@ -176,6 +180,10 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/playlist/itemindex ${value}`)
 					this.setVariableValues({ playlist_itemindex: value + 1 })
 					this.checkFeedbacks('playlist_itemindex')
+					break
+				case '/playlist/previous':
+				case '/playlist/next':
+					this.log('debug', `/playlist/previous or /playlist/next ${value}`)
 					break
 				case '/playlist/count':
 					this.log('warn', `/playlist/count ${value} not yet implemented`)
@@ -219,6 +227,7 @@ class SongbeamerInstance extends InstanceBase {
 		 */
 		this.osc.on('ready', () => {
 			this.log('info', 'OSC port is in "ready" state')
+			self.osc_update_polling()
 			this.heartbeat = setInterval(function () {
 				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
