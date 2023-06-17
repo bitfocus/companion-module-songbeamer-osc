@@ -43,4 +43,8 @@ export const variables = [
 		name: 'Video state',
 		variableId: 'video_state',
 	},
+	{
+		name: 'livevideo state',
+		variableId: 'livevideo_state',
+	},
 ]

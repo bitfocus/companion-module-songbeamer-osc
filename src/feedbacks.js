@@ -1,4 +1,4 @@
-import { presentation_states, video_states } from './choices.js'
+import { presentation_states, video_states, livevideo_states } from './choices.js'
 import { get_images } from './images.js'
 
 export function getFeedbackDefinitions(self, osc) {
@@ -501,6 +501,95 @@ export function getFeedbackDefinitions(self, osc) {
 			},
 			subscribe: () => {
 				const path = '/video/state'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
+		livevideo_state_advanced: {
+			type: 'advanced', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'livevideo State (image + text)',
+			description: 'Sets text and icon based on live video state',
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'dropdown',
+					label: 'State',
+					id: 'livevideo_state',
+					default: '0',
+					choices: livevideo_states.map((item, index) => {
+						return {
+							id: index.toString(),
+							label: item,
+						}
+					}),
+					minChoicesForSearch: 0,
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				// self.log('debug',`called feedback with ${JSON.stringify(feedback)}`)
+				let var_state
+				var_state = self.getVariableValue('livevideo_state')
+				if (var_state == livevideo_states[feedback.options.livevideo_state]) {
+					switch (var_state) {
+						case 'play':
+							return { text: '', png64: get_images()['state_live_play'] }
+						case 'stop':
+							return { text: '', png64: get_images()['state_live_stop'] }
+						default:
+							self.log(
+								'error',
+								'feedback livevideo_state_advanced did use a state which is not configured for automatic feedback'
+							)
+							return { text: 'error' }
+					}
+				}
+			},
+			subscribe: () => {
+				const path = '/livevideo/state'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
+		livevideo_state: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'live video State',
+			description: 'custom feedback based on live video state',
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'dropdown',
+					label: 'State',
+					id: 'livevideo_state',
+					default: '0',
+					choices: livevideo_states.map((item, index) => {
+						return {
+							id: index.toString(),
+							label: item,
+						}
+					}),
+					minChoicesForSearch: 0,
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				// self.log('debug',`called feedback with ${JSON.stringify(feedback)}`)
+				let var_state
+				var_state = self.getVariableValue('livevideo_state')
+				if (var_state == livevideo_states[feedback.options.livevideo_state]) {
+					return true
+				} else {
+					return false
+				}
+			},
+			subscribe: () => {
+				const path = '/livevideo/state'
 				osc.send({
 					address: path,
 					args: [],

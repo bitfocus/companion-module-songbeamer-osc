@@ -569,5 +569,112 @@ export function getPresetDefinitions() {
 	result['video_state_pause'] = video_state_pause
 	result['video_state_stop'] = video_state_stop
 
+	// liveVideo state
+	const livevideo_state_current = {
+		type: 'button', // This must be 'button' for now
+		category: 'livevideo state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `get current live video playback state`, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '?',
+			size: '24',
+			png64: get_images()['state_live_play'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'livevideo_state',
+						options: {
+							should_change: false,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [
+			{
+				feedbackId: 'livevideo_state_advanced',
+				options: {
+					livevideo_state: '0',
+				},
+			},
+			{
+				feedbackId: 'livevideo_state_advanced',
+				options: {
+					livevideo_state: '1',
+				},
+			},
+		],
+	}
+
+	const livevideo_state_play = {
+		type: 'button', // This must be 'button' for now
+		category: 'livevideo state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `livevideo_state -> play `, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '',
+			size: '24',
+			png64: get_images()['state_live_play'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'livevideo_state',
+						options: {
+							livevideo_state: '0',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+
+	const livevideo_state_stop = {
+		type: 'button', // This must be 'button' for now
+		category: 'livevideo state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `livevideo_state -> stop `, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: '',
+			size: '24',
+			png64: get_images()['state_live_stop'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'livevideo_state',
+						options: {
+							livevideo_state: '2',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+
+	result['livevideo_state_current'] = livevideo_state_current
+	result['livevideo_state_play'] = livevideo_state_play
+	result['livevideo_state_stop'] = livevideo_state_stop
+
 	return result
 }

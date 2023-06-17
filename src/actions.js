@@ -501,6 +501,10 @@ export function getActionDefinitions(self, osc) {
 					'debug',
 					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
 				)
+				self.log(
+					'warn',
+					'Implementation of livevideo might not work with Songbeamer 6.04c see https://github.com/bitfocus/companion-module-songbeamer-osc/issues/18'
+				)
 			},
 		},
 		send_int: {

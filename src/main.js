@@ -2,7 +2,7 @@ import { InstanceBase, runEntrypoint } from '@companion-module/base'
 import { UpgradeScripts } from './upgrades.js'
 import pkg from 'osc'
 const OSC = pkg
-import { presentation_states, video_states } from './choices.js'
+import { presentation_states, video_states, livevideo_states } from './choices.js'
 
 import { getActionDefinitions } from './actions.js'
 import { getFeedbackDefinitions } from './feedbacks.js'
@@ -258,6 +258,12 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_message_visible: value == 1 })
 					this.checkFeedbacks('presentation_message_visible')
 					this.log('info', `'presentation_message_visible' changed to ${value == 1}`)
+					break
+				case '/livevideo/state':
+					this.log('debug', `/livevideo/state ${value}`)
+					this.setVariableValues({ livevideo_state: livevideo_states[value] })
+					this.checkFeedbacks('livevideo_state', 'livevideo_state_advanced')
+					this.log('info', `'livevideo_state' changed to ${livevideo_states[value]}`)
 					break
 				case undefined:
 					this.log('warn', `receveived a special message without address - not implemented`)
