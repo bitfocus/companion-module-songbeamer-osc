@@ -68,16 +68,6 @@ export function getActionDefinitions(self, osc) {
 							value: presentation_states[presentation_state],
 						},
 					]
-					self.log(
-						'warn',
-						'workaround for Songbeamer 6.04a regression bug applied https://github.com/bitfocus/companion-module-songbeamer-osc/issues/39'
-					)
-					args = [
-						{
-							type: 'i',
-							value: presentation_state,
-						},
-					]
 				} else {
 					args = []
 				}
@@ -434,16 +424,6 @@ export function getActionDefinitions(self, osc) {
 							self.log('debug', 'video state not recoginzed ', video_state)
 							break
 					}
-					self.log(
-						'warn',
-						'workaround for Songbeamer 6.04a regression bug applied https://github.com/bitfocus/companion-module-songbeamer-osc/issues/39'
-					)
-					args = [
-						{
-							type: 'i',
-							value: video_state,
-						},
-					]
 				} else {
 					args = []
 				}
