@@ -128,7 +128,7 @@ class SongbeamerInstance extends InstanceBase {
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
 			this.log('debug', `Received OSC message from: ${JSON.stringify(info)}`)
-			// this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
+			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
 
 			const address = oscMsg['address']
 			let args = oscMsg['args']
@@ -166,6 +166,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/presentation/page ${value}`)
 					this.setVariableValues({ presentation_page: value })
 					this.checkFeedbacks('presentation_page')
+					this.log('info', `presentation_page' changed to ${value}`)
 					break
 				case '/presentation/nextpage':
 				case '/presentation/prevpage':
@@ -175,6 +176,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/presentation/pagecount ${value}`)
 					this.setVariableValues({ presentation_pagecount: value })
 					this.checkFeedbacks('presentation_pagecount')
+					this.log('info', `presentation_pagecount' changed to ${value}`)
 					break
 				case '/presentation/filename':
 					this.log('info', `/presentation/filename ${value}`)
@@ -183,11 +185,13 @@ class SongbeamerInstance extends InstanceBase {
 					value = value.split('.').slice(0, -1).join('.')
 					this.setVariableValues({ presentation_filename: value })
 					this.checkFeedbacks('presentation_filename')
+					this.log('info', `presentation_filename' changed to ${value}`)
 					break
 				case '/presentation/pagecaption':
 					this.log('debug', `/presentation/pagecaption ${value}`)
 					this.setVariableValues({ presentation_pagecaption: value })
 					this.checkFeedbacks('presentation_pagecaption')
+					this.log('info', `presentation_pagecaption' changed to ${value}`)
 					break
 				case '/playlist/filename':
 					this.log('info', `/playlist/filename ${value}`)
@@ -196,11 +200,13 @@ class SongbeamerInstance extends InstanceBase {
 					value = value.split('.').slice(0, -1).join('.')
 					this.setVariableValues({ playlist_filename: value })
 					this.checkFeedbacks('playlist_filename')
+					this.log('info', `playlist_filename' changed to ${value}`)
 					break
 				case '/playlist/itemindex':
 					this.log('debug', `/playlist/itemindex ${value}`)
 					this.setVariableValues({ playlist_itemindex: value + 1 })
 					this.checkFeedbacks('playlist_itemindex')
+					this.log('info', `playlist_itemindex' changed to ${value}`)
 					break
 				case '/playlist/previous':
 				case '/playlist/next':
@@ -213,11 +219,13 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `/playlist/count ${value}`)
 					this.setVariableValues({ playlist_count: value })
 					this.checkFeedbacks('playlist_count')
+					this.log('info', `playlist_count' changed to ${value}`)
 					break
 				case '/video/state':
 					this.log('debug', `/video/state ${value}`)
 					this.setVariableValues({ video_state: video_states[value] })
 					this.checkFeedbacks('video_state', 'video_state_advanced')
+					this.log('info', `video_state' changed to ${video_states[value]}`)
 					break
 				case '/video/position':
 					this.log('debug', `/video/position ${value}`) //in days! -> convert to minutes
@@ -237,16 +245,19 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('debug', `presentation/state ${value}`)
 					this.setVariableValues({ presentation_state: presentation_states[value] })
 					this.checkFeedbacks('presentation_state', 'presentation_state_advanced')
+					this.log('info', `presentation_state' changed to ${presentation_states[value]}`)
 					break
 				case '/presentation/message/text':
 					this.log('debug', `presentation/message/text ${value}`)
 					this.setVariableValues({ presentation_message_text: value })
 					this.checkFeedbacks('presentation_message_text')
+					this.log('info', `presentation_message_text' changed to ${value}`)
 					break
 				case '/presentation/message/visible':
 					this.log('debug', `presentation/message/visible ${value}`)
 					this.setVariableValues({ presentation_message_visible: value == 1 })
 					this.checkFeedbacks('presentation_message_visible')
+					this.log('info', `presentation_message_visible' changed to ${value == 1}`)
 					break
 				case undefined:
 					this.log('warn', `receveived a special message without address - not implemented`)
