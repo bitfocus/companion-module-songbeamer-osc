@@ -198,6 +198,13 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ video_state: video_states[value] })
 					this.checkFeedbacks('video_state', 'video_state_advanced')
 					break
+				case '/video/position':
+					this.log('debug', `/video/position ${value}`) //in days! -> convert to minutes
+					this.log(
+						'warn',
+						'There might be a bug in Songbeamer 6.0.4a which always returns the position set before instead of actual position #16'
+					)
+					break
 				case '/video/length':
 					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
 					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
