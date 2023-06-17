@@ -128,19 +128,40 @@ class SongbeamerInstance extends InstanceBase {
 		 */
 		this.osc.on('message', (oscMsg, timeTag, info) => {
 			this.log('debug', `Received OSC message from: ${JSON.stringify(info)}`)
+			// this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
 
 			const address = oscMsg['address']
-			const args = oscMsg['args'][0]
+			let args = oscMsg['args']
 			let value = undefined
-			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
 
-			if (args !== undefined) {
+			if (args.length == 1) {
+				args = args[0]
 				value = args['value']
 			}
 
-			let path
-
 			switch (address) {
+				case '/xinfo':
+					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
+					this.network_address = args[0]['value']
+					this.network_name = args[1]['value']
+					this.software = args[2]['value']
+					this.software_version = args[3]['value']
+					this.log(
+						'info',
+						`Connected to ${this.network_address} (${this.network_name}) on ${this.software} (${this.software_version})`
+					)
+					break
+				case '/info':
+					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
+					this.server_version = args[0]['value']
+					this.server_name = args[1]['value']
+					this.software = args[2]['value']
+					this.software_version = args[3]['value']
+					this.log(
+						'info',
+						`Connected to ${this.server_name} (${this.server_version}) on ${this.software} (${this.software_version})`
+					)
+					break
 				case '/presentation/page':
 					this.log('debug', `/presentation/page ${value}`)
 					this.setVariableValues({ presentation_page: value })
