@@ -35,7 +35,11 @@ class SongbeamerInstance extends InstanceBase {
 		this.setPresetDefinitions(getPresetDefinitions(this))
 		this.log('debug', 'Finished definition of presets')
 
-		this.updateStatus('ok')
+		this.osc.send({
+			address: '/xinfo',
+			args: [],
+		})
+		this.log('debug', 'xinfo requested as part of init')
 	}
 
 	/**
@@ -150,6 +154,7 @@ class SongbeamerInstance extends InstanceBase {
 						'info',
 						`Connected to ${this.network_address} (${this.network_name}) on ${this.software} (${this.software_version})`
 					)
+					this.updateStatus('ok')
 					break
 				case '/info':
 					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
@@ -302,11 +307,16 @@ class SongbeamerInstance extends InstanceBase {
 		 * Properly logging error and stopping heartbeat
 		 */
 		this.osc.on('error', (err) => {
-			this.log('error', 'Error: ' + err.message)
-			this.updateStatus('UnknownError', err.message)
-			if (this.heartbeat) {
-				clearInterval(this.heartbeat)
-				delete this.heartbeat
+			if (err.message.startsWith('send ENETUNREACH')) {
+				this.log('error', 'Connection lost - will try to recover every 5 sec as long as module is active')
+				this.updateStatus('Connecting')
+			} else {
+				this.log('error', 'Error: ' + err.message + ' module restart is reload is required!')
+				this.updateStatus('UnknownError', err.message)
+				if (this.heartbeat) {
+					clearInterval(this.heartbeat)
+					delete this.heartbeat
+				}
 			}
 		})
 
