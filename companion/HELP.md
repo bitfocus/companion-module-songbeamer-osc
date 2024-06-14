@@ -25,6 +25,9 @@ Please be aware that quite a lot of functionality is not yet fully implemented i
 This module is NOT provided by the Songbeamer developers but rather a user!
 
 # Technical things ...
+* Upcoming devolpment milestones are tracked in https://github.com/bitfocus/companion-module-songbeamer-osc/milestones
+* Original Songbeamer OSC documentation is in documents/SongBeamer.docx
+* Modified Songbeamer OSC documentation with status comments and references to existing bug tickets is in documents/SongBeamer_OSC.docx
 
 ## Changelog
 
