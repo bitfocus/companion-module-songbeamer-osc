@@ -291,6 +291,14 @@ class SongbeamerInstance extends InstanceBase {
 			this.heartbeat = setInterval(function () {
 				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
+
+			// check /xinfo in order to confirm successful connection upon response
+			this.osc.send({
+				address: '/xinfo',
+				args: [],
+			})
+			//TODO #32 repeat until state is ok
+			self.log('info', `Sent OSC to ${self.config.host}:${self.config.port} with /xinfo to check connection status`)
 		})
 
 		/**
