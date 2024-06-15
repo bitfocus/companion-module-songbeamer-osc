@@ -6,7 +6,8 @@
 	"scripts": {
 		"format": "prettier --write .",
 		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
-		"lint": "yarn lint:raw ."
+		"lint": "yarn lint:raw .",
+		"prepare": "husky install"
 	},
 	"license": "MIT",
 	"repository": {

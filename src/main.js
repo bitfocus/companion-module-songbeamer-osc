@@ -61,12 +61,14 @@ class SongbeamerInstance extends InstanceBase {
 	async configUpdated(config) {
 		this.config = config
 
-		if (config.local_port == config.remote_port){
+		if (config.local_port == config.remote_port) {
 			this.log('warn', 'remote and local port are the same - if running on the same machine this does not work!')
 		}
-		if (this.config.local_port != this.osc.options.localPort ||
+		if (
+			this.config.local_port != this.osc.options.localPort ||
 			this.config.remote_port != this.osc.options.remotePort ||
-			this.config.host != this.osc.remoteAddress) {
+			this.config.host != this.osc.remoteAddress
+		) {
 			this.log('debug', 'host or port configuration changed - reloading osc server')
 			this.osc_server_init()
 		}
@@ -109,8 +111,9 @@ class SongbeamerInstance extends InstanceBase {
 			{
 				type: 'textinput',
 				id: 'local_port',
-				label: "Local Port",
-				tooltip: 'OSC Port used to send messages - should be different from target port to avoid mistakes when running on same machine',
+				label: 'Local Port',
+				tooltip:
+					'OSC Port used to send messages - should be different from target port to avoid mistakes when running on same machine',
 				width: 4,
 				regex: this.REGEX_PORT,
 				useVariables: true,
