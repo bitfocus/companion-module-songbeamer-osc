@@ -35,6 +35,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.setPresetDefinitions(getPresetDefinitions(this))
 		this.log('debug', 'Finished definition of presets')
 
+		// xinfo is used to gather information about connection status and init variables
 		this.osc.send({
 			address: '/xinfo',
 			args: [],
@@ -175,6 +176,17 @@ class SongbeamerInstance extends InstanceBase {
 						`Connected to ${this.network_address} (${this.network_name}) on ${this.software} (${this.software_version})`
 					)
 					this.updateStatus('ok')
+
+					// trying to init all variables
+					this.log('info', 'triggering re-initialization of all variables')
+					for (const variable of variables) {
+						const init_url = `/${variable.variableId.split('_').join('/')}`
+						this.log('debug', `triggering init for var ${variable.variableId} with ${init_url}`)
+						this.osc.send({
+							address: init_url,
+							args: [],
+						})
+					}
 					break
 				case '/info':
 					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
@@ -317,7 +329,6 @@ class SongbeamerInstance extends InstanceBase {
 				address: '/xinfo',
 				args: [],
 			})
-			//TODO #32 repeat until state is ok
 			self.log('info', `Sent OSC to ${self.config.host}:${self.config.port} with /xinfo to check connection status`)
 		})
 

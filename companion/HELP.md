@@ -13,22 +13,34 @@ If it shows "disabled" you need to enable it by running a Songbeamer macro.
 Open the macro window (ALT + F8) and execute
 `IniSFS.OSC.Enabled := True;`
 
-## Use of variables and feedbacks
+## Implementation status
 
-All variables are only updated upon changes in Songbeamer or in case any feedback is using them.
-This means that the use of variables as simple "display" values might show incorrect initial states.
-
-In case some value has issues a warning referencing the respective github issue will be logged.
+Any behaviour that is not implemented yet should show a log entry referencing a respective GitHub issues.
 More details can be found on the issues page https://github.com/bitfocus/companion-module-songbeamer-osc/issues
 
 Please be aware that quite a lot of functionality is not yet fully implemented in Songbeamer.
-This module is NOT provided by the Songbeamer developers but rather a user!
+This module is NOT provided by the Songbeamer developers but rather a user! Upcoming release changes might not be available at the same time.
 
 # Technical things ...
+
+THIS PART IS ONLY RELEVANT IF YOU ARE TESTING OR DEVELOPING THIS MODULE
 
 - Upcoming devolpment milestones are tracked in https://github.com/bitfocus/companion-module-songbeamer-osc/milestones
 - Original Songbeamer OSC documentation is in documents/SongBeamer.docx
 - Modified Songbeamer OSC documentation with status comments and references to existing bug tickets is in documents/SongBeamer_OSC.docx
+
+## Initial connection and variables
+
+During start of the module /xinfo is requested from Songbeamer
+This is used to check the Songbeamer version and updated status to ok if a response is received.
+
+Every time /xinfo response is received the module will try to send an initial request for all variables.
+This is because Songbeamer will only send updates but not the original state.
+Variables will also be subscribed when using them prepared feedbacks
+
+Because in it's current state all variable ids equal their path
+(e.g. presentation_state == /presentation/state) a simple str replacement
+followed by a request to the respective url is used for init
 
 ## Use of development branch
 
@@ -59,60 +71,3 @@ The module itself or Songbeamer might crash any moment!
 ### Version 2.0.0
 
 - Companion 3.0 compatibility
-
-## Functional Scope
-
-### Actions
-
-presentation_state
-
-- /presentation/state
-
-presentation_page
-
-- /presentation/page
-
-presentation_versemarker
-
-- /presentation/pagecaption
-
-presentation_language_primary
-
-- /presentation/primary_language
-
-presentation_language
-
-- /presentation/language
-
-presentation_message_visible
-
-- /presentation/message/visible
-
-presentation_message_text
-
-- /presentation/message/text
-
-navigate_to
-
-- /presentation/nextpage
-- /presentation/prevpage
-- /playlist/next
-- /playlist/previous
-
-video_state
-
-- /video/state
-
-video_position
-
-- /video/position
-
-livevideo_state
-
-- /livevideo/state
-
-### Feedbacks
-
-presentation_state
-
-- /presentation/state
