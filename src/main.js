@@ -60,7 +60,13 @@ class SongbeamerInstance extends InstanceBase {
 	 */
 	async configUpdated(config) {
 		this.config = config
-		if (this.config.port != this.osc.options.localPort || this.config.host != this.osc.remoteAddress) {
+
+		if (config.local_port == config.remote_port){
+			this.log('warn', 'remote and local port are the same - if running on the same machine this does not work!')
+		}
+		if (this.config.local_port != this.osc.options.localPort ||
+			this.config.remote_port != this.osc.options.remotePort ||
+			this.config.host != this.osc.remoteAddress) {
 			this.log('debug', 'host or port configuration changed - reloading osc server')
 			this.osc_server_init()
 		}
@@ -86,14 +92,25 @@ class SongbeamerInstance extends InstanceBase {
 				type: 'textinput',
 				id: 'host',
 				label: 'Target IP',
+				tooltip: 'IP adress of the PC running Songbeamer',
 				width: 8,
 				regex: this.REGEX_IP,
 				useVariables: true,
 			},
 			{
 				type: 'textinput',
-				id: 'port',
+				id: 'remote_port',
 				label: 'Target Port',
+				tooltip: 'OSC Port used in Songbeamer default is 10023',
+				width: 4,
+				regex: this.REGEX_PORT,
+				useVariables: true,
+			},
+			{
+				type: 'textinput',
+				id: 'local_port',
+				label: "Local Port",
+				tooltip: 'OSC Port used to send messages - should be different from target port to avoid mistakes when running on same machine',
 				width: 4,
 				regex: this.REGEX_PORT,
 				useVariables: true,
@@ -121,8 +138,8 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc = new OSC.UDPPort({
 			localAddress: '0.0.0.0',
 			remoteAddress: this.config.host,
-			localPort: this.config.port,
-			remotePort: this.config.port,
+			localPort: this.config.local_port,
+			remotePort: this.config.remote_port,
 			broadcast: true,
 			metadata: true,
 		})
