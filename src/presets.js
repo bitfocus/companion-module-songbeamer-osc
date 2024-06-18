@@ -455,21 +455,7 @@ export function getPresetDefinitions() {
 		feedbacks: [
 			{
 				feedbackId: 'video_state_advanced',
-				options: {
-					video_state: '0',
-				},
-			},
-			{
-				feedbackId: 'video_state_advanced',
-				options: {
-					video_state: '1',
-				},
-			},
-			{
-				feedbackId: 'video_state_advanced',
-				options: {
-					video_state: '2',
-				},
+				options: {},
 			},
 		],
 	}
@@ -603,12 +589,6 @@ export function getPresetDefinitions() {
 					livevideo_state: '0',
 				},
 			},
-			{
-				feedbackId: 'livevideo_state_advanced',
-				options: {
-					livevideo_state: '1',
-				},
-			},
 		],
 	}
 
@@ -631,7 +611,7 @@ export function getPresetDefinitions() {
 					{
 						actionId: 'livevideo_state',
 						options: {
-							livevideo_state: '0',
+							livevideo_state: true,
 							should_change: true,
 						},
 					},
@@ -661,7 +641,7 @@ export function getPresetDefinitions() {
 					{
 						actionId: 'livevideo_state',
 						options: {
-							livevideo_state: '2',
+							livevideo_state: false,
 							should_change: true,
 						},
 					},

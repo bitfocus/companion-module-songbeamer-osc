@@ -481,17 +481,31 @@ export function getActionDefinitions(self, osc) {
 					label: 'Play',
 					id: 'livevideo_state',
 					default: true,
+					isVisible: (options) => options.should_change,
+				},
+				{
+					type: 'checkbox',
+					label: 'Execute change',
+					id: 'should_change',
+					default: true,
+					tooltip: 'disable in order to request state instead of changing it',
 				},
 			],
 			callback: async (event) => {
 				let livevideo_state = await self.parseVariablesInString(event.options.livevideo_state)
+				const should_change = await self.parseVariablesInString(event.options.should_change)
+
 				path = '/livevideo/state'
-				args = [
-					{
-						type: 's',
-						value: livevideo_state === 'true' ? 'play' : 'stop',
-					},
-				]
+				if (should_change == 'true') {
+					args = [
+						{
+							type: 's',
+							value: livevideo_state === 'true' ? 'play' : 'stop',
+						},
+					]
+				} else {
+					args = []
+				}
 
 				osc.send({
 					address: path,
