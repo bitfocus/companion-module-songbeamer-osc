@@ -165,7 +165,7 @@ class SongbeamerInstance extends InstanceBase {
 			}
 
 			switch (address) {
-				case '/xinfo':
+				case '/xinfo': {
 					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
 					this.network_address = args[0]['value']
 					this.network_name = args[1]['value']
@@ -175,19 +175,33 @@ class SongbeamerInstance extends InstanceBase {
 						'info',
 						`Connected to ${this.network_address} (${this.network_name}) on ${this.software} (${this.software_version})`
 					)
-					this.updateStatus('ok')
+
+					this.setVariableValues({ _songbeamer_version: this.software_version })
+					const numeric_version = parseFloat(this.software_version.match(/[0-9.]+/g))
+					this.log('info', `'_songbeamer version' changed to ${numeric_version}`)
+
+					if (numeric_version < 6.04) {
+						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.04a or later to avoid unexpected behaviour`
+						this.log('warn', message)
+						this.updateStatus('BadConfig', message)
+					} else {
+						this.updateStatus('ok')
+					}
 
 					// trying to init all variables
 					this.log('info', 'triggering re-initialization of all variables')
 					for (const variable of variables) {
-						const init_url = `/${variable.variableId.split('_').join('/')}`
-						this.log('debug', `triggering init for var ${variable.variableId} with ${init_url}`)
-						this.osc.send({
-							address: init_url,
-							args: [],
-						})
+						if (!variable.variableId.startsWith('_')) {
+							const init_url = `/${variable.variableId.split('_').join('/')}`
+							this.log('debug', `triggering init for var ${variable.variableId} with ${init_url}`)
+							this.osc.send({
+								address: init_url,
+								args: [],
+							})
+						}
 					}
 					break
+				}
 				case '/info':
 					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
 					this.server_version = args[0]['value']
