@@ -1,4 +1,5 @@
 export const variables = [
+	{ name: '_songbeamer version', variableId: '_songbeamer_version' },
 	{
 		name: 'presentation state',
 		variableId: 'presentation_state',
