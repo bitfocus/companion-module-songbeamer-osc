@@ -455,21 +455,7 @@ export function getPresetDefinitions() {
 		feedbacks: [
 			{
 				feedbackId: 'video_state_advanced',
-				options: {
-					video_state: '0',
-				},
-			},
-			{
-				feedbackId: 'video_state_advanced',
-				options: {
-					video_state: '1',
-				},
-			},
-			{
-				feedbackId: 'video_state_advanced',
-				options: {
-					video_state: '2',
-				},
+				options: {},
 			},
 		],
 	}
