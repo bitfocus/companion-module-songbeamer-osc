@@ -603,12 +603,6 @@ export function getPresetDefinitions() {
 					livevideo_state: '0',
 				},
 			},
-			{
-				feedbackId: 'livevideo_state_advanced',
-				options: {
-					livevideo_state: '1',
-				},
-			},
 		],
 	}
 
@@ -631,7 +625,7 @@ export function getPresetDefinitions() {
 					{
 						actionId: 'livevideo_state',
 						options: {
-							livevideo_state: '0',
+							livevideo_state: true,
 							should_change: true,
 						},
 					},
@@ -661,7 +655,7 @@ export function getPresetDefinitions() {
 					{
 						actionId: 'livevideo_state',
 						options: {
-							livevideo_state: '2',
+							livevideo_state: false,
 							should_change: true,
 						},
 					},
