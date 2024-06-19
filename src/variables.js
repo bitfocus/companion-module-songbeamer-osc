@@ -45,6 +45,10 @@ export const variables = [
 		variableId: 'video_state',
 	},
 	{
+		name: 'Video length in seconds',
+		variableId: 'video_length',
+	},
+	{
 		name: 'livevideo state',
 		variableId: 'livevideo_state',
 	},

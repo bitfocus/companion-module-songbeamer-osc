@@ -280,17 +280,18 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				case '/video/position':
 					this.log('debug', `/video/position ${value}`) //in days! -> convert to minutes
-					this.log(
-						'warn',
-						'There might be a bug in Songbeamer 6.0.4a which always returns the position set before instead of actual position #16'
-					)
+					this.log('warn', `/video/position ${value} not yet implemented in Songbeamer 6.04 #16`)
 					break
-				case '/video/length':
-					this.log('debug', `/video/length ${value}`) //in days! -> convert to minutes
-					this.log('warn', 'There might be a bug in Songbeamer 6.0.0d which always results in a 0 value #17')
+				case '/video/length': {
+					this.log('debug', `/video/length ${value}`)
+					const video_length = Math.round(value * 86400)
+					this.setVariableValues({ video_length: video_length })
+					this.checkFeedbacks('video_length')
+					this.log('info', `'video_length' changed to ${secondsToTime(video_length)}`)
 					break
+				}
 				case '/video/filename':
-					this.log('warn', `/video/filename ${value}  not yet implemented`)
+					this.log('warn', `/video/filename ${value}  not yet implemented in Songbeamer 6.04- see issue #62 on Github`)
 					break
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)
@@ -377,6 +378,20 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc.open()
 		this.log('debug', `osc_server_init method finished ${JSON.stringify(this.osc)}`)
 	}
+}
+
+function secondsToTime(seconds) {
+	const days = Math.floor(seconds / 86400)
+	const hours = Math.floor((seconds % 86400) / 3600)
+	const minutes = Math.floor((seconds % 3600) / 60)
+	const secs = Math.round(seconds % 60)
+
+	const formattedDays = days > 0 ? String(days).padStart(2, '0') + ':' : ''
+	const formattedHours = String(hours).padStart(2, '0')
+	const formattedMinutes = String(minutes).padStart(2, '0')
+	const formattedSeconds = String(secs).padStart(2, '0')
+
+	return `${formattedDays}${formattedHours}:${formattedMinutes}:${formattedSeconds}`
 }
 
 runEntrypoint(SongbeamerInstance, UpgradeScripts)

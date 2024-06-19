@@ -1,4 +1,4 @@
-import { presentation_states, video_states, livevideo_states } from './choices.js'
+import { presentation_states, video_states, livevideo_states, comparators } from './choices.js'
 import { get_images } from './images.js'
 
 export function getFeedbackDefinitions(self, osc) {
@@ -410,6 +410,69 @@ export function getFeedbackDefinitions(self, osc) {
 			},
 			subscribe: () => {
 				const path = '/playlist/count'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
+		video_length: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'video length in seconds',
+			description: 'Length of a video',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				//TODO #4 Implement default style
+			},
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Compare operation',
+					id: 'video_length_comparator',
+					default: '0',
+					choices: comparators.map((item, index) => {
+						return {
+							id: index.toString(),
+							label: item,
+						}
+					}),
+					minChoicesForSearch: 0,
+				},
+				{
+					type: 'number',
+					label: 'time in seconds',
+					id: 'video_length',
+					default: 30,
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				switch (comparators[feedback.options.video_length_comparator]) {
+					case 'less':
+						return self.getVariableValue('video_length') < feedback.options.video_length
+					case 'less or equal':
+						return self.getVariableValue('video_length') <= feedback.options.video_length
+					case 'equal':
+						return self.getVariableValue('video_length') == feedback.options.video_length
+					case 'greater or equal':
+						return self.getVariableValue('video_length') >= feedback.options.video_length
+					case 'greater':
+						return self.getVariableValue('video_length') > feedback.options.video_length
+					default:
+						self.log(
+							'error',
+							`${
+								comparators[feedback.options.video_length_comparator]
+							} video_length_comparator which is not configured for automatic feedback´`
+						)
+						return { text: 'error' }
+				}
+			},
+			subscribe: () => {
+				const path = '/video/length'
 				osc.send({
 					address: path,
 					args: [],
