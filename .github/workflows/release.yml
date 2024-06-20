@@ -27,10 +27,8 @@ jobs:
       - name: Create Release
         uses: /softprops/action-gh-release@v2.0.6
         with:
-          name: Dev Release ${{ github.ref }}
-          body: 'This is a dev build of the module - use with caution. In case you are no developer please wait for official releases as part of a companion release'
+          body: 'This is a dev build of the module - use pkg.tgz with caution. In case you are no developer please wait for official releases as part of a companion release'
           draft: true
           prerelease: true
           files: |
             pkg.tgz
-            pkg
