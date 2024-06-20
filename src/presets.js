@@ -130,10 +130,74 @@ export function getPresetDefinitions() {
 		],
 		feedbacks: [],
 	}
+	const navigate4 = {
+		type: 'button', // This must be 'button' for now
+		category: 'Navigation relative and absolute',
+		name: `navigate to next playlist item showing caption`, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			// This is the minimal set of style properties you must define
+			text: '$(Songbeamer_OSC_Dev:_playlist_caption_next_item)', // `$(generic-module:some-variable)`, // You can use variables from your module here
+			size: 'auto',
+			png64: get_images()['playlist_next'],
+			alignment: 'left:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						// add an action on down press
+						actionId: 'navigate_to',
+						options: {
+							navigate_to: 'playlist/next',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
+	const navigate5 = {
+		type: 'button', // This must be 'button' for now
+		category: 'Navigation relative and absolute',
+		name: `navigate to prev playlist item showing caption`, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			// This is the minimal set of style properties you must define
+			text: '$(Songbeamer_OSC_Dev:_playlist_caption_prev_item)', // `$(generic-module:some-variable)`, // You can use variables from your module here
+			size: 'auto',
+			png64: get_images()['playlist_prev'],
+			alignment: 'left:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						// add an action on down press
+						actionId: 'navigate_to',
+						options: {
+							navigate_to: 'playlist/previous',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [],
+	}
 	result['navigate0'] = navigate0
 	result['navigate1'] = navigate1
 	result['navigate2'] = navigate2
 	result['navigate3'] = navigate3
+	result['navigate4'] = navigate4
+	result['navigate5'] = navigate5
 
 	const navigate_page = {
 		type: 'button', // This must be 'button' for now

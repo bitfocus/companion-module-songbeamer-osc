@@ -164,7 +164,11 @@ class SongbeamerInstance extends InstanceBase {
 				value = args['value']
 			}
 
-			switch (address) {
+			//cleanup adress that contains numeric references in order to keep switch case structure
+			const adress_without_reference = address.replace(/(\/playlist\/items\/)(\d+)(\/filename|\/caption)/, '$1$3')
+			//this.log("info",`replaced address ${adress_without_reference}`)
+
+			switch (adress_without_reference) {
 				case '/xinfo': {
 					this.log('debug', `/xinfo ${JSON.stringify(args)}`)
 					this.network_address = args[0]['value']
@@ -258,7 +262,83 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ playlist_itemindex: value + 1 })
 					this.checkFeedbacks('playlist_itemindex')
 					this.log('info', `'playlist_itemindex' changed to ${value}`)
+
+					//trigger update for relative references
+					this.log('debug', 'request updated relative caption and filename vars')
+					//_playlist_caption_prev_item
+					this.osc.send({
+						address: `/playlist/items/${value - 1}/caption`,
+						args: [],
+					})
+					//_playlist_caption_current_item
+					this.osc.send({
+						address: `/playlist/items/${value}/caption`,
+						args: [],
+					})
+					//_playlist_caption_next_item
+					this.osc.send({
+						address: `/playlist/items/${value + 1}/caption`,
+						args: [],
+					})
+					//_playlist_filename_prev_item
+					this.osc.send({
+						address: `/playlist/items/${value - 1}/filename`,
+						args: [],
+					})
+					// /playlist/items//filename exists on it's own
+					//_playlist_filename_next_item
+					this.osc.send({
+						address: `/playlist/items/${value + 1}/filename`,
+						args: [],
+					})
+
 					break
+				case '/playlist/items//caption': {
+					//shortened form of /number/
+					const response_index = address.replace(/(\/playlist\/items\/)(\d+)(\/caption)/, '$2')
+					const current_index = this.getVariableValue('playlist_itemindex') - 1
+					const offset = response_index - current_index
+
+					if (offset == -1) {
+						this.setVariableValues({ _playlist_caption_prev_item: value })
+						this.log('info', `'_playlist_caption_prev_item' changed to ${value}`)
+					} else if (offset == 0) {
+						this.setVariableValues({ _playlist_caption_current_item: value })
+						this.log('info', `'_playlist_caption_current_item' changed to ${value}`)
+					} else if (offset == 1) {
+						this.setVariableValues({ _playlist_caption_next_item: value })
+						this.log('info', `'_playlist_caption_next_item' changed to ${value}`)
+					} else {
+						this.log(
+							'warn',
+							`bigger playlist index difference than expected cur ref=${current_index}; new ref=${response_index} maybe changes occured too fast?`
+						)
+					}
+					break
+				}
+				case '/playlist/items//filename': {
+					//shortened form of /number/
+					const response_index = address.replace(/(\/playlist\/items\/)(\d+)(\/filename)/, '$2')
+					const current_index = this.getVariableValue('playlist_itemindex') - 1
+					const offset = response_index - current_index
+
+					if (offset == -1) {
+						this.setVariableValues({ _playlist_filename_prev_item: value })
+						this.log('info', `'_playlist_filename_prev_item' changed to ${value}`)
+					} else if (offset == 0) {
+						this.setVariableValues({ _playlist_filename_current_item: value })
+						this.log('info', `'_playlist_filename_current_item' changed to ${value}`)
+					} else if (offset == 1) {
+						this.setVariableValues({ _playlist_filename_next_item: value })
+						this.log('info', `'_playlist_filename_next_item' changed to ${value}`)
+					} else {
+						this.log(
+							'warn',
+							`bigger playlist index difference than expected cur ref=${current_index}; new ref=${response_index} maybe changes occured too fast?`
+						)
+					}
+					break
+				}
 				case '/playlist/previous':
 				case '/playlist/next':
 					this.log('debug', `/playlist/previous or /playlist/next ${value}`)
@@ -322,9 +402,6 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				default:
 					this.log('warn', `received a message with an unknown address - not implemented`)
-					//TODO
-					// /playlist/items/**/caption
-					// /playlist/items/**/filename
 					break
 			}
 		})

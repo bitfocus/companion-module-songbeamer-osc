@@ -17,12 +17,32 @@ export const variables = [
 		variableId: 'presentation_pagecaption',
 	},
 	{
+		name: 'caption of playlist item before current item',
+		variableId: '_playlist_caption_prev_item',
+	},
+	{
+		name: 'caption of current playlist item',
+		variableId: '_playlist_caption_current_item',
+	},
+	{
+		name: 'caption of playlist item after current item',
+		variableId: '_playlist_caption_next_item',
+	},
+	{
 		name: 'presentation pagecount',
 		variableId: 'presentation_pagecount',
 	},
 	{
 		name: 'playlist item filename',
 		variableId: 'playlist_filename',
+	},
+	{
+		name: 'filenmame of playlist item before current item',
+		variableId: '_playlist_filename_prev_item',
+	},
+	{
+		name: 'filename of playlist item after current item',
+		variableId: '_playlist_filename_next_item',
 	},
 	{
 		name: 'playlist itemindex (starting with 1)',
