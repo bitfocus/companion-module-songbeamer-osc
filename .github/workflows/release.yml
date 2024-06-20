@@ -24,21 +24,13 @@ jobs:
       - name: Build package
         run: yarn companion-module-build --dev
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1.1.4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: /softprops/action-gh-release@v2.0.6
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Dev Release ${{ github.ref }}
+          name: Dev Release ${{ github.ref }}
+          body: 'This is a dev build of the module - use with caution. In case you are no developer please wait for official releases as part of a companion release'
           draft: true
           prerelease: true
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.0.2
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: pkg.tgz
-          asset_name: pkg.tgz
-          asset_content_type: application/gzip
+          files: |
+            pkg.tgz
+            pkg
