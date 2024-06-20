@@ -1,3 +1,5 @@
 module.exports = {
-	extraFiles: ['icons/*.png'],
+	from: 'icons/',
+	to: 'icons/',
+	extraFiles: ['*.png'],
 }
