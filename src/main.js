@@ -402,9 +402,6 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				default:
 					this.log('warn', `received a message with an unknown address - not implemented`)
-					//TODO
-					// /playlist/items/**/caption
-					// /playlist/items/**/filename
 					break
 			}
 		})
