@@ -390,7 +390,18 @@ export function getPresetDefinitions() {
 				up: [],
 			},
 		],
-		feedbacks: [],
+		feedbacks: [
+			{
+				feedbackId: 'presentation_state',
+				options: {
+					presentation_state: '0',
+				},
+				style: {
+					bgcolor: combineRgb(255, 0, 0),
+					color: combineRgb(255, 255, 255),
+				},
+			},
+		],
 	}
 
 	const state_background = {
@@ -420,7 +431,18 @@ export function getPresetDefinitions() {
 				up: [],
 			},
 		],
-		feedbacks: [],
+		feedbacks: [
+			{
+				feedbackId: 'presentation_state',
+				options: {
+					presentation_state: '1',
+				},
+				style: {
+					bgcolor: combineRgb(255, 0, 0),
+					color: combineRgb(255, 255, 255),
+				},
+			},
+		],
 	}
 
 	const state_page = {
@@ -450,7 +472,18 @@ export function getPresetDefinitions() {
 				up: [],
 			},
 		],
-		feedbacks: [],
+		feedbacks: [
+			{
+				feedbackId: 'presentation_state',
+				options: {
+					presentation_state: '2',
+				},
+				style: {
+					bgcolor: combineRgb(255, 0, 0),
+					color: combineRgb(255, 255, 255),
+				},
+			},
+		],
 	}
 
 	const state_logo = {
@@ -480,7 +513,18 @@ export function getPresetDefinitions() {
 				up: [],
 			},
 		],
-		feedbacks: [],
+		feedbacks: [
+			{
+				feedbackId: 'presentation_state',
+				options: {
+					presentation_state: '3',
+				},
+				style: {
+					bgcolor: combineRgb(255, 0, 0),
+					color: combineRgb(255, 255, 255),
+				},
+			},
+		],
 	}
 	result['state_current'] = state_current
 	result['state_black'] = state_black

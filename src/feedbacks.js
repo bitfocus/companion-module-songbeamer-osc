@@ -1,5 +1,6 @@
 import { presentation_states, video_states, livevideo_states, comparators } from './choices.js'
 import { get_images } from './images.js'
+import { combineRgb } from '@companion-module/base'
 
 export function getFeedbackDefinitions(self, osc) {
 	const feedbacks = {
@@ -63,6 +64,12 @@ export function getFeedbackDefinitions(self, osc) {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'Presentation State',
 			description: 'custom feedback based on presentation state',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				bgcolor: combineRgb(255, 0, 0),
+				color: combineRgb(255, 255, 255),
+			},
 			// options is how the user can choose the condition the feedback activates for
 			options: [
 				{
