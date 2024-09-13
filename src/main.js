@@ -34,13 +34,6 @@ class SongbeamerInstance extends InstanceBase {
 
 		this.setPresetDefinitions(getPresetDefinitions(this))
 		this.log('debug', 'Finished definition of presets')
-
-		// xinfo is used to gather information about connection status and init variables
-		this.osc.send({
-			address: '/xinfo',
-			args: [],
-		})
-		this.log('debug', 'xinfo requested as part of init')
 	}
 
 	/**
@@ -83,7 +76,21 @@ class SongbeamerInstance extends InstanceBase {
 			address: '/xremote',
 			args: [],
 		})
-		//this.log('debug', 'heartbeat send')
+		//this.log('debug', 'osc_update_polling send')
+	}
+
+	/**
+	 * request /xinfo for connection init confirmation
+	 */
+	osc_reconnecting_init_polling() {
+		this.osc.send({
+			address: '/xinfo',
+			args: [],
+		})
+		this.log(
+			'info',
+			`Sent osc_reconnecting_init_polling to ${this.config.host}:${this.config.port} with /xinfo to check connection status`
+		)
 	}
 
 	/**
@@ -118,6 +125,17 @@ class SongbeamerInstance extends InstanceBase {
 				width: 4,
 				regex: this.REGEX_PORT,
 				useVariables: true,
+			},
+			{
+				type: 'number',
+				id: 'reconnect_time',
+				label: 'reconnect time',
+				tooltip: 'ms after which reconnect should be attempted',
+				width: 4,
+				min: 1000,
+				default: 5000,
+				useVariables: true,
+				required: true,
 			},
 		]
 	}
@@ -154,7 +172,7 @@ class SongbeamerInstance extends InstanceBase {
 		this.osc.on('message', (oscMsg, timeTag, info) => {
 			this.log('debug', `Received OSC message from: ${JSON.stringify(info)}`)
 			this.log('debug', `OSC Content is: ${JSON.stringify(oscMsg)}`)
-
+			this.log('debug', `OSC Content is: ${JSON.stringify(this.last_message_received)}`)
 			const address = oscMsg['address']
 			let args = oscMsg['args']
 			let value = undefined
@@ -189,6 +207,10 @@ class SongbeamerInstance extends InstanceBase {
 						this.log('warn', message)
 						this.updateStatus('BadConfig', message)
 					} else {
+						if (this.heartbeat_osc_connected) {
+							clearInterval(this.heartbeat_osc_connected)
+							delete this.heartbeat_osc_connected
+						}
 						this.updateStatus('ok')
 					}
 
@@ -411,26 +433,26 @@ class SongbeamerInstance extends InstanceBase {
 		 */
 		this.osc.on('ready', () => {
 			this.log('info', 'OSC port is in "ready" state')
+			//setup osc update polling renewal
 			self.osc_update_polling()
-			this.heartbeat = setInterval(function () {
+			this.heartbeat_osc_keep_alive = setInterval(function () {
 				self.osc_update_polling()
 			}, 9500) // just before 10 sec expiration
 
-			// check /xinfo in order to confirm successful connection upon response
-			this.osc.send({
-				address: '/xinfo',
-				args: [],
-			})
-			self.log('info', `Sent OSC to ${self.config.host}:${self.config.port} with /xinfo to check connection status`)
+			//setup xinfo reconnect polling until first successful connection
+			this.osc_reconnecting_init_polling()
+			this.heartbeat_osc_connected = setInterval(function () {
+				self.osc_reconnecting_init_polling()
+			}, this.config.reconnect_time)
 		})
 
 		/**
 		 * Properly closing the hearbeat on close
 		 */
 		this.osc.on('close', () => {
-			if (this.heartbeat) {
-				clearInterval(this.heartbeat)
-				delete this.heartbeat
+			if (this.heartbeat_osc_keep_alive) {
+				clearInterval(this.heartbeat_osc_keep_alive)
+				delete this.heartbeat_osc_keep_alive
 			}
 		})
 
@@ -439,14 +461,29 @@ class SongbeamerInstance extends InstanceBase {
 		 */
 		this.osc.on('error', (err) => {
 			if (err.message.startsWith('send ENETUNREACH')) {
-				this.log('error', 'Connection lost - will try to recover every 5 sec as long as module is active')
+				if (!this.heartbeat_osc_connected) {
+					//re-setup xinfo reconnect polling until first successful connection
+					this.heartbeat_osc_connected = setInterval(function () {
+						this.osc_reconnecting_init_polling()
+					}, this.config.reconnect_time)
+				}
+				this.log(
+					'error',
+					'Connection lost - will try to recover every ' +
+						this.config.reconnect_time +
+						' ms as long as module is active'
+				)
 				this.updateStatus('Connecting')
 			} else {
 				this.log('error', 'Error: ' + err.message + ' module restart is reload is required!')
 				this.updateStatus('UnknownError', err.message)
-				if (this.heartbeat) {
-					clearInterval(this.heartbeat)
-					delete this.heartbeat
+				if (this.heartbeat_osc_keep_alive) {
+					clearInterval(this.heartbeat_osc_keep_alive)
+					delete this.heartbeat_osc_keep_alive
+				}
+				if (this.heartbeat_osc_connected) {
+					clearInterval(this.heartbeat_osc_connected)
+					delete this.heartbeat_osc_connected
 				}
 			}
 		})
