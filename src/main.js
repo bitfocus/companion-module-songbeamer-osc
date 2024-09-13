@@ -264,6 +264,20 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_filename')
 					this.log('info', `'presentation_filename' changed to ${value}`)
 					break
+				case '/presentation/primarylanguage':
+					this.log('debug', `/presentation/primarylanguage ${value}`)
+					this.setVariableValues({ presentation_primarylanguage: value })
+					this.checkFeedbacks('presentation_primarylanguage')
+					this.log('info', `'presentation_primarylanguage' changed to ${value}`)
+					self.log('warn', 'if only one language is selected this value might be wrong! - Songbeamer 6.10 - see #6')
+					break
+				case '/presentation/languages':
+					this.log('debug', `/presentation/languages ${value}`)
+					this.setVariableValues({ presentation_languages: value })
+					this.checkFeedbacks('presentation_languages')
+					this.log('info', `'presentation_languages' changed to ${value}`)
+					self.log('warn', '/presentation/langauges is not fully implemented with - Songbeamer 6.10 - see #6')
+					break
 				case '/presentation/pagecaption':
 					this.log('debug', `/presentation/pagecaption ${value}`)
 					this.setVariableValues({ presentation_pagecaption: value })
@@ -439,7 +453,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('warn', `receveived a special message without address - not implemented`)
 					break
 				default:
-					this.log('warn', `received a message with an unknown address - not implemented`)
+					this.log('warn', `received a message with an unknown address  ${adress_without_reference}- not implemented`)
 					break
 			}
 		})

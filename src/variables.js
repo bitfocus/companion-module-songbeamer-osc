@@ -17,6 +17,15 @@ export const variables = [
 		variableId: 'presentation_filename',
 	},
 	{
+		name: 'presentation primarylanguage',
+		variableId: 'presentation_primarylanguage',
+	},
+	// "/presentation/languages is not fully implemented with Songbeamer 6.10 - only primary language can be set- see #6")
+	//{
+	//	name: 'presentation languages',
+	//	variableId: 'presentation_languages',
+	//},
+	{
 		name: 'presentation pagecaption',
 		variableId: 'presentation_pagecaption',
 	},

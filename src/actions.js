@@ -109,8 +109,6 @@ export function getActionDefinitions(self, osc) {
 				const presentation_permanentblack = await self.parseVariablesInString(event.options.presentation_permanentblack)
 				const should_change = await self.parseVariablesInString(event.options.should_change)
 
-				self.log('debug', `permbalck:shouldchange= ${presentation_permanentblack}:${should_change}`)
-
 				path = '/presentation/permanentblack'
 
 				if (should_change == 'true') {
@@ -181,7 +179,7 @@ export function getActionDefinitions(self, osc) {
 					],
 					minChoicesForSearch: 0,
 				},
-				{
+				/*{
 					type: 'textinput',
 					label: 'Combination of id-number of languages to be displayed',
 					id: 'presentation_language',
@@ -189,10 +187,9 @@ export function getActionDefinitions(self, osc) {
 					tooltip: 'Choose any combination of 1234 or type ALL',
 					regex: Regex.SOMETHING,
 					useVariables: true,
-				},
+				},*/
 			],
 			callback: async (event) => {
-				self.log('warn', 'Songbeamer does not yet act upon the request  - check #6')
 				const presentation_language_primary = await self.parseVariablesInString(
 					event.options.presentation_language_primary
 				)
@@ -213,6 +210,11 @@ export function getActionDefinitions(self, osc) {
 					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
 				)
 
+				self.log(
+					'warn',
+					'/presentation/languages is not fully implemented with Songbeamer 6.10 - only primary language can be set- see #6'
+				)
+				/*
 				let presentation_language = await self.parseVariablesInString(event.options.presentation_language)
 				path = '/presentation/language'
 				args = [
@@ -230,6 +232,7 @@ export function getActionDefinitions(self, osc) {
 					'debug',
 					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
 				)
+					*/
 			},
 		},
 		presentation_message: {
