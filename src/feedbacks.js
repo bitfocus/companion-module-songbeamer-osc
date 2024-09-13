@@ -480,6 +480,69 @@ export function getFeedbackDefinitions(self, osc) {
 				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
 			},
 		},
+		video_position: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'video position in seconds',
+			description: 'position of a video',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				//TODO #4 Implement default style
+			},
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Compare operation',
+					id: 'video_position_comparator',
+					default: '0',
+					choices: comparators.map((item, index) => {
+						return {
+							id: index.toString(),
+							label: item,
+						}
+					}),
+					minChoicesForSearch: 0,
+				},
+				{
+					type: 'number',
+					label: 'time in seconds',
+					id: 'video_position',
+					default: 30,
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				switch (comparators[feedback.options.video_position_comparator]) {
+					case 'less':
+						return self.getVariableValue('video_position') < feedback.options.video_position
+					case 'less or equal':
+						return self.getVariableValue('video_position') <= feedback.options.video_position
+					case 'equal':
+						return self.getVariableValue('video_position') == feedback.options.video_position
+					case 'greater or equal':
+						return self.getVariableValue('video_position') >= feedback.options.video_position
+					case 'greater':
+						return self.getVariableValue('video_position') > feedback.options.video_length
+					default:
+						self.log(
+							'error',
+							`${
+								comparators[feedback.options.video_position_comparator]
+							} video_position_comparator which is not configured for automatic feedback´`
+						)
+						return { text: 'error' }
+				}
+			},
+			subscribe: () => {
+				const path = '/video/position'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
 		video_state_advanced: {
 			type: 'advanced', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'Video State (image)',
@@ -547,6 +610,41 @@ export function getFeedbackDefinitions(self, osc) {
 			},
 			subscribe: () => {
 				const path = '/video/state'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
+		video_filename: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'video filename',
+			description: 'Checks video filename (without path)',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				//TODO #4 Implement default style
+			},
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'textinput',
+					label: 'Message text',
+					id: 'video_filename',
+					default: '',
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				if (self.getVariableValue('video_filename') == feedback.options.video_filename) {
+					return true
+				} else {
+					return false
+				}
+			},
+			subscribe: () => {
+				const path = '/video/filename'
 				osc.send({
 					address: path,
 					args: [],

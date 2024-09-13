@@ -203,7 +203,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('info', `'_songbeamer version' changed to ${numeric_version}`)
 
 					if (numeric_version < 6.04) {
-						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.04a or later to avoid unexpected behaviour`
+						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.04h or later to avoid unexpected behaviour`
 						this.log('warn', message)
 						this.updateStatus('BadConfig', message)
 					} else {
@@ -380,10 +380,14 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('video_state', 'video_state_advanced')
 					this.log('info', `'video_state' changed to ${video_states[value]}`)
 					break
-				case '/video/position':
+				case '/video/position': {
 					this.log('debug', `/video/position ${value}`) //in days! -> convert to minutes
-					this.log('warn', `/video/position ${value} not yet implemented in Songbeamer 6.04 #16`)
+					const video_position = Math.round(value * 86400)
+					this.setVariableValues({ video_position: video_position })
+					this.checkFeedbacks('video_position')
+					this.log('info', `'video_position' changed to ${secondsToTime(video_position)}`)
 					break
+				}
 				case '/video/length': {
 					this.log('debug', `/video/length ${value}`)
 					const video_length = Math.round(value * 86400)
@@ -393,7 +397,13 @@ class SongbeamerInstance extends InstanceBase {
 					break
 				}
 				case '/video/filename':
-					this.log('warn', `/video/filename ${value}  not yet implemented in Songbeamer 6.04- see issue #62 on Github`)
+					this.log('debug', `/video/filename ${value}`)
+					value = value.split(/\\|\//)
+					value = value[value.length - 1]
+					value = value.split('.').slice(0, -1).join('.')
+					this.setVariableValues({ video_filename: value })
+					this.checkFeedbacks('video_filename')
+					this.log('info', `'video_filename' changed to ${value}`)
 					break
 				case '/presentation/state':
 					this.log('debug', `presentation/state ${value}`)

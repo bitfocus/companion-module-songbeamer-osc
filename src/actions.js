@@ -443,10 +443,10 @@ export function getActionDefinitions(self, osc) {
 			options: [
 				{
 					type: 'textinput',
-					label: 'Position in min',
+					label: 'Position in seconds',
 					id: 'video_position',
 					required: true,
-					tooltip: 'Position of video to skip to as minutes with optional . as decimal delimiter',
+					tooltip: 'Position of video to skip to as seconds',
 					default: 1,
 					regex: Regex.SIGNED_FLOAT,
 					useVariables: true,
@@ -459,7 +459,7 @@ export function getActionDefinitions(self, osc) {
 				args = [
 					{
 						type: 'f',
-						value: parseFloat(video_position) / 24 / 60,
+						value: parseFloat(video_position) / 24 / 60 / 60,
 					},
 				]
 
