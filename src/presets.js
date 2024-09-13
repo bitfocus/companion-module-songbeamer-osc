@@ -482,7 +482,6 @@ export function getPresetDefinitions() {
 		],
 		feedbacks: [],
 	}
-
 	result['state_current'] = state_current
 	result['state_black'] = state_black
 	result['state_background'] = state_background

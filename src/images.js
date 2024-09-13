@@ -3,7 +3,7 @@ import fs from 'fs'
 export function get_images() {
 	const image_names = []
 	image_names.push(...['slide_next', 'slide_prev', 'playlist_next', 'playlist_prev']) // navigation icons
-	image_names.push(...['state_black', 'state_background', 'state_logo']) // presentation_state_icons // slide = background + text
+	image_names.push(...['state_black', 'state_background', 'state_logo', 'state_blank']) // presentation_state_icons // slide = background + text
 	image_names.push(...['state_play', 'state_pause', 'state_stop']) // video states
 	image_names.push(...['state_live_play', 'state_live_stop']) // live video states
 

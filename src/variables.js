@@ -5,6 +5,10 @@ export const variables = [
 		variableId: 'presentation_state',
 	},
 	{
+		name: 'presentation permanentblack',
+		variableId: 'presentation_permanentblack',
+	},
+	{
 		name: 'presentation page',
 		variableId: 'presentation_page',
 	},

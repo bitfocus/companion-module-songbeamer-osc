@@ -39,12 +39,10 @@ export function getActionDefinitions(self, osc) {
 					id: 'presentation_state',
 					default: '0',
 					tooltip: 'Choose presentation state',
-					choices: [
-						{ id: '0', label: 'black' },
-						{ id: '1', label: 'background' },
-						{ id: '2', label: 'page' },
-						{ id: '3', label: 'logo' },
-					],
+					choices: presentation_states.map((item, index) => ({
+						id: String(index),
+						label: item,
+					})),
 					isVisible: (options) => options.should_change,
 					minChoicesForSearch: 0,
 				},
@@ -59,6 +57,7 @@ export function getActionDefinitions(self, osc) {
 			callback: async (event) => {
 				const presentation_state = await self.parseVariablesInString(event.options.presentation_state)
 				const should_change = await self.parseVariablesInString(event.options.should_change)
+
 				path = '/presentation/state'
 
 				if (should_change == 'true') {
@@ -71,7 +70,6 @@ export function getActionDefinitions(self, osc) {
 				} else {
 					args = []
 				}
-
 				osc.send({
 					address: path,
 					args: args,
@@ -84,6 +82,68 @@ export function getActionDefinitions(self, osc) {
 			subscribe: () => {
 				osc.send({
 					address: '/presentation/state',
+					args: [],
+				})
+			},
+		},
+		presentation_permanentblack: {
+			name: 'Change presentation state to permanent black',
+			options: [
+				{
+					type: 'checkbox',
+					label: 'Presentation should be permanent black',
+					id: 'presentation_permanentblack',
+					default: 'true',
+					tooltip: 'Choose to enable permanent black',
+					isVisible: (options) => options.should_change,
+				},
+				{
+					type: 'checkbox',
+					label: 'Execute change',
+					id: 'should_change',
+					default: 'true',
+					tooltip: 'disable in order to request state instead of changing it',
+				},
+			],
+			callback: async (event) => {
+				const presentation_permanentblack = await self.parseVariablesInString(event.options.presentation_permanentblack)
+				const should_change = await self.parseVariablesInString(event.options.should_change)
+
+				self.log('debug', `permbalck:shouldchange= ${presentation_permanentblack}:${should_change}`)
+
+				path = '/presentation/permanentblack'
+
+				if (should_change == 'true') {
+					if (presentation_permanentblack == 'true') {
+						args = [
+							{
+								type: 'i',
+								value: 1,
+							},
+						]
+					} else {
+						args = [
+							{
+								type: 'i',
+								value: 0,
+							},
+						]
+					}
+				} else {
+					args = []
+				}
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+			subscribe: () => {
+				osc.send({
+					address: '/presentation/permanentblack',
 					args: [],
 				})
 			},
@@ -526,17 +586,17 @@ export function getActionDefinitions(self, osc) {
 			options: [
 				{
 					type: 'textinput',
-					label: 'Value',
-					id: 'int',
-					default: 1,
-					regex: Regex.SIGNED_NUMBER,
+					label: 'OSC Path',
+					id: 'path',
+					default: '/osc/path',
 					useVariables: true,
 				},
 				{
 					type: 'textinput',
-					label: 'OSC Path',
-					id: 'path',
-					default: '/osc/path',
+					label: 'Value',
+					id: 'int',
+					default: 1,
+					regex: Regex.SIGNED_NUMBER,
 					useVariables: true,
 				},
 			],

@@ -411,6 +411,12 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_state', 'presentation_state_advanced')
 					this.log('info', `'presentation_state' changed to ${presentation_states[value]}`)
 					break
+				case '/presentation/permanentblack':
+					this.log('debug', `presentation/permanentblack ${value}`)
+					this.setVariableValues({ presentation_permanentblack: value == 1 })
+					this.checkFeedbacks('presentation_permanentblack')
+					this.log('info', `'presentation_permanentblack' changed to ${value == 1}`)
+					break
 				case '/presentation/message/text':
 					this.log('debug', `presentation/message/text ${value}`)
 					this.setVariableValues({ presentation_message_text: value })
