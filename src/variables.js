@@ -73,6 +73,10 @@ export const variables = [
 		variableId: 'stage_layout_name',
 	},
 	{
+		name: 'Stage timer init',
+		variableId: 'stage_timerinit',
+	},
+	{
 		name: 'Video state',
 		variableId: 'video_state',
 	},

@@ -426,6 +426,69 @@ export function getFeedbackDefinitions(self, osc) {
 				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
 			},
 		},
+		stage_timerinit: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'stage timer init position in seconds',
+			description: 'initial value of stage timer',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				//TODO #4 Implement default style
+			},
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'dropdown',
+					label: 'Compare operation',
+					id: 'stage_timerinit_comparator',
+					default: '0',
+					choices: comparators.map((item, index) => {
+						return {
+							id: index.toString(),
+							label: item,
+						}
+					}),
+					minChoicesForSearch: 0,
+				},
+				{
+					type: 'number',
+					label: 'time in seconds',
+					id: 'stage_timerinit',
+					default: 30,
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				switch (comparators[feedback.options.stage_timerinit_comparator]) {
+					case 'less':
+						return self.getVariableValue('stage_timerinit') < feedback.options.stage_timerinit
+					case 'less or equal':
+						return self.getVariableValue('stage_timerinit') <= feedback.options.stage_timerinit
+					case 'equal':
+						return self.getVariableValue('stage_timerinit') == feedback.options.stage_timerinit
+					case 'greater or equal':
+						return self.getVariableValue('stage_timerinit') >= feedback.options.stage_timerinit
+					case 'greater':
+						return self.getVariableValue('stage_timerinit') > feedback.options.stage_timerinit
+					default:
+						self.log(
+							'error',
+							`${
+								comparators[feedback.options.stage_timer_comparator]
+							} stage_timerinit_comparator which is not configured for automatic feedback´`
+						)
+						return { text: 'error' }
+				}
+			},
+			subscribe: () => {
+				const path = '/stage/timerinit'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
 		presentation_pagecount: {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'presentation pagecount',

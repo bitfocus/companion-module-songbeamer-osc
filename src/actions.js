@@ -354,6 +354,40 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
+		stage_timerinit: {
+			name: 'Set Stage Timer Init to Value',
+			options: [
+				{
+					type: 'textinput',
+					label: 'lenght in seconds',
+					id: 'stage_timerinit',
+					required: true,
+					tooltip: 'The length of the timer to set as seconds',
+					default: 1,
+					regex: Regex.SIGNED_FLOAT,
+					useVariables: true,
+				},
+			],
+			callback: async (event) => {
+				let stage_timerinit = await self.parseVariablesInString(event.options.stage_timerinit)
+				path = '/stage/timerinit'
+				args = [
+					{
+						type: 'f',
+						value: parseFloat(stage_timerinit) / 24 / 60 / 60,
+					},
+				]
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
 		navigate_to: {
 			name: 'Navigation within presentation and playlist',
 			options: [
