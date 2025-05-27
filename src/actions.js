@@ -288,6 +288,39 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
+		stage_message: {
+			name: 'Change stage message text',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Message',
+					id: 'stage_message_text',
+					default: '',
+					tooltip: 'Type any message to display',
+					regex: Regex.SOMETHING,
+					useVariables: true,
+				},
+			],
+			callback: async (event) => {
+				let stage_message_text = await self.parseVariablesInString(event.options.stage_message_text)
+				path = '/stage/message/text'
+				args = [
+					{
+						type: 's',
+						value: stage_message_text,
+					},
+				]
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
 		navigate_to: {
 			name: 'Navigation within presentation and playlist',
 			options: [

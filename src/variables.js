@@ -65,6 +65,10 @@ export const variables = [
 		variableId: 'presentation_message_visible',
 	},
 	{
+		name: 'Stage message text',
+		variableId: 'stage_message_text',
+	},
+	{
 		name: 'Video state',
 		variableId: 'video_state',
 	},

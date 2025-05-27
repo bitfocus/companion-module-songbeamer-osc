@@ -202,7 +202,7 @@ class SongbeamerInstance extends InstanceBase {
 					const numeric_version = parseFloat(this.software_version.match(/[0-9.]+/g))
 					this.log('info', `'_songbeamer version' changed to ${numeric_version}`)
 
-					if (numeric_version < 6.04) {
+					if (numeric_version < 6.1) {
 						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.04h or later to avoid unexpected behaviour`
 						this.log('warn', message)
 						this.updateStatus('BadConfig', message)
@@ -428,6 +428,12 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_message_visible: value == 1 })
 					this.checkFeedbacks('presentation_message_visible')
 					this.log('info', `'presentation_message_visible' changed to ${value == 1}`)
+					break
+				case '/stage/message/text':
+					this.log('debug', `stage/message/text ${value}`)
+					this.setVariableValues({ stage_message_text: value })
+					this.checkFeedbacks('stage_message_text')
+					this.log('info', `'stage_message_text' changed to ${value}`)
 					break
 				case '/livevideo/state':
 					this.log('debug', `/livevideo/state ${value}`)

@@ -356,6 +356,41 @@ export function getFeedbackDefinitions(self, osc) {
 				self.log('warn', 'initialisation of presentation/message/visible not possible - check #2')
 			},
 		},
+		stage_message_text: {
+			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
+			name: 'Stage Message Text',
+			description: 'Checks stage message',
+			defaultStyle: {
+				// The default style change for a boolean feedback
+				// The user will be able to customise these values as well as the fields that will be changed
+				//TODO #4 Implement default style
+			},
+			// options is how the user can choose the condition the feedback activates for
+			options: [
+				{
+					type: 'textinput',
+					label: 'Message text',
+					id: 'stage_message_text',
+					default: '',
+				},
+			],
+			callback: async (feedback) => {
+				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
+				if (self.getVariableValue('stage_message_text') == feedback.options.stage_message_text) {
+					return true
+				} else {
+					return false
+				}
+			},
+			subscribe: () => {
+				const path = '/stage/message/text'
+				osc.send({
+					address: path,
+					args: [],
+				})
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+			},
+		},
 		presentation_pagecount: {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'presentation pagecount',
