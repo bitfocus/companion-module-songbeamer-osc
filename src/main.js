@@ -202,8 +202,8 @@ class SongbeamerInstance extends InstanceBase {
 					const numeric_version = parseFloat(this.software_version.match(/[0-9.]+/g))
 					this.log('info', `'_songbeamer version' changed to ${numeric_version}`)
 
-					if (numeric_version < 6.1) {
-						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.04h or later to avoid unexpected behaviour`
+					if (numeric_version < 6.13) {
+						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.12b or later to avoid unexpected behaviour`
 						this.log('warn', message)
 						this.updateStatus('BadConfig', message)
 					} else {
@@ -435,11 +435,11 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('stage_message_text')
 					this.log('info', `'stage_message_text' changed to ${value}`)
 					break
-				case '/stage/layout/name':
-					this.log('debug', `stage/layout/name ${value}`)
-					this.setVariableValues({ stage_layout_name: value })
-					this.checkFeedbacks('stage_layout_name')
-					this.log('info', `'stage_layout_name' changed to ${value}`)
+				case '/stage/layoutname':
+					this.log('debug', `stage/layoutname ${value}`)
+					this.setVariableValues({ stage_layoutname: value })
+					this.checkFeedbacks('stage_layoutname')
+					this.log('info', `'stage_layoutname' changed to ${value}`)
 					break
 				case '/stage/timerinit': {
 					this.log('debug', `/stage/timerinit ${value}`) //in days! -> convert to minutes

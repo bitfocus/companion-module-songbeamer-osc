@@ -391,7 +391,7 @@ export function getFeedbackDefinitions(self, osc) {
 				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
 			},
 		},
-		stage_layout_name: {
+		stage_layoutname: {
 			type: 'boolean', // Feedbacks can either a simple boolean, or can be an 'advanced' style change (until recently, all feedbacks were 'advanced')
 			name: 'Stage Layout Text',
 			description: 'Checks stage layout name',
@@ -405,20 +405,20 @@ export function getFeedbackDefinitions(self, osc) {
 				{
 					type: 'textinput',
 					label: 'Message text',
-					id: 'stage_layout_name',
+					id: 'stage_layoutname',
 					default: '',
 				},
 			],
 			callback: async (feedback) => {
 				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
-				if (self.getVariableValue('stage_layout_name') == feedback.options.stage_layout_name) {
+				if (self.getVariableValue('stage_layoutname') == feedback.options.stage_layoutname) {
 					return true
 				} else {
 					return false
 				}
 			},
 			subscribe: () => {
-				const path = '/stage/layout/name'
+				const path = '/stage/layoutname'
 				osc.send({
 					address: path,
 					args: [],

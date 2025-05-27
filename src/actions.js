@@ -288,7 +288,7 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
-		stage_message: {
+		stage_message_text: {
 			name: 'Change stage message text',
 			options: [
 				{
@@ -321,13 +321,13 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
-		stage_layout_name: {
+		stage_layoutname: {
 			name: 'Change stage layout by name',
 			options: [
 				{
 					type: 'textinput',
 					label: 'Message',
-					id: 'stage_layout_name',
+					id: 'stage_layoutname',
 					default: '',
 					tooltip: 'Type name of layout without extension to be used for stage display',
 					regex: Regex.SOMETHING,
@@ -335,12 +335,12 @@ export function getActionDefinitions(self, osc) {
 				},
 			],
 			callback: async (event) => {
-				let stage_layout_name = await self.parseVariablesInString(event.options.stage_layout_name)
-				path = '/stage/layout/name'
+				let stage_layoutname = await self.parseVariablesInString(event.options.stage_layoutname)
+				path = '/stage/layoutname'
 				args = [
 					{
 						type: 's',
-						value: stage_layout_name,
+						value: stage_layoutname,
 					},
 				]
 

@@ -70,7 +70,7 @@ export const variables = [
 	},
 	{
 		name: 'Stage layout name',
-		variableId: 'stage_layout_name',
+		variableId: 'stage_layoutname',
 	},
 	{
 		name: 'Stage timer init',
