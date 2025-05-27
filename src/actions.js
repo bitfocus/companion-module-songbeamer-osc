@@ -321,6 +321,39 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
+		stage_layout_name: {
+			name: 'Change stage layout by name',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Message',
+					id: 'stage_layout_name',
+					default: '',
+					tooltip: 'Type name of layout without extension to be used for stage display',
+					regex: Regex.SOMETHING,
+					useVariables: true,
+				},
+			],
+			callback: async (event) => {
+				let stage_layout_name = await self.parseVariablesInString(event.options.stage_layout_name)
+				path = '/stage/layout/name'
+				args = [
+					{
+						type: 's',
+						value: stage_layout_name,
+					},
+				]
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
 		navigate_to: {
 			name: 'Navigation within presentation and playlist',
 			options: [

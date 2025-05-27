@@ -435,6 +435,12 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('stage_message_text')
 					this.log('info', `'stage_message_text' changed to ${value}`)
 					break
+				case '/stage/layout/name':
+					this.log('debug', `stage/layout/name ${value}`)
+					this.setVariableValues({ stage_layout_name: value })
+					this.checkFeedbacks('stage_layout_name')
+					this.log('info', `'stage_layout_name' changed to ${value}`)
+					break
 				case '/livevideo/state':
 					this.log('debug', `/livevideo/state ${value}`)
 					this.setVariableValues({ livevideo_state: livevideo_states[value] })

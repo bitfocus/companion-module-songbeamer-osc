@@ -69,6 +69,10 @@ export const variables = [
 		variableId: 'stage_message_text',
 	},
 	{
+		name: 'Stage layout name',
+		variableId: 'stage_layout_name',
+	},
+	{
 		name: 'Video state',
 		variableId: 'video_state',
 	},
