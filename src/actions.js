@@ -328,7 +328,7 @@ export function getActionDefinitions(self, osc) {
 					type: 'textinput',
 					label: 'Message',
 					id: 'stage_layoutname',
-					default: '',
+					default: 'StageMonitor',
 					tooltip: 'Type name of layout without extension to be used for stage display',
 					regex: Regex.SOMETHING,
 					useVariables: true,
@@ -380,7 +380,7 @@ export function getActionDefinitions(self, osc) {
 				},
 				{
 					type: 'checkbox',
-					label: 'use timeframe instead of time ',
+					label: 'stage layout uses timeframe instead of time',
 					id: 'use_timeframe',
 					default: 'true',
 					tooltip: 'disable in order to send target time instead of timeframe',
