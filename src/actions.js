@@ -355,28 +355,60 @@ export function getActionDefinitions(self, osc) {
 			},
 		},
 		stage_timerinit: {
-			name: 'Set Stage Timer Init to Value',
+			name: 'Set stagetimer initial value',
 			options: [
 				{
 					type: 'textinput',
-					label: 'lenght in seconds',
-					id: 'stage_timerinit',
+					label: 'Set Timer target time',
+					id: 'stage_timerinit_time',
+					default: '11:45:00',
+					tooltip: 'Chose any 24h time',
+					regex: '^(0*[0-9]|1[0-9]|2[0-4]):(0*[0-9]|[1-5][0-9]|60):(0*[0-9]|[1-5][0-9]|60)$',
+					useVariables: true,
+					isVisible: (options) => !options.use_timeframe,
+				},
+				{
+					type: 'textinput',
+					label: 'Set length of timer in seconds',
+					id: 'stage_timerinit_seconds',
 					required: true,
 					tooltip: 'The length of the timer to set as seconds',
-					default: 1,
+					default: 60,
 					regex: Regex.SIGNED_FLOAT,
 					useVariables: true,
+					isVisible: (options) => options.use_timeframe,
+				},
+				{
+					type: 'checkbox',
+					label: 'use timeframe instead of time ',
+					id: 'use_timeframe',
+					default: 'true',
+					tooltip: 'disable in order to send target time instead of timeframe',
 				},
 			],
 			callback: async (event) => {
-				let stage_timerinit = await self.parseVariablesInString(event.options.stage_timerinit)
+				let use_timeframe = await self.parseVariablesInString(event.options.use_timeframe)
+
+				let stage_timerinit = 0
+				if (use_timeframe == 'true') {
+					stage_timerinit = await self.parseVariablesInString(event.options.stage_timerinit_seconds)
+					args = [
+						{
+							type: 'f',
+							value: parseFloat(stage_timerinit) / 24 / 60 / 60,
+						},
+					]
+				} else {
+					stage_timerinit = await self.parseVariablesInString(event.options.stage_timerinit_time)
+					args = [
+						{
+							type: 's',
+							value: stage_timerinit,
+						},
+					]
+				}
+
 				path = '/stage/timerinit'
-				args = [
-					{
-						type: 'f',
-						value: parseFloat(stage_timerinit) / 24 / 60 / 60,
-					},
-				]
 
 				osc.send({
 					address: path,

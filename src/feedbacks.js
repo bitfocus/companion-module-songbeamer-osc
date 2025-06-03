@@ -383,12 +383,14 @@ export function getFeedbackDefinitions(self, osc) {
 				}
 			},
 			subscribe: () => {
-				const path = '/stage/message/text'
+				/*const path = '/stage/message/text'
 				osc.send({
 					address: path,
 					args: [],
 				})
 				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+				*/
+				self.log('warn', 'initialisation of /stage/message/text not possible - feedback only valid after value changed')
 			},
 		},
 		stage_layoutname: {
@@ -418,12 +420,18 @@ export function getFeedbackDefinitions(self, osc) {
 				}
 			},
 			subscribe: () => {
-				const path = '/stage/layoutname'
+				/* const path = '/stage/layoutname'
 				osc.send({
 					address: path,
-					args: [],
+					args: [
+						{
+							type: 's',
+							value: 'Standard',
+						},
+					],
 				})
-				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)*/
+				self.log('warn', 'initialisation of /stage/message/text not possible - feedback only valid after value changed')
 			},
 		},
 		stage_timerinit: {
@@ -453,7 +461,7 @@ export function getFeedbackDefinitions(self, osc) {
 				{
 					type: 'number',
 					label: 'time in seconds',
-					id: 'stage_timerinit',
+					id: 'stage_timerinit_seconds',
 					default: 30,
 				},
 			],
@@ -461,15 +469,15 @@ export function getFeedbackDefinitions(self, osc) {
 				// This callback will be called whenever companion wants to check if this feedback is 'active' and should affect the button style
 				switch (comparators[feedback.options.stage_timerinit_comparator]) {
 					case 'less':
-						return self.getVariableValue('stage_timerinit') < feedback.options.stage_timerinit
+						return self.getVariableValue('stage_timerinit_seconds') < feedback.options.stage_timerinit_seconds
 					case 'less or equal':
-						return self.getVariableValue('stage_timerinit') <= feedback.options.stage_timerinit
+						return self.getVariableValue('stage_timerinit_seconds') <= feedback.options.stage_timerinit_seconds
 					case 'equal':
-						return self.getVariableValue('stage_timerinit') == feedback.options.stage_timerinit
+						return self.getVariableValue('stage_timerinit_seconds') == feedback.options.stage_timerinit_seconds
 					case 'greater or equal':
-						return self.getVariableValue('stage_timerinit') >= feedback.options.stage_timerinit
+						return self.getVariableValue('stage_timerinit_seconds') >= feedback.options.stage_timerinit_seconds
 					case 'greater':
-						return self.getVariableValue('stage_timerinit') > feedback.options.stage_timerinit
+						return self.getVariableValue('stage_timerinit_seconds') > feedback.options.stage_timerinit_seconds
 					default:
 						self.log(
 							'error',
@@ -481,12 +489,15 @@ export function getFeedbackDefinitions(self, osc) {
 				}
 			},
 			subscribe: () => {
+				/*
 				const path = '/stage/timerinit'
 				osc.send({
 					address: path,
 					args: [],
 				})
 				self.log('debug', `Sent OSC to ${self.config.host}:${self.config.port} with ${path}`)
+				*/
+				self.log('warn', 'initialisation of /stage/message/text not possible - feedback only valid after value changed')
 			},
 		},
 		presentation_pagecount: {

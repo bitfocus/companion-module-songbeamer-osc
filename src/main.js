@@ -442,9 +442,10 @@ class SongbeamerInstance extends InstanceBase {
 					this.log('info', `'stage_layoutname' changed to ${value}`)
 					break
 				case '/stage/timerinit': {
-					this.log('debug', `/stage/timerinit ${value}`) //in days! -> convert to minutes
+					this.log('debug', `/stage/timerinit ${value}`) //float in days! -> convert to minutes
 					const stage_timerinit = Math.round(value * 86400)
-					this.setVariableValues({ stage_timerinit: stage_timerinit })
+					this.setVariableValues({ stage_timerinit_seconds_seconds: stage_timerinit })
+					this.setVariableValues({ stage_timerinit_seconds_seconds: `${secondsToTime(stage_timerinit)}` })
 					this.checkFeedbacks('stage_timerinit')
 					this.log('info', `'stage_timerinit' changed to ${secondsToTime(stage_timerinit)}`)
 					break
