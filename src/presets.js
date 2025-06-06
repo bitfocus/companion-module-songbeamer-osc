@@ -1,5 +1,6 @@
 import { combineRgb } from '@companion-module/base'
 import { get_images } from './images.js'
+import { sng_colors } from './choices.js'
 
 export function getPresetDefinitions() {
 	let result = {}
@@ -264,30 +265,32 @@ export function getPresetDefinitions() {
 
 	// Page captions
 	const page_captions = [
-		'Title',
-		'Intro',
-		'Verse 1',
-		'Verse 2',
-		'Verse 3',
-		'Chorus 1',
-		'Chorus 2',
-		'Pre-Chorus',
-		'Bridge',
-		'Ending',
+		['Title', sng_colors.title],
+		['Intro', sng_colors.intro],
+		['Verse 1', sng_colors.verse],
+		['Verse 2', sng_colors.verse],
+		['Verse 3', sng_colors.verse],
+		['Chorus 1', sng_colors.chorus],
+		['Chorus 2', sng_colors.chorus],
+		['Pre-Chorus', sng_colors.prechorus],
+		['Bridge', sng_colors.bridge],
+		['Ending', sng_colors.intro],
+		['Solo 1', sng_colors.chor],
+		['Chor 1', sng_colors.chor],
 	]
 	page_captions.forEach(function (value) {
-		result['navigate_pagecaption_' + value] = {
+		result['navigate_pagecaption_' + value[0]] = {
 			type: 'button', // This must be 'button' for now
 			category: 'Navigation by page caption', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
-			name: `navigate to pagecaption ${value}`, // A name for the preset. Shown to the user when they hover over it
+			name: `navigate to pagecaption ${value[0]}`, // A name for the preset. Shown to the user when they hover over it
 			style: {
 				// This is the minimal set of style properties you must define
-				text: `➔\n${value}`,
+				text: `➔\n${value[0]}`,
 				size: '18pt',
 				alignment: 'left:center',
 				pngalignment: 'center:center',
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
+				color: value[1] === sng_colors.title ? combineRgb(0, 0, 0) : combineRgb(255, 255, 255),
+				bgcolor: value[1],
 			},
 			steps: [
 				{
