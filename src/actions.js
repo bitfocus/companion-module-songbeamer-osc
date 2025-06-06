@@ -288,6 +288,138 @@ export function getActionDefinitions(self, osc) {
 				)
 			},
 		},
+		stage_message_text: {
+			name: 'Change stage message text',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Message',
+					id: 'stage_message_text',
+					default: '',
+					tooltip: 'Type any message to display',
+					regex: Regex.SOMETHING,
+					useVariables: true,
+				},
+			],
+			callback: async (event) => {
+				let stage_message_text = await self.parseVariablesInString(event.options.stage_message_text)
+				path = '/stage/message/text'
+				args = [
+					{
+						type: 's',
+						value: stage_message_text,
+					},
+				]
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
+		stage_layoutname: {
+			name: 'Change stage layout by name',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Message',
+					id: 'stage_layoutname',
+					default: 'StageMonitor',
+					tooltip: 'Type name of layout without extension to be used for stage display',
+					regex: Regex.SOMETHING,
+					useVariables: true,
+				},
+			],
+			callback: async (event) => {
+				let stage_layoutname = await self.parseVariablesInString(event.options.stage_layoutname)
+				path = '/stage/layoutname'
+				args = [
+					{
+						type: 's',
+						value: stage_layoutname,
+					},
+				]
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
+		stage_timerinit: {
+			name: 'Set stagetimer initial value',
+			options: [
+				{
+					type: 'textinput',
+					label: 'Set Timer target time',
+					id: 'stage_timerinit_time',
+					default: '11:45:00',
+					tooltip: 'Chose any 24h time',
+					regex: '^(0*[0-9]|1[0-9]|2[0-4]):(0*[0-9]|[1-5][0-9]|60):(0*[0-9]|[1-5][0-9]|60)$',
+					useVariables: true,
+					isVisible: (options) => !options.use_timeframe,
+				},
+				{
+					type: 'textinput',
+					label: 'Set length of timer in seconds',
+					id: 'stage_timerinit_seconds',
+					required: true,
+					tooltip: 'The length of the timer to set as seconds',
+					default: 60,
+					regex: Regex.SIGNED_FLOAT,
+					useVariables: true,
+					isVisible: (options) => options.use_timeframe,
+				},
+				{
+					type: 'checkbox',
+					label: 'stage layout uses timeframe instead of time',
+					id: 'use_timeframe',
+					default: 'true',
+					tooltip: 'disable in order to send target time instead of timeframe',
+				},
+			],
+			callback: async (event) => {
+				let use_timeframe = await self.parseVariablesInString(event.options.use_timeframe)
+
+				let stage_timerinit = 0
+				if (use_timeframe == 'true') {
+					stage_timerinit = await self.parseVariablesInString(event.options.stage_timerinit_seconds)
+					args = [
+						{
+							type: 'f',
+							value: parseFloat(stage_timerinit) / 24 / 60 / 60,
+						},
+					]
+				} else {
+					stage_timerinit = await self.parseVariablesInString(event.options.stage_timerinit_time)
+					args = [
+						{
+							type: 's',
+							value: stage_timerinit,
+						},
+					]
+				}
+
+				path = '/stage/timerinit'
+
+				osc.send({
+					address: path,
+					args: args,
+				})
+				self.log(
+					'debug',
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+				)
+			},
+		},
 		navigate_to: {
 			name: 'Navigation within presentation and playlist',
 			options: [

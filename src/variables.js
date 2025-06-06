@@ -65,6 +65,22 @@ export const variables = [
 		variableId: 'presentation_message_visible',
 	},
 	{
+		name: 'Stage message text',
+		variableId: 'stage_message_text',
+	},
+	{
+		name: 'Stage layout name',
+		variableId: 'stage_layoutname',
+	},
+	{
+		name: 'Stage timer init - as timeframe in seconds',
+		variableId: 'stage_timerinit_seconds',
+	},
+	{
+		name: 'Stage timer init - as time',
+		variableId: 'stage_timerinit_time',
+	},
+	{
 		name: 'Video state',
 		variableId: 'video_state',
 	},

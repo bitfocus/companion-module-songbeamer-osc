@@ -202,8 +202,8 @@ class SongbeamerInstance extends InstanceBase {
 					const numeric_version = parseFloat(this.software_version.match(/[0-9.]+/g))
 					this.log('info', `'_songbeamer version' changed to ${numeric_version}`)
 
-					if (numeric_version < 6.04) {
-						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.04h or later to avoid unexpected behaviour`
+					if (numeric_version < 6.13) {
+						const message = `Using an old Songbeamer ${this.software_version} will cause trouble! Please upgrade to Songbeamer 6.12b or later to avoid unexpected behaviour`
 						this.log('warn', message)
 						this.updateStatus('BadConfig', message)
 					} else {
@@ -429,6 +429,27 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_message_visible')
 					this.log('info', `'presentation_message_visible' changed to ${value == 1}`)
 					break
+				case '/stage/message/text':
+					this.log('debug', `stage/message/text ${value}`)
+					this.setVariableValues({ stage_message_text: value })
+					this.checkFeedbacks('stage_message_text')
+					this.log('info', `'stage_message_text' changed to ${value}`)
+					break
+				case '/stage/layoutname':
+					this.log('debug', `stage/layoutname ${value}`)
+					this.setVariableValues({ stage_layoutname: value })
+					this.checkFeedbacks('stage_layoutname')
+					this.log('info', `'stage_layoutname' changed to ${value}`)
+					break
+				case '/stage/timerinit': {
+					this.log('debug', `/stage/timerinit ${value}`) //float in days! -> convert to minutes
+					const stage_timerinit = Math.round(value * 86400)
+					this.setVariableValues({ stage_timerinit_seconds_seconds: stage_timerinit })
+					this.setVariableValues({ stage_timerinit_seconds_seconds: `${secondsToTime(stage_timerinit)}` })
+					this.checkFeedbacks('stage_timerinit')
+					this.log('info', `'stage_timerinit' changed to ${secondsToTime(stage_timerinit)}`)
+					break
+				}
 				case '/livevideo/state':
 					this.log('debug', `/livevideo/state ${value}`)
 					this.setVariableValues({ livevideo_state: livevideo_states[value] })
