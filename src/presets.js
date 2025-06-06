@@ -300,7 +300,7 @@ export function getPresetDefinitions() {
 							actionId: 'navigate_to',
 							options: {
 								navigate_to: 'presentation/pagecaption',
-								presentation_pagecaption: `${value}`,
+								presentation_pagecaption: `${value[0]}`,
 							},
 						},
 					],
