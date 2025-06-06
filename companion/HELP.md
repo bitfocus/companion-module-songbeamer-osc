@@ -2,16 +2,21 @@
 
 After configuring host and port this module will open it's own OSC instance in order to communicate with SongBeamer.
 
-This module does define actions with names and options that map most of the implemented OSC functionalities. Therefore it eases up the use of OSC as a remote control by mapping specific actions with the respective paths / options.
+This module does define actions with names and options that map most of the implemented OSC functionalities.
+Therefore it eases up the use of OSC as a remote control by mapping specific actions with the respective paths / options.
 
 ## Songbeamer Requirements
 
-Please be aware that OSC is a functionality that is not enabled in Songbeamer by default. Check the forum for details!
+Please be aware that OSC is a functionality that is not enabled in Songbeamer by default.
+Open Tools/Extras -> Midi/OSC Setup and use the OSC tab to enable and configure port setup.
+
+## Pre-Songbeamer 6.10 (some functions might not be functional)
 
 To check whether OSC is active open Songbeamer Menu - Help - OSC logger (tested with version 6.0.4a)
 If it shows "disabled" you need to enable it by running a Songbeamer macro.
 Open the macro window (ALT + F8) and execute
 `IniSFS.OSC.Enabled := True;`
+Check the forum for details!
 
 ## Implementation status
 
@@ -67,6 +72,20 @@ The module itself or Songbeamer might crash any moment!
 4. in case you're trying yarn commands on Windows 11 'Set-ExecutionPolicy Restricted' needs to be allowed from an admin powershell first '
 
 ## Changelog
+
+### planned Version 2.3.0
+
+- Companion 4.0 compatibility
+
+### Version 2.2.0
+
+- implemented preset colors (#37)
+- implemented stage actions (#75)
+- requires Songbeamer 6.13
+
+### Version 2.1.0
+
+- See github tickets #74, #67, #68, #62, #16, #32, #71, #70, #65, #64, #63, #43, #17, #44
 
 ### Version 2.0.0
 
