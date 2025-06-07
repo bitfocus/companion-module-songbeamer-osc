@@ -45,7 +45,7 @@ export function getFeedbackDefinitions(self, osc) {
 						default:
 							self.log(
 								'error',
-								'feedback presentation_state_advanced did use a state which is not configured for automatic feedback'
+								'feedback presentation_state_advanced did use a state which is not configured for automatic feedback',
 							)
 							return { text: 'error' }
 					}
@@ -483,7 +483,7 @@ export function getFeedbackDefinitions(self, osc) {
 							'error',
 							`${
 								comparators[feedback.options.stage_timer_comparator]
-							} stage_timerinit_comparator which is not configured for automatic feedback´`
+							} stage_timerinit_comparator which is not configured for automatic feedback´`,
 						)
 						return { text: 'error' }
 				}
@@ -654,7 +654,7 @@ export function getFeedbackDefinitions(self, osc) {
 							'error',
 							`${
 								comparators[feedback.options.video_length_comparator]
-							} video_length_comparator which is not configured for automatic feedback´`
+							} video_length_comparator which is not configured for automatic feedback´`,
 						)
 						return { text: 'error' }
 				}
@@ -717,7 +717,7 @@ export function getFeedbackDefinitions(self, osc) {
 							'error',
 							`${
 								comparators[feedback.options.video_position_comparator]
-							} video_position_comparator which is not configured for automatic feedback´`
+							} video_position_comparator which is not configured for automatic feedback´`,
 						)
 						return { text: 'error' }
 				}
@@ -751,7 +751,7 @@ export function getFeedbackDefinitions(self, osc) {
 					default:
 						self.log(
 							'error',
-							'feedback video_state_advanced did use a state which is not configured for automatic feedback'
+							'feedback video_state_advanced did use a state which is not configured for automatic feedback',
 						)
 						return { text: 'error' }
 				}
@@ -859,7 +859,7 @@ export function getFeedbackDefinitions(self, osc) {
 					default:
 						self.log(
 							'error',
-							'feedback livevideo_state_advanced did use a state which is not configured for automatic feedback'
+							'feedback livevideo_state_advanced did use a state which is not configured for automatic feedback',
 						)
 						return { text: 'error' }
 				}

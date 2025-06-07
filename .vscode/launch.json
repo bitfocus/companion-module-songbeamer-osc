@@ -8,7 +8,7 @@
 			"name": "Run Companion-Launcher",
 			"type": "node-terminal",
 			"request": "launch",
-			"command": "../../companion-linux-x64-3.4.0+7304-stable-01df0f17/companion-x64/companion-launcher"
+			"command": "../../companion-linux-x64-4.0.0+8052-stable-68859c8a39/companion-x64/companion-launcher"
 		}
 	]
 }

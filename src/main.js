@@ -89,7 +89,7 @@ class SongbeamerInstance extends InstanceBase {
 		})
 		this.log(
 			'info',
-			`Sent osc_reconnecting_init_polling to ${this.config.host}:${this.config.port} with /xinfo to check connection status`
+			`Sent osc_reconnecting_init_polling to ${this.config.host}:${this.config.port} with /xinfo to check connection status`,
 		)
 	}
 
@@ -151,7 +151,7 @@ class SongbeamerInstance extends InstanceBase {
 				this.osc.close()
 				delete this.osc
 			} catch (e) {
-				// Ignore
+				this.log('error', e)
 			}
 		}
 		/**
@@ -195,7 +195,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.software_version = args[3]['value']
 					this.log(
 						'info',
-						`Connected to ${this.network_address} (${this.network_name}) on ${this.software} (${this.software_version})`
+						`Connected to ${this.network_address} (${this.network_name}) on ${this.software} (${this.software_version})`,
 					)
 
 					this.setVariableValues({ _songbeamer_version: this.software_version })
@@ -236,7 +236,7 @@ class SongbeamerInstance extends InstanceBase {
 					this.software_version = args[3]['value']
 					this.log(
 						'info',
-						`Connected to ${this.server_name} (${this.server_version}) on ${this.software} (${this.software_version})`
+						`Connected to ${this.server_name} (${this.server_version}) on ${this.software} (${this.software_version})`,
 					)
 					break
 				case '/presentation/page':
@@ -333,7 +333,7 @@ class SongbeamerInstance extends InstanceBase {
 					} else {
 						this.log(
 							'warn',
-							`bigger playlist index difference than expected cur ref=${current_index}; new ref=${response_index} maybe changes occured too fast?`
+							`bigger playlist index difference than expected cur ref=${current_index}; new ref=${response_index} maybe changes occured too fast?`,
 						)
 					}
 					break
@@ -356,7 +356,7 @@ class SongbeamerInstance extends InstanceBase {
 					} else {
 						this.log(
 							'warn',
-							`bigger playlist index difference than expected cur ref=${current_index}; new ref=${response_index} maybe changes occured too fast?`
+							`bigger playlist index difference than expected cur ref=${current_index}; new ref=${response_index} maybe changes occured too fast?`,
 						)
 					}
 					break
@@ -508,7 +508,7 @@ class SongbeamerInstance extends InstanceBase {
 					'error',
 					'Connection lost - will try to recover every ' +
 						this.config.reconnect_time +
-						' ms as long as module is active'
+						' ms as long as module is active',
 				)
 				this.updateStatus('Connecting')
 			} else {

@@ -73,9 +73,10 @@ The module itself or Songbeamer might crash any moment!
 
 ## Changelog
 
-### planned Version 2.3.0
+### Version 2.3.0
 
-- Companion 4.0 compatibility
+- updated to match companion 4.0
+- upgraded used modules - companion_base 1.12 beucase of "isVisibleExpression" -> incompatible with older versions of companion
 
 ### Version 2.2.0
 

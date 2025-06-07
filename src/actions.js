@@ -26,13 +26,20 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
 		presentation_state: {
 			name: 'Change presentation state',
 			options: [
+				{
+					type: 'checkbox',
+					label: 'Execute change',
+					id: 'should_change',
+					default: 'true',
+					tooltip: 'disable in order to request state instead of changing it',
+				},
 				{
 					type: 'dropdown',
 					label: 'State',
@@ -43,15 +50,8 @@ export function getActionDefinitions(self, osc) {
 						id: String(index),
 						label: item,
 					})),
-					isVisible: (options) => options.should_change,
+					isVisibleExpression: `$(options:should_change)`,
 					minChoicesForSearch: 0,
-				},
-				{
-					type: 'checkbox',
-					label: 'Execute change',
-					id: 'should_change',
-					default: 'true',
-					tooltip: 'disable in order to request state instead of changing it',
 				},
 			],
 			callback: async (event) => {
@@ -76,7 +76,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 			subscribe: () => {
@@ -95,7 +95,7 @@ export function getActionDefinitions(self, osc) {
 					id: 'presentation_permanentblack',
 					default: 'true',
 					tooltip: 'Choose to enable permanent black',
-					isVisible: (options) => options.should_change,
+					isVisibleExpression: `$(options:should_change)`,
 				},
 				{
 					type: 'checkbox',
@@ -138,7 +138,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 			subscribe: () => {
@@ -161,7 +161,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -194,7 +194,7 @@ export function getActionDefinitions(self, osc) {
 			callback: async (event) => {
 				self.log('warn', 'Songbeamer does not yet act upon the request  - check #6')
 				const presentation_language_primary = await self.parseVariablesInString(
-					event.options.presentation_language_primary
+					event.options.presentation_language_primary,
 				)
 				path = '/presentation/primarylanguage'
 				args = [
@@ -210,7 +210,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 
 				let presentation_language = await self.parseVariablesInString(event.options.presentation_language)
@@ -228,7 +228,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -236,19 +236,20 @@ export function getActionDefinitions(self, osc) {
 			name: 'Change presentation message text',
 			options: [
 				{
+					type: 'checkbox',
+					label: 'Show Message',
+					id: 'presentation_message_visible',
+					default: true,
+				},
+				{
 					type: 'textinput',
 					label: 'Message',
 					id: 'presentation_message_text',
 					default: '',
 					tooltip: 'Type any message to display',
+					isVisibleExpression: `$(options:presentation_message_visible)`,
 					regex: Regex.SOMETHING,
 					useVariables: true,
-				},
-				{
-					type: 'checkbox',
-					label: 'Show Message',
-					id: 'presentation_message_visible',
-					default: true,
 				},
 			],
 			callback: async (event) => {
@@ -267,7 +268,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 				let presentation_message_visible = await self.parseVariablesInString(event.options.presentation_message_visible)
 				path = '/presentation/message/visible'
@@ -284,7 +285,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -317,7 +318,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -350,13 +351,20 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
 		stage_timerinit: {
 			name: 'Set stagetimer initial value',
 			options: [
+				{
+					type: 'checkbox',
+					label: 'use timeframe instead of target time',
+					id: 'use_timeframe',
+					default: 'true',
+					tooltip: 'disable in order to send target time instead of timeframe',
+				},
 				{
 					type: 'textinput',
 					label: 'Set Timer target time',
@@ -365,7 +373,7 @@ export function getActionDefinitions(self, osc) {
 					tooltip: 'Chose any 24h time',
 					regex: '^(0*[0-9]|1[0-9]|2[0-4]):(0*[0-9]|[1-5][0-9]|60):(0*[0-9]|[1-5][0-9]|60)$',
 					useVariables: true,
-					isVisible: (options) => !options.use_timeframe,
+					isVisibleExpression: `!$(options:use_timeframe)`,
 				},
 				{
 					type: 'textinput',
@@ -376,14 +384,7 @@ export function getActionDefinitions(self, osc) {
 					default: 60,
 					regex: Regex.SIGNED_FLOAT,
 					useVariables: true,
-					isVisible: (options) => options.use_timeframe,
-				},
-				{
-					type: 'checkbox',
-					label: 'stage layout uses timeframe instead of time',
-					id: 'use_timeframe',
-					default: 'true',
-					tooltip: 'disable in order to send target time instead of timeframe',
+					isVisibleExpression: `$(options:use_timeframe)`,
 				},
 			],
 			callback: async (event) => {
@@ -416,13 +417,21 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
 		navigate_to: {
 			name: 'Navigation within presentation and playlist',
 			options: [
+				{
+					type: 'checkbox',
+					label: 'Execute change',
+					id: 'should_change',
+					default: true,
+					isVisibleExpression: `arrayIncludes(['nextpage', 'prevpage', 'playlist/previous', 'playlist/next'], $(options:navigate_to))`,
+					tooltip: 'disable in order to request state instead of changing it',
+				},
 				{
 					type: 'dropdown',
 					label: 'Action',
@@ -446,7 +455,7 @@ export function getActionDefinitions(self, osc) {
 					label: 'Playlist / Page number',
 					id: 'number',
 					default: '1',
-					isVisible: (options) => ['playlist/item', 'presentation/page'].includes(options.navigate_to),
+					isVisibleExpression: `arrayIncludes(['playlist/item', 'presentation/page'], $(options:navigate_to))`,
 					tooltip: 'Number of the page or playlist item (starting with 1 not 0 index!)',
 					regex: Regex.SIGNED_NUMBER,
 					useVariables: true,
@@ -456,19 +465,10 @@ export function getActionDefinitions(self, osc) {
 					label: 'page caption',
 					id: 'presentation_pagecaption',
 					default: 'Verse 1',
-					isVisible: (options) => options.navigate_to == 'presentation/pagecaption',
+					isVisibleExpression: `arrayIncludes(['presentation/pagecaption'], $(options:navigate_to))`,
 					tooltip: 'Choose any verse marker as listed defined in your current song - e.g. Verse 1, Chorus 1 ... ',
 					regex: Regex.SOMETHING,
 					useVariables: true,
-				},
-				{
-					type: 'checkbox',
-					label: 'Execute change',
-					id: 'should_change',
-					default: true,
-					isVisible: (options) =>
-						['nextpage', 'prevpage', 'playlist/previous', 'playlist/next'].includes(options.navigate_to),
-					tooltip: 'disable in order to request state instead of changing it',
 				},
 			],
 			callback: async (event) => {
@@ -535,7 +535,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -552,7 +552,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -570,7 +570,7 @@ export function getActionDefinitions(self, osc) {
 						{ id: '1', label: 'pause' },
 						{ id: '2', label: 'stop' },
 					],
-					isVisible: (options) => options.should_change,
+					isVisibleExpression: `$(options:should_change)`,
 					minChoicesForSearch: 0,
 				},
 				{
@@ -625,7 +625,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -660,7 +660,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -669,17 +669,17 @@ export function getActionDefinitions(self, osc) {
 			options: [
 				{
 					type: 'checkbox',
-					label: 'Play',
-					id: 'livevideo_state',
-					default: true,
-					isVisible: (options) => options.should_change,
-				},
-				{
-					type: 'checkbox',
 					label: 'Execute change',
 					id: 'should_change',
 					default: true,
 					tooltip: 'disable in order to request state instead of changing it',
+				},
+				{
+					type: 'checkbox',
+					label: 'Play',
+					id: 'livevideo_state',
+					default: true,
+					isVisibleExpression: `$(options:should_change)`,
 				},
 			],
 			callback: async (event) => {
@@ -704,11 +704,11 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 				self.log(
 					'warn',
-					'Implementation of livevideo might not work with Songbeamer 6.04c see https://github.com/bitfocus/companion-module-songbeamer-osc/issues/18'
+					'Implementation of livevideo might not work with Songbeamer 6.04c see https://github.com/bitfocus/companion-module-songbeamer-osc/issues/18',
 				)
 			},
 		},
@@ -747,7 +747,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
@@ -785,7 +785,7 @@ export function getActionDefinitions(self, osc) {
 				})
 				self.log(
 					'debug',
-					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`
+					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
 			},
 		},
