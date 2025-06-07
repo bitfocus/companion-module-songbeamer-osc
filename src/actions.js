@@ -427,7 +427,7 @@ export function getActionDefinitions(self, osc) {
 					type: 'dropdown',
 					label: 'Action',
 					id: 'navigate_to',
-					default: '0',
+					default: 'nextpage',
 					tooltip:
 						'Choose navigation action to be executed on presentation or playlist, disabling execute will query the item instead',
 					choices: [
@@ -446,7 +446,7 @@ export function getActionDefinitions(self, osc) {
 					label: 'Playlist / Page number',
 					id: 'number',
 					default: '1',
-					isVisible: (options) => ['playlist/item', 'presentation/page'].contains(options.navigate_to),
+					isVisible: (options) => ['playlist/item', 'presentation/page'].includes(options.navigate_to),
 					tooltip: 'Number of the page or playlist item (starting with 1 not 0 index!)',
 					regex: Regex.SIGNED_NUMBER,
 					useVariables: true,
@@ -507,7 +507,6 @@ export function getActionDefinitions(self, osc) {
 						break
 					case 'presentation/pagecaption':
 						path = '/presentation/pagecaption'
-						self.log('warn', 'This endpoint is not correctly implemented in Songbeamer! #15') // TODO #15
 						args = [
 							{
 								type: 's',
