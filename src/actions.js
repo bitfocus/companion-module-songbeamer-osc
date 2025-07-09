@@ -329,7 +329,7 @@ export function getActionDefinitions(self, osc) {
 					type: 'textinput',
 					label: 'Message',
 					id: 'stage_layoutname',
-					default: 'StageMonitor',
+					default: 'Default',
 					tooltip: 'Type name of layout without extension to be used for stage display',
 					regex: Regex.SOMETHING,
 					useVariables: true,
