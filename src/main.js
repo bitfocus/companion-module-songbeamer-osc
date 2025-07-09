@@ -255,15 +255,32 @@ class SongbeamerInstance extends InstanceBase {
 					this.checkFeedbacks('presentation_pagecount')
 					this.log('info', `'presentation_pagecount' changed to ${value}`)
 					break
-				case '/presentation/filename':
+				case '/presentation/filename': {
 					this.log('info', `'/presentation/filename ${value}`)
+					// extract just the file name (remove path)
 					value = value.split(/\\|\//)
 					value = value[value.length - 1]
-					value = value.split('.').slice(0, -1).join('.')
-					this.setVariableValues({ presentation_filename: value })
+					// split into base name and extension (if any)
+					let parts = value.split('.')
+					let filename = ''
+					let extension = ''
+					// handle presence or absence of extension even if . in filename
+					if (parts.length > 1) {
+						filename = parts.slice(0, -1).join('.')
+						extension = parts[parts.length - 1]
+					} else {
+						filename = parts[0]
+						extension = ''
+					}
+					// update variables and check feedbacks
+					this.setVariableValues({ presentation_filename: filename })
 					this.checkFeedbacks('presentation_filename')
-					this.log('info', `'presentation_filename' changed to ${value}`)
+					this.log('info', `'presentation_filename' changed to ${filename}`)
+					this.setVariableValues({ fileextension: extension })
+					this.checkFeedbacks('fileextension')
+					this.log('info', `'fileextension' changed to ${extension}`)
 					break
+				}
 				case '/presentation/pagecaption':
 					this.log('debug', `/presentation/pagecaption ${value}`)
 					this.setVariableValues({ presentation_pagecaption: value })

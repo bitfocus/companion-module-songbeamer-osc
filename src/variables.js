@@ -17,6 +17,10 @@ export const variables = [
 		variableId: 'presentation_filename',
 	},
 	{
+		name: 'presentation fileextension',
+		variableId: 'presentation_fileextension',
+	},
+	{
 		name: 'presentation pagecaption',
 		variableId: 'presentation_pagecaption',
 	},
