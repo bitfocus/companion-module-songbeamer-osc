@@ -276,9 +276,9 @@ class SongbeamerInstance extends InstanceBase {
 					this.setVariableValues({ presentation_filename: filename })
 					this.checkFeedbacks('presentation_filename')
 					this.log('info', `'presentation_filename' changed to ${filename}`)
-					this.setVariableValues({ fileextension: extension })
-					this.checkFeedbacks('fileextension')
-					this.log('info', `'fileextension' changed to ${extension}`)
+					this.setVariableValues({ presentation_fileextension: extension })
+					this.checkFeedbacks('presentation_fileextension')
+					this.log('info', `'presentation_fileextension' changed to ${extension}`)
 					break
 				}
 				case '/presentation/pagecaption':
