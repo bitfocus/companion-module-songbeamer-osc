@@ -1,0 +1,34 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*' # This wildcard means any tag
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build package
+        run: yarn companion-module-build --dev
+
+      - name: Create Release
+        uses: /softprops/action-gh-release@v2.0.6
+        with:
+          body: 'This is a dev build of the module - use pkg.tgz with caution. In case you are no developer please wait for official releases as part of a companion release'
+          draft: true
+          prerelease: true
+          files: |
+            songbeamer-osc-*.tgz

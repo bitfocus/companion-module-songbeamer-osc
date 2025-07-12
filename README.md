@@ -1,3 +1,3 @@
 # companion-module-songbeamer-osc
 
-See HELP.md and LICENSE
+See companion/HELP.md and LICENSE

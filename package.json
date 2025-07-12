@@ -1,9 +1,13 @@
 {
 	"name": "songbeamer-osc",
-	"version": "2.0.0",
-	"main": "osc.js",
+	"version": "2.3.2",
+	"main": "src/main.js",
+	"type": "module",
 	"scripts": {
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
+		"lint": "yarn lint:raw .",
+		"prepare": "husky install"
 	},
 	"license": "MIT",
 	"repository": {
@@ -11,14 +15,18 @@
 		"url": "git+https://github.com/bitfocus/companion-module-songbeamer-osc.git"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^1.2.0",
-		"prettier": "^2.7.1"
+		"@companion-module/tools": "^2.3.0",
+		"eslint": "^9.28.0",
+		"husky": "^8.0.0",
+		"prettier": "^3.5.3"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.2",
-		"bufferutil": "^4.0.7",
+		"@companion-module/base": "^1.12.1",
+		"bufferutil": "^4.0.9",
 		"osc": "^2.4.1",
-		"utf-8-validate": "^6.0.3",
-		"ws": "^8.17.1"
-	}
+		"utf-8-validate": "^6.0.5",
+		"ws": "^8.18.2"
+	},
+	"prettier": "@companion-module/tools/.prettierrc.json",
+	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

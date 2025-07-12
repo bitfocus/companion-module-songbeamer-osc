@@ -3,7 +3,7 @@
 	"name": "songbeamer-osc",
 	"shortname": "songbeamer-osc",
 	"description": "Direct: Songbeamer OSC plugin for Companion",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-songbeamer-osc.git",
 	"bugs": "https://github.com/bitfocus/companion-module-songbeamer-osc/issues",
@@ -18,7 +18,7 @@
 		"type": "node18",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
-		"entrypoint": "../osc.js"
+		"entrypoint": "../src/main.js"
 	},
 	"manufacturer": "Songbeamer",
 	"products": ["OSC"],
