@@ -15,13 +15,13 @@
 		"url": "git+https://github.com/bitfocus/companion-module-songbeamer-osc.git"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.8.0",
+		"@companion-module/tools": "^2.9.1",
 		"eslint": "^9.28.0",
 		"husky": "^8.0.0",
 		"prettier": "^3.5.3"
 	},
 	"dependencies": {
-		"@companion-module/base": "^1.12.1",
+		"@companion-module/base": "^1.15.1",
 		"bufferutil": "^4.0.9",
 		"osc": "^2.4.1",
 		"utf-8-validate": "^6.0.5",
