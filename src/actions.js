@@ -56,7 +56,7 @@ export function getActionDefinitions(self, osc) {
 			],
 			callback: async (event) => {
 				const presentation_state = await self.parseVariablesInString(event.options.presentation_state)
-				const should_change = await self.parseVariablesInString(event.options.should_change)
+				const should_change = String(await self.parseVariablesInString(event.options.should_change))
 
 				path = '/presentation/state'
 
@@ -106,8 +106,10 @@ export function getActionDefinitions(self, osc) {
 				},
 			],
 			callback: async (event) => {
-				const presentation_permanentblack = await self.parseVariablesInString(event.options.presentation_permanentblack)
-				const should_change = await self.parseVariablesInString(event.options.should_change)
+				const presentation_permanentblack = String(
+					await self.parseVariablesInString(event.options.presentation_permanentblack),
+				)
+				const should_change = String(await self.parseVariablesInString(event.options.should_change))
 
 				self.log('debug', `permbalck:shouldchange= ${presentation_permanentblack}:${should_change}`)
 
@@ -270,7 +272,9 @@ export function getActionDefinitions(self, osc) {
 					'debug',
 					`Sent OSC to ${self.config.host}:${self.config.port} with ${path} and ${JSON.stringify(args)}`,
 				)
-				let presentation_message_visible = await self.parseVariablesInString(event.options.presentation_message_visible)
+				let presentation_message_visible = String(
+					await self.parseVariablesInString(event.options.presentation_message_visible),
+				)
 				path = '/presentation/message/visible'
 				args = [
 					{
@@ -388,7 +392,7 @@ export function getActionDefinitions(self, osc) {
 				},
 			],
 			callback: async (event) => {
-				let use_timeframe = await self.parseVariablesInString(event.options.use_timeframe)
+				let use_timeframe = String(await self.parseVariablesInString(event.options.use_timeframe))
 
 				let stage_timerinit = 0
 				if (use_timeframe == 'true') {
@@ -473,7 +477,7 @@ export function getActionDefinitions(self, osc) {
 			],
 			callback: async (event) => {
 				const navigate_to = await self.parseVariablesInString(event.options.navigate_to)
-				const should_change = await self.parseVariablesInString(event.options.should_change) // TODO #11 - read bool not str?
+				const should_change = String(await self.parseVariablesInString(event.options.should_change)) // TODO #11 - read bool not str?
 				switch (navigate_to) {
 					case 'nextpage':
 						path = '/presentation/nextpage'
@@ -583,7 +587,7 @@ export function getActionDefinitions(self, osc) {
 			],
 			callback: async (event) => {
 				let video_state = await self.parseVariablesInString(event.options.video_state)
-				const should_change = await self.parseVariablesInString(event.options.should_change)
+				const should_change = String(await self.parseVariablesInString(event.options.should_change))
 				path = '/video/state'
 				if (should_change == 'true') {
 					switch (video_state) {
@@ -683,8 +687,8 @@ export function getActionDefinitions(self, osc) {
 				},
 			],
 			callback: async (event) => {
-				let livevideo_state = await self.parseVariablesInString(event.options.livevideo_state)
-				const should_change = await self.parseVariablesInString(event.options.should_change)
+				let livevideo_state = String(await self.parseVariablesInString(event.options.livevideo_state))
+				const should_change = String(await self.parseVariablesInString(event.options.should_change))
 
 				path = '/livevideo/state'
 				if (should_change == 'true') {
