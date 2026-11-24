@@ -363,6 +363,12 @@ export function getPresetDefinitions() {
 					presentation_state: '3',
 				},
 			},
+			{
+				feedbackId: 'presentation_state_advanced',
+				options: {
+					presentation_state: '4',
+				},
+			},			
 		],
 	}
 
@@ -529,11 +535,54 @@ export function getPresetDefinitions() {
 			},
 		],
 	}
+
+	const state_video = {
+		type: 'button', // This must be 'button' for now
+		category: 'Presentation state', // This groups presets into categories in the ui. Try to create logical groups to help users find presets
+		name: `presentation_state -> video `, // A name for the preset. Shown to the user when they hover over it
+		style: {
+			text: 'video',
+			size: '24',
+			png64: get_images()['state_play'],
+			alignment: 'center:center',
+			pngalignment: 'center:center',
+			color: combineRgb(255, 255, 255),
+			bgcolor: combineRgb(0, 0, 0),
+		},
+		steps: [
+			{
+				down: [
+					{
+						actionId: 'presentation_state',
+						options: {
+							presentation_state: '4',
+							should_change: true,
+						},
+					},
+				],
+				up: [],
+			},
+		],
+		feedbacks: [
+			{
+				feedbackId: 'presentation_state',
+				options: {
+					presentation_state: '4',
+				},
+				style: {
+					bgcolor: combineRgb(255, 0, 0),
+					color: combineRgb(255, 255, 255),
+				},
+			},
+		],
+	}
+
 	result['state_current'] = state_current
 	result['state_black'] = state_black
 	result['state_background'] = state_background
 	result['state_page'] = state_page
 	result['state_logo'] = state_logo
+	result['state_video'] = state_video
 
 	// Video state
 	const video_state_current = {
