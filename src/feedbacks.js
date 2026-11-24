@@ -42,6 +42,8 @@ export function getFeedbackDefinitions(self, osc) {
 							return { text: '', png64: get_images()['state_logo'] }
 						case 'blank':
 							return { text: '', png64: get_images()['state_blank'] }
+						case 'video':
+							return { text: 'video', png64: get_images()['state_play'] }
 						default:
 							self.log(
 								'error',
